@@ -50,3 +50,7 @@ __7th March : 14 days__
 	* messages
 
 __Estimated completion date Friday 4th March__
+
+### Questions for Week 2 Tute.
+* are the exceptions thorough? i.e. is there a need to handle instances where
+  the user is inputting special characters for their name?
