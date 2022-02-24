@@ -9,25 +9,18 @@
 
 ###### Test_0
 - assumes auth_id: valid, user_id: valid, start: invalid
-
 ###### Test_1
 - assumes auth_id: invalid, user_id: valid, start: invalid
-
 ###### Test_2
 - assumes auth_id: valid, user_id: invalid, start: invalid
-
 ###### Test_3
 - assumes auth_id: invalid, user_id: invalid, start: invalid
-
 ###### Test_4
 - assumes auth_id: invalid, user_id: valid, start: valid
-
 ###### Test_5
 - assumes auth_id: invalid, user_id: invalid, start: valid
-
 ###### Test_6
 - assumes auth_id: valid, user_id: invalid, start: valid
-
 
 ##### Access Error
 - For tests related to access error, the tests are currently not usable as data_store.py is not yet populated.
