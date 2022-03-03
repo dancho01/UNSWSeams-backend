@@ -10,12 +10,12 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 def channel_details_v1(auth_user_id, channel_id):
     store = data_store.get()
 
-    channel_info = checkValidChannel(channel_id, store)
+    valid_channel = checkValidChannel(channel_id, store)
 
-    if channel_info == 0:
+    if valid_channel == 0:
         raise InputError("channel_id does not refer to a valid channel")
-
-    channel_index = channel_info[1]
+    else:
+        channel_index = valid_channel[1]
 
     if checkAuthorization(auth_user_id, channel_index, store) == 0:
         raise AccessError(
