@@ -5,16 +5,6 @@ from src.channel import channel_join_v1
 from src.error import InputError, AccessError
 from src.other import clear_v1
 
-auth_register_return = auth_register_v1(
-    'firstuser@gmail.com', 'password', 'Daniel', 'Cho')
-auth_user_id_1 = auth_register_return.get('auth_user_id')
-channels_result = channels_create_v1(auth_user_id_1, 'validname', True)
-channel_id = channels_result.get('channel_id')
-auth_register_return = auth_register_v1(
-    'seconduser@gmail.com', 'password', 'firstname', 'lastname')
-auth_user_id_2 = auth_register_return.get('auth_user_id')
-channel_join_v1(auth_user_id_2, channel_id)
-
 
 def test_0_invalid_channel_id():
     clear_v1()
