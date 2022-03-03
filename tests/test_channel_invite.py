@@ -2,10 +2,12 @@ import pytest
 
 from src.error import InputError
 from src.error import AccessError
-from src.channel import channel_invite_v1, channel_join_v1
+from src.channel import channel_invite_v1
+from src.channel import channel_join_v1
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.other import clear_v1
+from src.data_store import checkValidChannel, checkAuthorization, messagesReturned, data_store
 
 def test_invalid_channel_id():
     clear_v1()
@@ -42,8 +44,8 @@ def test_auth_user_not_in_channel():
     u_id2 = auth_register_v1("another_email@domain.com", "Password2", "First", "Last")
     u_id3 = auth_register_v1("third_email@domain.com", "Password3", "First", "Last")
 
-    channel1 = channels_create_v1(u_id3, "Channel Name", True)   # returns an integer channel_id
-
+    channel1 = channels_create_v1(u_id3, "Channel Name", True).get("id")   # returns channel_id
+    print(channel1)
     with pytest.raises(AccessError):
         channel_invite_v1(u_id1, channel1, u_id2)
 
