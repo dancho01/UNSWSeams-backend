@@ -1,4 +1,33 @@
+from channels import channels_list_v1, channels_listall_v1
+from error import InputError, AccessError
+
 def channel_invite_v1(auth_user_id, channel_id, u_id):
+    # channel_id is invalid
+    all_channels = channels_listall_v1(auth_user_id)
+    if channel_id not in all_channels:
+        raise InputError
+
+    # auth_user_id is not a member of the channel
+    auth_channels = channels_list_v1(auth_user_id)  # returns a list of channels auth_user is in
+    if channel_id not in auth_channels:
+        raise AccessError
+
+    ###### auth_user_id is invalid, when auth_user_id does not exist
+    # not sure how to verify whether a user is valid or not
+
+    ###### u_id is invalid, when u_id does not exist
+    # not sure how to verify whether a user is valid or not
+    #try: 
+    #    user_id = auth_login_v1()
+
+    # u_id is already a member of the channel
+    user_channels = channels_list_v1(u_id)  # returns a list of channels u_id is in
+    if channel_id in user_channels:
+        raise InputError
+
+
+
+    channel_join_v1(u_id, channel_id)
     return {
     }
 
