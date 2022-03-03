@@ -1,5 +1,5 @@
-from error import InputError, AccessError
-from data_store import checkValidChannel, checkAuthorization, messagesReturned, data_store
+from src.error import InputError, AccessError
+from src.data_store import checkValidChannel, checkAuthorization, messagesReturned, data_store
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
