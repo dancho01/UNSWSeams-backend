@@ -32,18 +32,18 @@ def channels_create_v1(auth_user_id, name, is_public):
     
     found = False 
     for user in store['users']:
-        if user[0] == auth_user_id:
+        if user['id'] == auth_user_id:
             found = True 
     if found != True:
         raise AccessError("User_id is not valid")   
     
     
     new_channel_id = len(store['channels']) + 1
-    new_channel = {'channel_id': new_channel_id, 
+    new_channel = {'channel_id': new_channel_id,
                     'name': name, 
                     'is_public': is_public, 
-                    'owner_members': [{'u_id': auth_user_id}], 
-                    'all_members': [{'u_id': auth_user_id}],
+                    'owner_members': [auth_user_id], 
+                    'all_members': [auth_user_id],
                   }
     store['channels'].append(new_channel)
     data_store.set(store)
