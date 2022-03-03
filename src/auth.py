@@ -10,7 +10,7 @@ def auth_login_v1(email, password):
    
     found = False
     for user in store['users']:
-        if user[1] == email:
+        if user['email'] == email:
             found = True
     if found != True:
         raise InputError("This email is not registered!")
@@ -25,11 +25,11 @@ def auth_login_v1(email, password):
         raise InputError("No @ in email!")
 
     for user in store['users']:
-        if user[1] == email:
-            if user[2] != password:
+        if user['email'] == email:
+            if user['password'] != password:
                 raise InputError("Incorrect Password!")
             else:
-                return {'auth_user_id': user[0]}
+                return {'auth_user_id': user['id']}
 
 def auth_register_v1(email, password, name_first, name_last):
     store = data_store.get()
@@ -65,18 +65,23 @@ def auth_register_v1(email, password, name_first, name_last):
         raise InputError("Password must be 6 or more characters!")
     
     for user in store['users']:
-        if user[1] == email:
+        if user['email'] == email:
             raise InputError("This email is already in use by another user!")
 
     new_id = len(store['users']) + 1
-
-    store['users'].append((new_id, email, password, name_first + ' ' + name_last))
+    
+ 
+    new_user = {'id': new_id, 'name': name_first + ' ' + name_last, 'email': email, 'password': password} 
+    if new_id == 1:
+        new_user['global_permissions'] = 1
+    else:
+        new_user['global_permissions'] = 2                      
+              
+    store['users'].append(new_user)
 
     data_store.set(store)    
     
-    print(store)
-    return {
-        
+    return {      
             'auth_user_id': new_id,
     }
     
