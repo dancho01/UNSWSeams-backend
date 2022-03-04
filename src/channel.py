@@ -1,8 +1,41 @@
+from src.channels import channels_list_v1
+from src.channels import channels_listall_v1
 from src.error import InputError, AccessError
 from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
+    """
+    Invites a user with ID u_id to join a channel with ID channel_id.
+    Once invited, the user is added to the channel immediately. 
+    In both public and private channels, all members are able to invite users. 
+    """
+    store = data_store.get()
+
+    # check if auth_user_id exists
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError("auth_user_id passed in is invalid")
+
+    is_valid_channel = check_valid_channel(
+        channel_id, store)   # returns a tuple (1,index) if channel is valid else 0
+
+    if is_valid_channel == 0:
+        raise InputError("channel_id does not refer to a valid channel")
+
+    if check_user_registered(u_id, store) == False:
+        raise InputError("u_id does not refer to a valid user")
+
+    if check_authorization(auth_user_id, is_valid_channel[1], store) == 0:
+        raise AccessError("u_id does not refer to a valid user")
+
+    # u_id is invalid
+
+    # test if u_id is already a member of the channel
+    if check_authorization(u_id, is_valid_channel[1], store) == 0:
+        raise InputError(
+            "u_id refers to a user who is already a member of the channel")
+
+    channel_join_v1(u_id, channel_id)
     return {
     }
 
@@ -91,3 +124,7 @@ def channel_join_v1(auth_user_id, channel_id):
 
     return {
     }
+
+
+# if __name__ == "__main__":
+#     channel_invite_v1(2, 3, 4)

@@ -1,27 +1,34 @@
 from src.data_store import data_store, check_user_registered
 from src.error import InputError, AccessError
 
-
 def channels_list_v1(auth_user_id):
-    return {
-        'channels': [
-            {
-                'channel_id': 1,
-                'name': 'My Channel',
-            }
-        ],
-    }
+    store = data_store.get()
+    if not check_user_registered(auth_user_id, store): 
+        raise AccessError
 
+    auth_channel_list = []
+
+    all_channels = store["channels"]      # channel_id is a list of channels which are dictionaries
+    for channel in all_channels:
+        if auth_user_id in all_channels[channel]["all_members"]:
+            auth_channel_list.append(all_channels[channel])
+
+    return {"channels" : auth_channel_list}
 
 def channels_listall_v1(auth_user_id):
-    return {
-        'channels': [
-            {
-                'channel_id': 1,
-                'name': 'My Channel',
-            }
-        ],
-    }
+    store = data_store.get()
+    if not check_user_registered(auth_user_id, store): 
+        raise AccessError
+        
+    channel_list = []
+
+    channel_id = store["channels"]
+    for i in range(len(channel_id)):
+        if auth_user_id in channel_id[i]["authorised"]:
+            channel_list.append(channel_id[i])
+
+    return {"channels" : channel_list}
+
 
 
 def channels_create_v1(auth_user_id, name, is_public):
@@ -44,9 +51,10 @@ def channels_create_v1(auth_user_id, name, is_public):
                    'owner_members': [auth_user_id],
                    'all_members': [auth_user_id],
                    }
-    store['channels'].append(new_channel)
+    store["channels"].append(new_channel)
     data_store.set(store)
 
     return {
-        'channel_id': new_channel_id,
+        "channel_id": new_channel_id,
     }
+
