@@ -1,46 +1,46 @@
-from src.data_store import data_store
 from src.error import InputError, AccessError
+from src.data_store import checkValidChannel, checkAuthorization, messagesReturned, data_store
+
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     return {
     }
 
+
 def channel_details_v1(auth_user_id, channel_id):
-    return {
-        'name': 'Hayden',
-        'owner_members': [
-            {
-                'u_id': 1,
-                'email': 'example@gmail.com',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'haydenjacobs',
-            }
-        ],
-        'all_members': [
-            {
-                'u_id': 1,
-                'email': 'example@gmail.com',
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-                'handle_str': 'haydenjacobs',
-            }
-        ],
-    }
+    store = data_store.get()
+
+    valid_channel = checkValidChannel(channel_id, store)
+
+    if valid_channel == 0:
+        raise InputError("channel_id does not refer to a valid channel")
+    else:
+        channel_index = valid_channel[1]
+
+    if checkAuthorization(auth_user_id, channel_index, store) == 0:
+        raise AccessError(
+            "channel_id is valid and the authorized user is not a member of the channel")
+
+    return store['channels'][channel_index]
+
 
 def channel_messages_v1(auth_user_id, channel_id, start):
-    return {
-        'messages': [
-            {
-                'message_id': 1,
-                'u_id': 1,
-                'message': 'Hello world',
-                'time_created': 1582426789,
-            }
-        ],
-        'start': 0,
-        'end': 50,
-    }
+
+    if start < 0:
+        raise InputError(
+            "Start is greater than the total number of messages in the channel")
+
+    store = data_store.get()
+
+    if checkValidChannel(channel_id, store) != 0:
+        authListIndex = checkValidChannel(channel_id)
+    else:
+        assert InputError("Channel_id does not refer to a valid channel")
+
+    if checkAuthorization(auth_user_id, authListIndex, store):
+        assert AccessError(
+            "Channel_id is valid and the authorized user is not a member of the channel")
+
 
 def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
@@ -50,31 +50,28 @@ def channel_join_v1(auth_user_id, channel_id):
     for user in store['users']:
         if user['id'] == auth_user_id:
             found = True 
-        if user['global_permissions'] == 1:
-              global_owner = True
+            permission_id = user['global_permissions'] 
     if found != True:
-        raise AccessError("User_id is not valid")   
-    
-    found = False 
+        raise AccessError("User_id is not valid")
+
+    found = False
     for channel in store['channels']:
         if channel['channel_id'] == channel_id:
-            found = True 
+            found = True
             for member in channel['all_members']:
                 if member == auth_user_id:
                     raise InputError("Authorised user is already a channel member")
-            if channel['is_public'] == False and global_owner != True:               
+            if channel['is_public'] == False and permission_id != 1:            
                 raise AccessError("Cannot join a private channel if not a global owner")  
-            
+           
             new_member = auth_user_id
-            channel['all_members'].append(new_member)                                      
-                                                     
+            channel['all_members'].append(new_member)
+
     if found != True:
-        raise InputError("Channel_id does not refer to valid channel")  
-    
+        raise InputError("Channel_id does not refer to valid channel")
+
     data_store.set(store)
     print(store)
 
-
     return {
     }
-    
