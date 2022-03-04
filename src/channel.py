@@ -28,6 +28,24 @@ def channel_details_v1(auth_user_id, channel_id):
 
 
 def channel_messages_v1(auth_user_id, channel_id, start):
+    store = data_store.get()
+
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError("auth_user_id passed in is invalid")
+
+    if start < 0:
+        raise InputError(
+            "Start is greater than the total number of messages in the channel")
+
+    if check_valid_channel(channel_id, store) != 0:
+        authListIndex = check_valid_channel(channel_id)
+    else:
+        assert InputError("Channel_id does not refer to a valid channel")
+
+    if check_authorization(auth_user_id, authListIndex, store):
+        assert AccessError(
+            "Channel_id is valid and the authorized user is not a member of the channel")
+
     return {
         'messages': [
             {
@@ -40,6 +58,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'start': 0,
         'end': 50,
     }
+
 
 def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
