@@ -60,9 +60,9 @@ def channel_join_v1(auth_user_id, channel_id):
             found = True
             for member in channel['all_members']:
                 if member == auth_user_id:
-                    raise InputError("Authorised user is already a channel member")
+                    raise InputError("You are already a channel member")
             if channel['is_public'] == False and permission_id != 1:            
-                raise AccessError("Cannot join a private channel if not a global owner")  
+                raise AccessError("Cannot join a private channel as you are not a global owner")  
 
             new_member = auth_user_id
             channel['all_members'].append(new_member)
