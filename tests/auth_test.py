@@ -21,6 +21,7 @@ def test_rego_invalid_fname():
                          'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz', 'churchhill')
 
 
+
 def test_rego_invalid_lname():
     clear_v1()
     # with pytest.raises(InputError):
