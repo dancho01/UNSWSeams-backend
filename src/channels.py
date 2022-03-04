@@ -1,11 +1,11 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 
-
 def channels_list_v1(auth_user_id):
+    store = data_store.get()
     channel_list = []
 
-    channel_id = data['channels']
+    channel_id = store['channels']
     for i in range(len(channel_id)):
         if channel_id[i]['Private'] == False:
             channel_list.append(channel_id[i])
@@ -14,9 +14,10 @@ def channels_list_v1(auth_user_id):
 
 
 def channels_listall_v1(auth_user_id):
+    store = data_store.get()
     channel_list = []
 
-    channel_id = data['channels']
+    channel_id = store['channels']
     for i in range(len(channel_id)):
         if auth_user_id in channel_id[i]['authorised']:
             channel_list.append(channel_id[i])

@@ -53,43 +53,43 @@ global data_store
 data_store = Datastore()
 
 
-data = {
-    "users": [
-        {
-            "id": 1,
-            "name": "user1",
-            "global_permissions": 1,
-        },
-        {
-            "id": 2,
-            "name": "user2",
-            "global_permissions": 2,
-        },
-    ],
-    "channels": [
-        {
-            "id": 1,
-            "name": "channel1",
-            "all_members": [2, 4, 6, 8, 10], #authorized member ids (if its private)
-            "owner_members": [1, 2, 3],  #user_id for admins
-            "is_public": False,
-            "messages": [
-                {
-                    "message_id": 1,
-                    "u_id": 1,
-                    "message": "Hello world",
-                    "time_created": 4132,
-                },
-                {
-                    "message_id": 1,
-                    "u_id": 1,
-                    "message": "Hello world",
-                    "time_created": 2313,
-                },
-            ],
-        },
-    ],
-}
+# data = {
+#     "users": [
+#         {
+#             "id": 1,
+#             "name": "user1",
+#             "global_permissions": 1,
+#         },
+#         {
+#             "id": 2,
+#             "name": "user2",
+#             "global_permissions": 2,
+#         },
+#     ],
+#     "channels": [
+#         {
+#             "id": 1,
+#             "name": "channel1",
+#             "all_members": [2, 4, 6, 8, 10], #authorized member ids (if its private)
+#             "owner_members": [1, 2, 3],  #user_id for admins
+#             "is_public": False,
+#             "messages": [
+#                 {
+#                     "message_id": 1,
+#                     "u_id": 1,
+#                     "message": "Hello world",
+#                     "time_created": 4132,
+#                 },
+#                 {
+#                     "message_id": 1,
+#                     "u_id": 1,
+#                     "message": "Hello world",
+#                     "time_created": 2313,
+#                 },
+#             ],
+#         },
+#     ],
+# }
 
 
 # checkValidChannel checks all the channels within the data structure, if it finds a matching channel.
