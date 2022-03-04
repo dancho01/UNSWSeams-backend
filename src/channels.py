@@ -1,4 +1,4 @@
-from src.data_store import data_store
+from src.data_store import data_store, check_user_registered
 from src.error import InputError, AccessError
 
 
@@ -26,6 +26,9 @@ def channels_listall_v1(auth_user_id):
 
 def channels_create_v1(auth_user_id, name, is_public):
     store = data_store.get()
+
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError("auth_user_id passed in is invalid")
 
     if len(name) < 1:
         raise InputError("Make sure channel name is more than 1 character")

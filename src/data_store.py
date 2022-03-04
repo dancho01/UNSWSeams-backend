@@ -25,6 +25,7 @@ Example usage:
 '''
 
 # YOU SHOULD MODIFY THIS OBJECT BELOW
+
 initial_object = {
     'users': [],
     'channels': []
@@ -59,6 +60,7 @@ data_store = Datastore()
 #             "auth_user_id": 1,
 #             "name": "user1",
 #             "global_permissions": 1,
+#             "handle" : ""
 #         },
 #         {
 #             "auth_user_id": 2,
@@ -97,12 +99,15 @@ data_store = Datastore()
 
 
 def check_valid_channel(channel_id, data_store):
+    '''
+    check_valid_channel goes through the channels within data_store,
+    '''
 
-    channel_id = data_store['channels']
+    channel_list = data_store['channels']
 
-    for i in range(len(channel_id)):
-        if channel_id[i]['name'] == channel_id:
-            return 1, i
+    for channel_index in range(len(channel_list)):
+        if channel_list[channel_index]["channel_id"] == channel_id:
+            return 1, channel_index
 
     return 0
 
