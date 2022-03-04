@@ -39,7 +39,7 @@ def channels_create_v1(auth_user_id, name, is_public):
 
     found = False
     for user in store['users']:
-        if user['id'] == auth_user_id:
+        if user['auth_user_id'] == auth_user_id:
             found = True
     if found != True:
         raise AccessError("User_id is not valid")

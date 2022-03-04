@@ -23,7 +23,7 @@
     1. There is currently no function that will input messages to the channel, so in order to test the current functionalities we have access to, the tests will only consist of:
         1. InputError checking
         2. AccessError checking
-        3. Invalid store value (store < 1)
+        3. Invalid store value checking (store < 1)
 
 #### channel_join_v1
 

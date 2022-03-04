@@ -1,7 +1,7 @@
 from src.channels import channels_list_v1
 from src.channels import channels_listall_v1
 from src.error import InputError, AccessError
-from src.data_store import checkValidChannel, checkAuthorization, messagesReturned, data_store
+from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
@@ -68,14 +68,14 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 def channel_details_v1(auth_user_id, channel_id):
     store = data_store.get()
 
-    valid_channel = checkValidChannel(channel_id, store)
+    valid_channel = check_valid_channel(channel_id, store)
 
     if valid_channel == 0:
         raise InputError("channel_id does not refer to a valid channel")
     else:
         channel_index = valid_channel[1]
 
-    if checkAuthorization(auth_user_id, channel_index, store) == 0:
+    if check_authorization(auth_user_id, channel_index, store) == 0:
         raise AccessError(
             "channel_id is valid and the authorized user is not a member of the channel")
 
@@ -90,12 +90,12 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
     store = data_store.get()
 
-    if checkValidChannel(channel_id, store) != 0:
-        authListIndex = checkValidChannel(channel_id)
+    if check_valid_channel(channel_id, store) != 0:
+        authListIndex = check_valid_channel(channel_id)
     else:
         assert InputError("Channel_id does not refer to a valid channel")
 
-    if checkAuthorization(auth_user_id, authListIndex, store):
+    if check_authorization(auth_user_id, authListIndex, store):
         assert AccessError(
             "Channel_id is valid and the authorized user is not a member of the channel")
 
@@ -105,7 +105,7 @@ def channel_join_v1(auth_user_id, channel_id):
 
     found = False
     for user in store['users']:
-        if user['id'] == auth_user_id:
+        if user['auth_user_id'] == auth_user_id:
             found = True
     if found != True:
         raise AccessError("User_id is not valid")
@@ -117,7 +117,7 @@ def channel_join_v1(auth_user_id, channel_id):
             for member in channel['all_members']:
                 if member == auth_user_id:
                     raise InputError(
-                        "Authorised user is already a channel member")
+                        "Authorized user is already a channel member")
             if channel['is_public'] == False:
                 raise AccessError(
                     "Cannot join a private channel if not a global owner")
