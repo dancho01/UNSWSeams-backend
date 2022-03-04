@@ -98,10 +98,10 @@ data_store = Datastore()
 
 def check_valid_channel(channel_id, data_store):
 
-    channel_id = data_store['channels']
+    channel_list = data_store['channels']
 
-    for i in range(len(channel_id)):
-        if channel_id[i]['name'] == channel_id:
+    for i in range(len(channel_list)):
+        if channel_list[i]['name'] == channel_id:
             return 1, i
 
     return 0

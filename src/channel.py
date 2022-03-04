@@ -1,64 +1,36 @@
 from src.channels import channels_list_v1
 from src.channels import channels_listall_v1
 from src.error import InputError, AccessError
-from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store
+from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
+    """
+    Invites a user with ID u_id to join a channel with ID channel_id.
+    Once invited, the user is added to the channel immediately. 
+    In both public and private channels, all members are able to invite users. 
+    """
     store = data_store.get()
-    
-    if checkValidChannel(channel_id, store) == 0:
+    # check if channel is valid
+    is_valid_channel = check_valid_channel(channel_id, store)   # returns a tuple (1,index)
+    if is_valid_channel == 0:
         raise InputError
 
     # auth_user_id is not a member of the channel
-    auth_channels = channels_list_v1(auth_user_id)["channels"]  # returns a list of channels auth_user is in
+    if check_authorization(auth_user_id, is_valid_channel[1], store): 
+        raise AccessError
 
-    valid_user = False
-    # auth_channels is a dictionary of a list of channels
-    for channel in auth_channels:
-        if channel["channel_id"] == channel_id: 
-            valid_user = True
-        
-        if not valid_user:
-            raise AccessError
+    # check if auth_user_id exists
+    if check_user_registered(auth_user_id, store) == False: 
+        raise AccessError
 
-    # auth_user_id does not exist
-    
-    found = False 
-    for user in store['users']:
-        # print(user["id"])
-        if user["id"] == auth_user_id:
-            found = True 
-    if not found:
-        raise AccessError() 
-
-
-    # u_id is invalid, when u_id does not exist
-    found = False 
-    for user in store['users']:
-        if user["id"] == u_id:
-            found = True 
-    if found != True:
-        raise AccessError() 
-
-    """""
-    # u_id is already a member of the channel
-    user_channels = channels_list_v1(u_id)  # returns a list of channels u_id is in
-    if channel_id in user_channels:
+    # u_id is invalid
+    if check_user_registered(u_id, store) == False: 
         raise InputError
-    """""
 
-
-
-
-    checkAuthorization(auth_user_id, index, data_store)     # test if u_id is already a member of the channel
-
-    channel_authorization = data_store['channels'][index]['all_members']
-    if auth_user_id in channel_authorization:
-        return 1
-    else:
-        return 0
-
+    # test if u_id is already a member of the channel
+    if check_authorization(u_id, is_valid_channel[1], store): 
+        raise InputError
 
     channel_join_v1(u_id, channel_id)
     return {
