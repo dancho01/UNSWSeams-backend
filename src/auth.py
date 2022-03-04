@@ -30,7 +30,7 @@ def auth_login_v1(email, password):
             if user['password'] != password:
                 raise InputError("Incorrect Password!")
             else:
-                return {'auth_user_id': user['id']}
+                return {'auth_user_id': user['auth_user_id']}
 
 
 def auth_register_v1(email, password, name_first, name_last):
@@ -76,7 +76,7 @@ def auth_register_v1(email, password, name_first, name_last):
 
     new_id = len(store['users']) + 1
 
-    new_user = {'id': new_id, 'name': name_first + ' ' +
+    new_user = {'auth_user_id': new_id, 'name': name_first + ' ' +
                 name_last, 'email': email, 'password': password}
     if new_id == 1:
         new_user['global_permissions'] = 1
