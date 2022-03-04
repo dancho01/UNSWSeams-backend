@@ -71,7 +71,7 @@ data_store = Datastore()
 #             "id": 1,
 #             "name": "channel1",
 #             "all_members": [2, 4, 6, 8, 10], #authorized member ids (if its private)
-#             "owner_members": [1, 2, 3],  #user_id for admins
+#             "owner_members" : [1, 2, 3]  #user_id for admins
 #             "is_public": False,
 #             "messages": [
 #                 {
@@ -98,10 +98,10 @@ data_store = Datastore()
 
 def checkValidChannel(channel_id, data_store):
 
-    channelId = data_store['channels']
+    channel_id = data_store['channels']
 
-    for i in range(len(channelId)):
-        if channelId[i]['id'] == channel_id:
+    for i in range(len(channel_id)):
+        if channel_id[i]['name'] == channel_id:
             return 1, i
 
     return 0
