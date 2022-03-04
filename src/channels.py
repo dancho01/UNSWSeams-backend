@@ -3,33 +3,26 @@ from src.error import InputError, AccessError
 
 def channels_list_v1(auth_user_id):
     store = data_store.get()
-    if not check_user_registered(auth_user_id, store): 
-        raise AccessError
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError 
 
-    auth_channel_list = []
+    channel_return = []
+    for channel in store['channels']:
+        if auth_user_id in channel['all_members']:
+            channel_return.append({'channel_id' : channel['channel_id'], 'name' : channel['name']})
 
-    all_channels = store["channels"]      # channel_id is a list of channels which are dictionaries
-    for channel in all_channels:
-        if auth_user_id in all_channels[channel]["all_members"]:
-            auth_channel_list.append(all_channels[channel])
-
-    return {"channels" : auth_channel_list}
+    return {'channels' : channel_return}
 
 def channels_listall_v1(auth_user_id):
     store = data_store.get()
-    if not check_user_registered(auth_user_id, store): 
-        raise AccessError
-        
-    channel_list = []
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError 
 
-    channel_id = store["channels"]
-    for i in range(len(channel_id)):
-        if auth_user_id in channel_id[i]["authorised"]:
-            channel_list.append(channel_id[i])
+    channel_return = []
+    for channel in store['channels']:
+        channel_return.append({'channel_id' : channel['channel_id'], 'name' : channel['name']})
 
-    return {"channels" : channel_list}
-
-
+    return {'channels' : channel_return}
 
 def channels_create_v1(auth_user_id, name, is_public):
     store = data_store.get()
