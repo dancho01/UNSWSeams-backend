@@ -61,17 +61,14 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
 
 def channel_join_v1(auth_user_id, channel_id):
-    store = data_store.get()
+    store = data_store.get()   
 
     if check_user_registered(auth_user_id, store) == False:
-        raise AccessError("auth_user_id passed in is invalid")
-
-    found = False
+        raise AccessError("auth_user_id passed in is invalid")     
+        
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
-            found = True
-    if found != True:
-        raise AccessError("User_id is not valid")
+            permission_id = user['global_permissions']   
 
     found = False
     for channel in store['channels']:
@@ -79,11 +76,9 @@ def channel_join_v1(auth_user_id, channel_id):
             found = True
             for member in channel['all_members']:
                 if member == auth_user_id:
-                    raise InputError(
-                        "Authorized user is already a channel member")
-            if channel['is_public'] == False:
-                raise AccessError(
-                    "Cannot join a private channel if not a global owner")
+                    raise InputError("You are already a channel member")
+            if channel['is_public'] == False and permission_id != 1:            
+                raise AccessError("Cannot join a private channel as you are not a global owner")  
 
             new_member = auth_user_id
             channel['all_members'].append(new_member)
