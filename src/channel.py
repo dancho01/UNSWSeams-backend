@@ -11,18 +11,20 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     In both public and private channels, all members are able to invite users. 
     """
     store = data_store.get()
-    is_valid_channel = check_valid_channel(channel_id, store)   # returns a tuple (1,index)
 
     # check if auth_user_id exists
     if check_user_registered(auth_user_id, store) == False: 
         raise AccessError
 
-     # auth_user_id is not a member of the channel
-    if check_authorization(auth_user_id, is_valid_channel[1], store): 
-        raise AccessError
+    is_valid_channel = check_valid_channel(channel_id, store)   # returns a tuple (1,index)
+
+    if is_valid_channel:
+        # auth_user_id is not a member of the channel
+        if check_authorization(auth_user_id, is_valid_channel[1], store): 
+            raise AccessError
 
     # check if channel is valid
-    if is_valid_channel == 0:
+    else:
         raise InputError
 
     # u_id is invalid
