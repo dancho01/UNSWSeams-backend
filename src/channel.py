@@ -46,6 +46,19 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         assert AccessError(
             "Channel_id is valid and the authorized user is not a member of the channel")
 
+    return {
+        'messages': [
+            {
+                'message_id': 1,
+                'u_id': 1,
+                'message': 'Hello world',
+                'time_sent': 1582426789,
+            }
+        ],
+        'start': 0,
+        'end': 50,
+    }
+
 
 def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
