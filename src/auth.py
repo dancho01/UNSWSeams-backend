@@ -13,6 +13,7 @@ def auth_login_v1(email, password):
     for user in store['users']:
         if user['email'] == email:
             found = True
+
     if found != True:
         raise InputError("This email is not registered!")
 
