@@ -24,7 +24,7 @@ def test_invalid_u_id():
     new_channel = int(channels_create_v1(auth_user_id, "Channel Name", True)["channel_id"])
 
     with pytest.raises(InputError):
-        channel_invite_v1(auth_user_id, new_channel, 3)    # assume u_id 3 does not exist
+        channel_invite_v1(auth_user_id, new_channel, auth_user_id + 1)    # assume u_id 3 does not exist
 
 def test_already_channel_member():
     # tests that u_id is already in the channel
@@ -62,3 +62,23 @@ def test_invalid_auth_user_id():
 
 
     # test multiple errors, both input and access errors
+def test_all_input_errors():
+    # all three input errors
+    # so auth user not in channel, and channel is invalid, u_id invalid
+    clear_v1()
+    u_id1 = int(auth_register_v1("valid_email@domain.com", "Password1", "First", "Last")["auth_user_id"])
+    u_id2 = int(auth_register_v1("another_email@domain.com", "Password2", "First", "Last")["auth_user_id"])
+
+    channel1 = int(channels_create_v1(u_id2, "Channel Name", True).get("channel_id"))   # returns channel_id
+
+    with pytest.raises(InputError): 
+        channel_invite_v1(u_id1, channel1 + 1, u_id2 + 1)
+
+
+# test 
+    # edges cases
+    # no users
+
+    # one user
+
+    # multiple users

@@ -14,14 +14,14 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
     # check if auth_user_id exists
     if check_user_registered(auth_user_id, store) == False: 
-        raise AccessError
+        raise AccessError("auth_user_id does not exist")
 
     is_valid_channel = check_valid_channel(channel_id, store)   # returns a tuple (1,index)
 
     if is_valid_channel:
         # auth_user_id is not a member of the channel
         if check_authorization(auth_user_id, is_valid_channel[1], store): 
-            raise AccessError
+            raise AccessError("auth_user_id is not a member of channel")
 
     # check if channel is valid
     else:
@@ -29,11 +29,11 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
     # u_id is invalid
     if check_user_registered(u_id, store) == False: 
-        raise InputError
+        raise InputError("u_id does not exist")
 
     # test if u_id is already a member of the channel
     if check_authorization(u_id, is_valid_channel[1], store): 
-        raise InputError
+        raise InputError("u_id already a member of channel")
 
     channel_join_v1(u_id, channel_id)
     return {

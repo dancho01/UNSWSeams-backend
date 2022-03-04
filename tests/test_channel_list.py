@@ -8,7 +8,6 @@ from src.auth import auth_register_v1
 from src.channels import channels_create_v1
 from src.other import clear_v1
 from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered
-from test_channel_invite import test_invalid_auth_user_id
 
 def test_invalid_auth_user_id():
     # when auth_user_id does not exist
