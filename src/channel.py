@@ -46,9 +46,12 @@ def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
     
     found = False 
+    global_owner = False
     for user in store['users']:
         if user['id'] == auth_user_id:
             found = True 
+        if user['global_permissions'] == 1:
+              global_owner = True
     if found != True:
         raise AccessError("User_id is not valid")   
     
@@ -59,7 +62,7 @@ def channel_join_v1(auth_user_id, channel_id):
             for member in channel['all_members']:
                 if member == auth_user_id:
                     raise InputError("Authorised user is already a channel member")
-            if channel['is_public'] == False:
+            if channel['is_public'] == False and global_owner != True:               
                 raise AccessError("Cannot join a private channel if not a global owner")  
             
             new_member = auth_user_id
