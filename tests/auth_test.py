@@ -7,12 +7,12 @@ from src.other import clear_v1
 
 def test_rego_invalid_fname():
     clear_v1()
-    with pytest.raises(InputError):
-        auth_register_v1('winstonchurchhill@gmail.com',
-                         'winniepooh', 'w!nston', 'churchhill')
-    with pytest.raises(InputError):
-        auth_register_v1('winstonchurchhill@gmail.com',
-                         'winniepooh', 'winst0n', 'churchhill')
+    # with pytest.raises(InputError):
+    #     auth_register_v1('winstonchurchhill@gmail.com',
+    #                      'winniepooh', 'w!nston', 'churchhill')
+    # with pytest.raises(InputError):
+    #     auth_register_v1('winstonchurchhill@gmail.com',
+    #                      'winniepooh', 'winst0n', 'churchhill')
     with pytest.raises(InputError):
         auth_register_v1('winstonchurchhill@gmail.com',
                          'winniepooh', '', 'churchhill')
@@ -21,14 +21,15 @@ def test_rego_invalid_fname():
                          'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz', 'churchhill')
 
 
+
 def test_rego_invalid_lname():
     clear_v1()
-    with pytest.raises(InputError):
-        auth_register_v1('winstonchurchhill@gmail.com',
-                         'winniepooh', 'winston', 'churchh!ll')
-    with pytest.raises(InputError):
-        auth_register_v1('winstonchurchhill@gmail.com',
-                         'winniepooh', 'winston', 'churchh1ll')
+    # with pytest.raises(InputError):
+    #     auth_register_v1('winstonchurchhill@gmail.com',
+    #                      'winniepooh', 'winston', 'churchh!ll')
+    # with pytest.raises(InputError):
+    #     auth_register_v1('winstonchurchhill@gmail.com',
+    #                      'winniepooh', 'winston', 'churchh1ll')
     with pytest.raises(InputError):
         auth_register_v1('winstonchurchhill@gmail.com',
                          'winniepooh', 'winston', '')
@@ -63,6 +64,15 @@ def test_rego_no_repeats():
     with pytest.raises(InputError):
         auth_register_v1('winstonchurchhill@gmail.com',
                          'winniepooh', 'winston', 'churchhill')
+
+def test_handle_partial():
+    clear_v1()
+    auth_register_v1('awinstonchurchhill@gmail.com',
+                     'winniepooh', 'winstoney', 'churchhillon')
+    auth_register_v1('bwinstonchurchhill@gmail.com',
+                     'winniepooh', 'winst0tney', 'churchhillon')
+    auth_register_v1('cwinstonchurchhill@gmail.com',
+                     'winniepooh', 'winstoney', 'churchhillon') == 1
 
 
 def test_login_invalid_email():
@@ -103,3 +113,6 @@ def test_rego_to_login():
         'winstonchurchhill@gmail.com', 'winniepooh', 'winston', 'churchhill')
     login_id = auth_login_v1('winstonchurchhill@gmail.com', 'winniepooh')
     assert rego_id == login_id
+    
+    
+
