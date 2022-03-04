@@ -53,6 +53,11 @@ def test_3_invalid_auth_user_id():
     channel_id = channels_result.get('channel_id')   
     with pytest.raises(AccessError): 
         channel_join_v1(auth_user_id_1 + 1, channel_id)
+        
+def test_invalid_channel_id_and_user_id():
+    clear_v1()
+    with pytest.raises(AccessError): 
+        channel_join_v1(1, 1)       
 
 def test_4_correct_return_type():
     clear_v1()

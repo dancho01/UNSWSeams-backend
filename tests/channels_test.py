@@ -4,7 +4,9 @@ from src.channels import channels_create_v1
 from src.error import InputError, AccessError
 from src.other import clear_v1
 
+#channels_create_v1 tests
 def test_0_invalid_channel_name_public():
+    # tests for invalid channel name passed in 
     clear_v1()
     auth_reg_result = auth_register_v1(
         'randomuser@gmail.com', 'password', 'Daniel', 'Cho')
@@ -14,8 +16,7 @@ def test_0_invalid_channel_name_public():
     with pytest.raises(InputError):
         channels_create_v1(auth_user_id, 'abcdefghijklmnopqrstuvwxyz', True)
 
-
-def test_1_invalid_channel_name_private():
+def test_invalid_channel_name_private():
     clear_v1()
     auth_reg_result = auth_register_v1(
         'randomuser@gmail.com', 'password', 'Daniel', 'Cho')
@@ -24,15 +25,22 @@ def test_1_invalid_channel_name_private():
         channels_create_v1(auth_user_id, '', False)
     with pytest.raises(InputError):
         channels_create_v1(auth_user_id, 'abcdefghijklmnopqrstuvwxyz', False)
-
-
-def test_2_invalid_auth_user_id():
+        
+def test_invalid_name_and_user_id():
+    # when an invalid user id and channel name are passed in, an AccessError is thrown
     clear_v1()
     with pytest.raises(AccessError):
-        channels_create_v1(1, 'randomename', True)
+        channels_create_v1(1, '', True)
+    with pytest.raises(AccessError):
+        channels_create_v1(1, 'abcdefghijklmnopqrstuvwxyz', True)
 
+def test_no_user_registered():
+    # when no users are registered, any user id passed in is invalid
+    clear_v1()
+    with pytest.raises(AccessError):
+        channels_create_v1(1, 'channelname', True)          
 
-def test_3_correct_return_value():
+def test_correct_return_value():
     clear_v1()
     auth_reg_result = auth_register_v1(
         'randomuser@gmail.com', 'password', 'Daniel', 'Cho')
