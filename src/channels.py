@@ -9,11 +9,9 @@ def channels_list_v1(auth_user_id):
     auth_channel_list = []
 
     all_channels = store["channels"]      # channel_id is a list of channels which are dictionaries
-    for i in range(len(all_channels)):
-        for member in all_channels[i]["all_members"]:
-            if member == auth_user_id:
-                auth_channel_list.append(all_channels[i])
-                break
+    for channel in all_channels:
+        if auth_user_id in all_channels[channel]["all_members"]:
+            auth_channel_list.append(all_channels[channel])
 
     return {"channels" : auth_channel_list}
 

@@ -13,9 +13,10 @@ def test_invalid_channel_id():
     clear_v1()
     auth_user_id = int(auth_register_v1("valid_email@domain.com", "Password1", "First", "Last")["auth_user_id"])
     new_user_id = int(auth_register_v1("another_email@domain.com", "Password2", "First", "Last")["auth_user_id"])
+    new_channel = int(channels_create_v1(auth_user_id, "Channel Name", True)["channel_id"])
 
     with pytest.raises(InputError): # should raise an exception
-        channel_invite_v1(auth_user_id, 3, new_user_id)     # assume channel_id 3 does not exist
+        channel_invite_v1(auth_user_id, new_channel + 1, new_user_id)
 
 def test_invalid_u_id():
     clear_v1()
@@ -57,3 +58,7 @@ def test_invalid_auth_user_id():
 
     with pytest.raises(AccessError):
         channel_invite_v1(1, channel1, u_id3)   # assumes 1 is not a valid user_id
+
+
+
+    # test multiple errors, both input and access errors
