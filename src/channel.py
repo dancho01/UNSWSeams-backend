@@ -13,27 +13,27 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     store = data_store.get()
 
     # check if auth_user_id exists
-    if check_user_registered(auth_user_id, store) == False: 
-        raise AccessError
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError("auth_user_id passed in is invalid")
 
-    is_valid_channel = check_valid_channel(channel_id, store)   # returns a tuple (1,index)
+    is_valid_channel = check_valid_channel(
+        channel_id, store)   # returns a tuple (1,index) if channel is valid else 0
 
-    if is_valid_channel:
-        # auth_user_id is not a member of the channel
-        if check_authorization(auth_user_id, is_valid_channel[1], store): 
-            raise AccessError
+    if is_valid_channel == 0:
+        raise InputError("channel_id does not refer to a valid channel")
 
-    # check if channel is valid
-    else:
-        raise InputError
+    if check_user_registered(u_id, store) == False:
+        raise InputError("u_id does not refer to a valid user")
+
+    if check_authorization(auth_user_id, is_valid_channel[1], store) == 0:
+        raise AccessError("u_id does not refer to a valid user")
 
     # u_id is invalid
-    if check_user_registered(u_id, store) == False: 
-        raise InputError
 
     # test if u_id is already a member of the channel
-    if check_authorization(u_id, is_valid_channel[1], store): 
-        raise InputError
+    if check_authorization(u_id, is_valid_channel[1], store) == 0:
+        raise InputError(
+            "u_id refers to a user who is already a member of the channel")
 
     channel_join_v1(u_id, channel_id)
     return {
@@ -73,6 +73,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         'start': 0,
         'end': 50,
     }
+
 
 def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
