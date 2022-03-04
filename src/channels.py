@@ -27,25 +27,8 @@ def channels_listall_v1(auth_user_id):
 def channels_create_v1(auth_user_id, name, is_public):
     store = data_store.get()
 
-<<<<<<< HEAD
-=======
     if check_user_registered(auth_user_id, store) == False:
         raise AccessError("auth_user_id passed in is invalid")
-
-    if len(name) < 1:
-        raise InputError("Make sure channel name is more than 1 character")
-
-    if len(name) > 20:
-        raise InputError(
-            "Make sure channel name does not exceed 20 characters")
->>>>>>> ae9fe56088505906b8235d10d54686b899fdf0ba
-
-    found = False
-    for user in store['users']:
-        if user['auth_user_id'] == auth_user_id:
-            found = True
-    if found != True:
-        raise AccessError("User_id is not valid")
         
     if len(name) < 1:
         raise InputError("Make sure channel name is more than 1 character")

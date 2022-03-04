@@ -61,24 +61,14 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
 
 def channel_join_v1(auth_user_id, channel_id):
-    store = data_store.get()
-<<<<<<< HEAD
-    
-    found = False 
-    global_owner = False
-=======
+    store = data_store.get()   
 
     if check_user_registered(auth_user_id, store) == False:
-        raise AccessError("auth_user_id passed in is invalid")
-
-    found = False
->>>>>>> ae9fe56088505906b8235d10d54686b899fdf0ba
+        raise AccessError("auth_user_id passed in is invalid")     
+        
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
-            found = True
             permission_id = user['global_permissions']   
-    if found != True:
-        raise AccessError("User_id is not valid")
 
     found = False
     for channel in store['channels']:
