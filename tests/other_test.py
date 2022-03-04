@@ -11,6 +11,7 @@ def test1_clear_v1():
     auth_register_v1('random123@gmail.com', '1234123', 'Bob', 'James')
     first_auth_id = int(auth_login_v1(
         "random123@gmail.com", "1234123")["auth_user_id"])
+    assert(auth_login_v1("random123@gmail.com", "1234123")['auth_user_id'] == first_auth_id)
     clear_v1()
     with pytest.raises(InputError):
         auth_login_v1("random123@gmail.com", "1234123")
@@ -23,6 +24,5 @@ def test1_clear_v1():
 #         "random123@gmail.com", "1234123")["auth_user_id"])
 #     first_channel_id = channels_create_v1(first_auth_id, "New channel", True)
 #     clear_v1()
-
 #     with pytest.raises(InputError):
 #         auth_login_v1("random123@gmail.com", "1234123")
