@@ -54,6 +54,10 @@ global data_store
 data_store = Datastore()
 
 
+'''
+Example of what the data structure may look like
+'''
+
 # data = {
 #     "users": [
 #         {

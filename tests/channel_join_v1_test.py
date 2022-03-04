@@ -5,7 +5,6 @@ from src.channel import channel_join_v1
 from src.error import InputError, AccessError
 from src.other import clear_v1
 
-
 def test_0_invalid_channel_id():
     clear_v1()
     auth_register_return = auth_register_v1(
@@ -47,9 +46,18 @@ def test_2_join_priv_channel():
 
 def test_3_invalid_auth_user_id():
     clear_v1()
-    with pytest.raises(AccessError):
-        channel_join_v1(1, 1)
-
+    auth_register_return = auth_register_v1(
+        'firstuser@gmail.com', 'password', 'Daniel', 'Cho')
+    auth_user_id_1 = auth_register_return.get('auth_user_id')
+    channels_result = channels_create_v1(auth_user_id_1, 'validname', True)
+    channel_id = channels_result.get('channel_id')   
+    with pytest.raises(AccessError): 
+        channel_join_v1(auth_user_id_1 + 1, channel_id)
+        
+def test_invalid_channel_id_and_user_id():
+    clear_v1()
+    with pytest.raises(AccessError): 
+        channel_join_v1(1, 1)       
 
 def test_4_correct_return_type():
     clear_v1()
