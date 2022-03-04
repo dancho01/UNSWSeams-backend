@@ -1,5 +1,5 @@
 from src.error import InputError, AccessError
-from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store
+from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
@@ -9,6 +9,9 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
 
 def channel_details_v1(auth_user_id, channel_id):
     store = data_store.get()
+
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError("auth_user_id passed in is invalid")
 
     valid_channel = check_valid_channel(channel_id, store)
 
@@ -25,12 +28,14 @@ def channel_details_v1(auth_user_id, channel_id):
 
 
 def channel_messages_v1(auth_user_id, channel_id, start):
+    store = data_store.get()
+
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError("auth_user_id passed in is invalid")
 
     if start < 0:
         raise InputError(
             "Start is greater than the total number of messages in the channel")
-
-    store = data_store.get()
 
     if check_valid_channel(channel_id, store) != 0:
         authListIndex = check_valid_channel(channel_id)
@@ -41,12 +46,33 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         assert AccessError(
             "Channel_id is valid and the authorized user is not a member of the channel")
 
+    return {
+        'messages': [
+            {
+                'message_id': 1,
+                'u_id': 1,
+                'message': 'Hello world',
+                'time_sent': 1582426789,
+            }
+        ],
+        'start': 0,
+        'end': 50,
+    }
+
 
 def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
+<<<<<<< HEAD
     
     found = False 
     global_owner = False
+=======
+
+    if check_user_registered(auth_user_id, store) == False:
+        raise AccessError("auth_user_id passed in is invalid")
+
+    found = False
+>>>>>>> ae9fe56088505906b8235d10d54686b899fdf0ba
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
             found = True
