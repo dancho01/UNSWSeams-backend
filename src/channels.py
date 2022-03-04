@@ -7,7 +7,7 @@ def channels_list_v1(auth_user_id):
 
     channel_id = store['channels']
     for i in range(len(channel_id)):
-        if channel_id[i]['Private'] == False:
+        if channel_id[i]['is_public'] == True:
             channel_list.append(channel_id[i])
 
     return {'channels' : channel_list}

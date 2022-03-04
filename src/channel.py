@@ -6,17 +6,9 @@ from src.data_store import checkValidChannel, checkAuthorization, messagesReturn
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     store = data_store.get()
-    # handle invalid channel_id
-    # store["channels"][0]["id"]
-    all_channels = channels_listall_v1(auth_user_id)["channels"]
-    valid_channel = False
-    # all_channels is a dictionary of a list of channels
-    for channel in all_channels:
-        if channel["channel_id"] == channel_id: 
-            valid_channel = True
-        
-        if not valid_channel:
-            raise InputError()
+    
+    if checkValidChannel(channel_id, store) == 0:
+        raise InputError
 
     # auth_user_id is not a member of the channel
     auth_channels = channels_list_v1(auth_user_id)["channels"]  # returns a list of channels auth_user is in
@@ -49,12 +41,23 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     if found != True:
         raise AccessError() 
 
-
+    """""
     # u_id is already a member of the channel
     user_channels = channels_list_v1(u_id)  # returns a list of channels u_id is in
     if channel_id in user_channels:
         raise InputError
+    """""
 
+
+
+
+    checkAuthorization(auth_user_id, index, data_store)     # test if u_id is already a member of the channel
+
+    channel_authorization = data_store['channels'][index]['all_members']
+    if auth_user_id in channel_authorization:
+        return 1
+    else:
+        return 0
 
 
     channel_join_v1(u_id, channel_id)
