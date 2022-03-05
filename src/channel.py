@@ -150,15 +150,20 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
 def channel_join_v1(auth_user_id, channel_id):
     '''
+    This function allows the authorised user to join a channel, given the 
+    channiel_id.
 
     Arguments:
-        auth_user_id    int         - id of the user that is to be searched
-        index           int         - Index of the channel that is to be searched
-        data_store      dict        - copy of the datastructure   
+        auth_user_id    int         - id of the user requesting to join the channel
+        channel_id      int         - id of the channel that user wishes to join
 
     Exceptions:
-        InputError      - Occurs when
-        AccessError     - Occurs when
+        AccessError     - Occurs when auth_user_id passed in is invalid
+        AccessError     - Occurs when channel_id refers to a channel that is private 
+                          and the authorised user is not already a channel member and 
+                          is not a global owner 
+        InputError      - Occurs when channel_id does not refer to a valid channel
+        InputError      - Occurs when the authorised user is already a member of the channel
 
     Return Value:
         Returns 
@@ -192,7 +197,6 @@ def channel_join_v1(auth_user_id, channel_id):
         raise InputError('Channel_id does not refer to valid channel')
 
     data_store.set(store)
-    print(store)
 
     return {
     }

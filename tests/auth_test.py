@@ -4,6 +4,8 @@ from src.auth import auth_register_v1, auth_login_v1
 from src.error import InputError
 from src.other import clear_v1
 
+auth_register_v1('awinstonchurchhill@gmail.com',
+                 'winniepooh', 'winstoney', 'churchhillon')
 
 def test_rego_invalid_fname():
     clear_v1()
