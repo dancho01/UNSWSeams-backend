@@ -32,6 +32,24 @@ def channels_listall_v1(auth_user_id):
 
 
 def channels_create_v1(auth_user_id, name, is_public):
+    '''
+    This function allows an autherised user to request to make a new channel
+    with the given name that is either a public or private channel. The user
+    then automatically joins the channel
+
+    Arguments:
+        auth_user_id    int         - id of the user that is creating the channel
+        name            string      - name of the channel to be created
+        is_public       boolean     - variable that indicates whether a channel is public or private
+
+    Exceptions:
+        AccessError     - Occurs when auth_user_id passed in is invalid
+        InputError      - Occurs when length of name is less than 1 or more than 20 characters
+
+    Return Value:
+        Returns a dictionary with the key 'channel_id', which is an integer, if channel is 
+        successfully created
+    '''
     store = data_store.get()
 
     if check_user_registered(auth_user_id, store) == False:
@@ -43,13 +61,16 @@ def channels_create_v1(auth_user_id, name, is_public):
     if len(name) > 20:
         raise InputError(
             'Make sure channel name does not exceed 20 characters')
-
+    
+    # id of new channel is generated based on number of channels
     new_channel_id = len(store['channels']) + 1
+ 
     new_channel = {'channel_id': new_channel_id,
                    'name': name,
                    'is_public': is_public,
                    'owner_members': [auth_user_id],
                    'all_members': [auth_user_id],
+                   'messages': [],
                    }
     store['channels'].append(new_channel)
     data_store.set(store)
