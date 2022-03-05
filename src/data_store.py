@@ -59,38 +59,38 @@ Example of what the data structure may look like
 '''
 
 # data = {
-#     "users": [
+#     'users': [
 #         {
-#             "auth_user_id": 1,
-#             "name": "user1",
-#             "global_permissions": 1,
-#             "handle" : ""
+#             'auth_user_id': 1,
+#             'name': 'user1',
+#             'global_permissions': 1,
+#             'handle' : ''
 #         },
 #         {
-#             "auth_user_id": 2,
-#             "name": "user2",
-#             "global_permissions": 2,
+#             'auth_user_id': 2,
+#             'name': 'user2',
+#             'global_permissions': 2,
 #         },
 #     ],
-#     "channels": [
+#     'channels': [
 #         {
-#             "channel_id": 1,
-#             "name": "channel1",
-#             "all_members": [2, 4, 6, 8, 10], #authorized member ids (if its private)
-#             "owner_members" : [1, 2, 3]  #user_id for admins
-#             "is_public": False,
-#             "messages": [
+#             'channel_id': 1,
+#             'name': 'channel1',
+#             'all_members': [2, 4, 6, 8, 10], #authorized member ids (if its private)
+#             'owner_members' : [1, 2, 3]  #user_id for admins
+#             'is_public': False,
+#             'messages': [
 #                 {
-#                     "message_id": 1,
-#                     "u_id": 1,
-#                     "message": "Hello world",
-#                     "time_created": 4132,
+#                     'message_id': 1,
+#                     'u_id': 1,
+#                     'message': 'Hello world',
+#                     'time_created': 4132,
 #                 },
 #                 {
-#                     "message_id": 1,
-#                     "u_id": 1,
-#                     "message": "Hello world",
-#                     "time_created": 2313,
+#                     'message_id': 1,
+#                     'u_id': 1,
+#                     'message': 'Hello world',
+#                     'time_created': 2313,
 #                 },
 #             ],
 #         },
@@ -98,52 +98,83 @@ Example of what the data structure may look like
 # }
 
 
-# check_valid_channel checks all the channels within the data structure, if it finds a matching channel.
-# If it finds a match, it will return 1 and the index number after it, else return 0.
-
-
 def check_valid_channel(channel_id, data_store):
     '''
-    check_valid_channel goes through the channels within data_store,
+    check_valid_channel goes through data_stores['channels']['index']['channel_id'] which includes the name
+    of every single channel that is created within the data structure, if there is a match then True is returned
+    else False is returned.
+
+    Arguments:
+        channel_id      int         - id of the channel that is to be searched
+        data_store      dict        - copy of the datastructure
+
+    Return Value:
+        Returns True if channel_id matches with any channels within the datastructure
+        Returns channel_index when a match is found, this way the channel does not have to be found again
+                saving resources
+        Returns False if Channel_id is not found
     '''
 
     channel_list = data_store['channels']
 
     for channel_index in range(len(channel_list)):
-        if channel_list[channel_index]["channel_id"] == channel_id:
-            return 1, channel_index
+        if channel_list[channel_index]['channel_id'] == channel_id:
+            return True, channel_index
 
-    return 0
-
-# check_authorization loops through the authorized users within a channel, returning a 1 if this user is authorized
-# and a 0 if they are not.
+    return False
 
 
 def check_authorization(auth_user_id, index, data_store):
     '''
-    messages_returned takes the channelIndex, finds it and accesses the 'messages' content. It goes through
-    the messages and attaces it to returnedMessages until k == 50 which it will then return the
-    returnedMessages variable.
+    check_authorization works in tandem with check_valid_channel, it takes the outputted index if
+    check_valid_channel returns a True. It uses that index to access the 'all_members' list where
+    if the user is apart of all_members, it will return True else return False.
+
+    Arguments:
+        auth_user_id    int         - id of the user that is to be searched
+        index           int         - Index of the channel that is to be searched
+        data_store      dict        - copy of the datastructure   
+
+    Return Value:
+        Returns True if user in channels ['all_members'] list
+        Returns False if user not in channels ['all_members'] list
     '''
     channel_authorization = data_store['channels'][index]['all_members']
     if auth_user_id in channel_authorization:
-        return 1
+        return True
     else:
-        return 0
+        return False
 
 
 def check_user_registered(auth_user_id, data_store):
-    user_list = data_store["users"]
+    '''
+    check_user_registered loops through data_store['users]['auth_user_id] of each element within
+    all the users, it returns true if the user is stored but will return false if the user is 
+    not stored.
+
+    Arguments:
+        auth_user_id    int         - id of the user that is to be searched
+        data_store      dict        - copy of the datastructure   
+
+    Return Value:
+        Returns True if a match is found for auth_user_id
+        Returns False if a match is not found for auth_user_id
+    '''
+    user_list = data_store['users']
 
     for user in user_list:
-        if user["auth_user_id"] == auth_user_id:
+        if user['auth_user_id'] == auth_user_id:
             return True
 
     return False
 
 
 def messages_returned(channelIndex, start, data_store):
-
+    '''
+    messages_returned takes the inde, finds it and accesses the 'messages' content. It goes through
+    the messages and attaces it to returnedMessages until k == 50 which it will then return the
+    returnedMessages variable.
+    '''
     returnedMessages = []
 
     subject = data_store['channels'][channelIndex]
@@ -155,19 +186,3 @@ def messages_returned(channelIndex, start, data_store):
             return returnedMessages
         returnedMessages.append(i)
         k += 1
-
-
-def create_member_dictionary(id_list, store):
-
-    member_dict = []
-
-    for auth_user_id in id_list:
-        member_dict.append(return_member(auth_user_id, store))
-
-    return member_dict
-
-
-def return_member(auth_user_id, store):
-    for user_index in range(len(store['users'])):
-        if store['users'][user_index]['auth_user_id'] == auth_user_id:
-            return store['users'][user_index]
