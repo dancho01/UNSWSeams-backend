@@ -41,6 +41,8 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         raise AccessError('u_id does not refer to a valid user')
 
     # u_id is invalid
+    if check_user_registered(u_id, store) == False:
+        raise InputError('u_id passed in is invalid')
 
     # test if u_id is already a member of the channel
     if check_authorization(u_id, channel_status[1], store) == False:
@@ -48,7 +50,8 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
             'u_id refers to a user who is already a member of the channel')
 
     channel_join_v1(u_id, channel_id)
-    return {}
+    return {
+    }
 
 
 def channel_details_v1(auth_user_id, channel_id):
