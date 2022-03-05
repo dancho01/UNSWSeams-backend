@@ -50,7 +50,8 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
             'u_id refers to a user who is already a member of the channel')
 
     channel_join_v1(u_id, channel_id)
-    return {}
+    return {
+    }
 
 
 def channel_details_v1(auth_user_id, channel_id):
