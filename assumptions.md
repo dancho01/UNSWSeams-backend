@@ -25,6 +25,8 @@
         2. AccessError checking
         3. Invalid store value checking (store < 1)
 
+    2. There is currently no way to input messages, according to the spec sheet end should return -1 if there are no more messages so, the assumption made here is since there are no messages, it will return an empty list and end will always be -1.
+
 #### channel_join_v1
 
 ---
