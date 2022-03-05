@@ -22,11 +22,12 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     if is_valid_channel == 0:
         raise InputError("channel_id does not refer to a valid channel")
 
+    if check_authorization(auth_user_id, is_valid_channel[1], store) == 0:
+        raise AccessError("auth_user_id is not a member of channel and cannot invite users to this channel")
+        
     if check_user_registered(u_id, store) == False:
         raise InputError("u_id does not refer to a valid user")
 
-    if check_authorization(auth_user_id, is_valid_channel[1], store) == 0:
-        raise AccessError("u_id does not refer to a valid user")
 
     # u_id is invalid
 

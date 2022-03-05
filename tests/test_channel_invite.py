@@ -68,16 +68,15 @@ def test_auth_user_not_in_channel():
 def test_invalid_auth_user_id():
     # when auth_user_id does not exist
     clear_v1()
-    u_id2 = int(auth_register_v1("another_email@domain.com",
-                "Password2", "First", "Last")["auth_user_id"])
-    channel1 = int(channels_create_v1(u_id2, "Channel Name", True)[
+    u_id1 = int(auth_register_v1("valid_email@domain.com", "Password1", "First", "Last")["auth_user_id"])
+    u_id2 = int(auth_register_v1("another_email@domain.com", "Password2", "First", "Last")["auth_user_id"])
+    channel1 = int(channels_create_v1(u_id1, "Channel Name", True)[
                    "channel_id"])   # returns an integer channel_id
 
     with pytest.raises(AccessError):
-        # assumes 1 is not a valid user_id
         channel_invite_v1(u_id2 + 1, channel1, u_id2)
 
-    # test multiple errors, both input and access errors
+    # test multiple errors
 def test_all_input_errors():
     # all three input errors
     # so auth user not in channel, and channel is invalid, u_id invalid
@@ -89,6 +88,63 @@ def test_all_input_errors():
 
     with pytest.raises(InputError): 
         channel_invite_v1(u_id1, channel1 + 1, u_id2 + 1)
+
+    # test 1 access 1 input error
+def test_invalid_auth_invalid_channel():
+    # test auth_user_id doesn't exist & invalid channel
+    clear_v1()
+    u_id1 = int(auth_register_v1("valid_email@domain.com", "Password1", "First", "Last")["auth_user_id"])
+    u_id2 = int(auth_register_v1("another_email@domain.com", "Password2", "First", "Last")["auth_user_id"])
+    channel1 = int(channels_create_v1(u_id1, "Channel Name", True).get("channel_id"))   # returns channel_id
+
+    with pytest.raises(AccessError): 
+        channel_invite_v1(u_id2 + 1, channel1 + 1, u_id2)
+
+    # test 1 access 1 input error
+def test_invalid_auth_invalid_u_id():
+    # test auth_user_id doesn't exist & invalid u_id
+    clear_v1()
+    u_id1 = int(auth_register_v1("valid_email@domain.com", "Password1", "First", "Last")["auth_user_id"])
+    channel1 = int(channels_create_v1(u_id1, "Channel Name", True).get("channel_id"))   # returns channel_id
+
+    with pytest.raises(AccessError): 
+        channel_invite_v1(u_id1 + 1, channel1, u_id1 + 2)
+
+    # test 1 access 1 input error
+def test_invalid_auth_id_inviting_existing_member():
+    # test auth_user_id doesn't exist & u_id already a member
+    clear_v1()
+    u_id1 = int(auth_register_v1("valid_email@domain.com", "Password1", "First", "Last")["auth_user_id"])
+    channel1 = int(channels_create_v1(u_id1, "Channel Name", True).get("channel_id"))   # returns channel_id
+
+    with pytest.raises(AccessError): 
+        channel_invite_v1(u_id1 + 1, channel1, u_id1)
+
+    # test 1 access 1 input error
+def test_unauthorised_auth_id_inviting_non_registered_user():
+    # test auth_user_id not a member of channel & invalid u_id
+    clear_v1()
+    u_id1 = int(auth_register_v1("valid_email@domain.com", "Password1", "First", "Last")["auth_user_id"])
+    u_id2 = int(auth_register_v1("another_email@domain.com", "Password2", "First", "Last")["auth_user_id"])
+    channel1 = int(channels_create_v1(u_id1, "Channel Name", True).get("channel_id"))   # returns channel_id
+
+    with pytest.raises(AccessError): 
+        channel_invite_v1(u_id2, channel1, u_id2 + 1)
+
+    # test 1 access 1 input error
+def test_unauthorised_auth_id_inviting_existing_channel_member():
+    # test auth_user_id not a member of channel & invalid u_id
+    clear_v1()
+    u_id1 = int(auth_register_v1("valid_email@domain.com", "Password1", "First", "Last")["auth_user_id"])
+    u_id2 = int(auth_register_v1("another_email@domain.com", "Password2", "First", "Last")["auth_user_id"])
+    channel1 = int(channels_create_v1(u_id1, "Channel Name", True).get("channel_id"))   # returns channel_id
+
+    with pytest.raises(AccessError): 
+        channel_invite_v1(u_id2, channel1, u_id1)
+    
+    # test both input and access errors - access errors should be called first
+
+    # test all 5 errors
 
 
 # test 
