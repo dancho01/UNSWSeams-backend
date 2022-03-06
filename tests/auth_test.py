@@ -4,6 +4,7 @@ from src.auth import auth_register_v1, auth_login_v1
 from src.error import InputError
 from src.other import clear_v1
 
+
 # Tests for auth_register_v1
 # Tests if first name is invalid
 def test_rego_invalid_fname():
@@ -21,6 +22,7 @@ def test_rego_invalid_fname():
         auth_register_v1('winstonchurchhill@gmail.com', 'winniepooh',
                          'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz', 'churchhill')
 
+
 # Tests if last name is invalid
 def test_rego_invalid_lname():
     '''
@@ -37,6 +39,7 @@ def test_rego_invalid_lname():
         auth_register_v1('winstonchurchhill@gmail.com', 'winniepooh', 'winston',
                          'abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz')
 
+
 # Tests if email is invalid
 def test_rego_invalid_email():
     '''
@@ -50,6 +53,7 @@ def test_rego_invalid_email():
         auth_register_v1('', 'winniepooh', 'winston', 'churchhill')
     with pytest.raises(InputError):
         auth_register_v1('winstonchurchhill@gmail@com', 'winniepooh', 'winston', 'churchhill')
+    
                          
 # Tests if password is invalid  
 def test_rego_invalid_pass():
@@ -98,6 +102,7 @@ def test_login_invalid_email():
     with pytest.raises(InputError):
         auth_login_v1('wchurchhill@gmail.com', 'winniepooh')
 
+
 # Tests that password entered during login is correct
 def test_login_invalid_pass():
     '''
@@ -111,6 +116,7 @@ def test_login_invalid_pass():
                      'winniepooh', 'winston', 'churchhill')
     with pytest.raises(InputError):
         auth_login_v1('winstonchurchhill@gmail.com', 'poohwinnie')
+
 
 # Tests that login is successful
 def test_rego_to_login():
