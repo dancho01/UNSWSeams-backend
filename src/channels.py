@@ -3,6 +3,19 @@ from src.error import InputError, AccessError
 
 
 def channels_list_v1(auth_user_id):
+    '''
+    Provide a list of all channels (and their associated details) that the authorised user is part of.
+
+    Arguments:
+        auth_user_id    int         - id of the user requesting the channels they are part of and the associated details
+
+    Exceptions:
+        AccessError     - Occurs when auth_user_id passed in is invalid
+
+    Return Value:
+        Returns {channels} if all conditions are satisfied, which a dictionary containing a list
+        of dictionaries that contain { channel_id, name }.
+    '''
     store = data_store.get()
 
     if check_user_registered(auth_user_id, store) == False:
@@ -18,6 +31,19 @@ def channels_list_v1(auth_user_id):
 
 
 def channels_listall_v1(auth_user_id):
+    '''
+    Provide a list of all channels (and their associated details) that the authorised user is part of.
+
+    Arguments:
+        auth_user_id    int         - id of the user requesting a list of all channels and the associated details
+
+    Exceptions:
+        AccessError     - Occurs when auth_user_id passed in is invalid
+
+    Return Value:
+        Returns {channels} if all conditions are satisfied, which a dictionary containing a list
+        of dictionaries that contain { channel_id, name }.
+    '''
     store = data_store.get()
 
     if check_user_registered(auth_user_id, store) == False:
