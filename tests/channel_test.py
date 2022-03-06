@@ -15,29 +15,23 @@ def create_first_user():
     clear_v1()
     auth_user1_id = auth_register_v1(
         'valid_email@domain.com', 'Password1', 'First', 'Last')['auth_user_id']
-    return auth_user1_id
+    return {'auth_user1_id': auth_user1_id}
 
 
 @pytest.fixture
 def create_first_channel_and_user(create_first_user):
-    auth_user1_id = create_first_user
+    auth_user1_id = create_first_user['auth_user1_id']
     first_new_channel_id = channels_create_v1(
         auth_user1_id, 'Channel Name', True)['channel_id']
-    return auth_user1_id, first_new_channel_id
+    return {'auth_user1_id': auth_user1_id,
+            'first_new_channel_id': first_new_channel_id}
 
 
 @pytest.fixture
 def create_second_user():
     auth_user2_id = auth_register_v1('another_email@domain.com',
                                      'Password2', 'First', 'Last')['auth_user_id']
-    return auth_user2_id
-
-
-# @pytest.fixture
-# def create_first_channel_and_user(create_first_user):
-#     first_new_channel_id = channels_create_v1(
-#         create_first_user, 'Channel Name', True)['channel_id']
-#     return first_new_channel_id
+    return {'auth_user2_id': auth_user2_id}
 
 
 '''
@@ -48,10 +42,11 @@ Tests for channel_invite_v1
 def test_invite_invalid_channel_id(create_first_user, create_second_user, create_first_channel_and_user):
     # auth_user_id = auth_register_v1(
     #     'valid_email@domain.com', 'Password1', 'First', 'Last')['auth_user_id']
-    info = create_first_channel_and_user
+    channel_user_return = create_first_channel_and_user
     auth_user2_id = create_second_user
     with pytest.raises(InputError):  # should raise an exception
-        channel_invite_v1(info[0], info[1] + 1, auth_user2_id)
+        channel_invite_v1(channel_user_return['auth_user1_id'],
+                          channel_user_return['first_new_channel_id'] + 1, auth_user2_id)
 
 
 def test_invite_invalid_u_id():
