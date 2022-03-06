@@ -23,8 +23,8 @@ def create_first_channel_and_user(create_first_user):
     auth_user1_id = create_first_user['auth_user1_id']
     first_new_channel_id = channels_create_v1(
         auth_user1_id, 'Channel Name', True)['channel_id']
-    return {'auth_user1_id': auth_user1_id, 
-        'first_new_channel_id': first_new_channel_id}
+    return {'auth_user1_id': auth_user1_id,
+            'first_new_channel_id': first_new_channel_id}
 
 # creates first user and PRIVATE channel
 @pytest.fixture
