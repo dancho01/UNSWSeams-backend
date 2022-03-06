@@ -59,7 +59,13 @@ def create_first_channel_for_second_user(create_second_user):
 
 
 # Testing if all public channels in server linked to the individual
-def test_0_one_user_multiple_public_channels(create_first_channel_and_user, create_second_public_channel_for_first_user):                                                       
+def test_0_one_user_multiple_public_channels(create_first_channel_and_user, create_second_public_channel_for_first_user):  
+    '''
+    Explanation:
+        Fixture create_first_channel_and_user is used to create the first user and channel. Then the fixture 
+        create_second_public_channel_for_first_user will produce a secod public channel for the first user. The assert is used to
+        ensure that the user is able to recieve a non-empty dictionary from channels_list_v1.
+    '''                                                    
     first_user_first_channel = create_first_channel_and_user 
     create_second_public_channel_for_first_user
     assert(channels_list_v1(first_user_first_channel['auth_user1_id']) != {})  
@@ -67,14 +73,25 @@ def test_0_one_user_multiple_public_channels(create_first_channel_and_user, crea
 
 # Testing if all channels, public and private, linked to the individual
 def test_1_one_user_multiple_mixed_channels(create_first_channel_and_user, create_second_private_channel_for_first_user):
-    # user is listed.
+    '''
+    Explanation:
+        Fixture create_first_channel_and_user is used to create the first user and channel. Then the fixture 
+        create_second_private_channel_for_first_user will produce a private channel for the first user. The assert is used to
+        ensure that the user is able to recieve a non-empty dictionary from channels_list_v1.
+    '''       
     first_user_first_channel = create_first_channel_and_user 
     create_second_private_channel_for_first_user
     assert(channels_list_v1(first_user_first_channel['auth_user1_id']) != {})  
 
 
 # Testing if channels linked to specified users are listed
-def test_2_multiple_users_multiple_channels(create_first_channel_and_user, create_first_channel_for_second_user):                                                        # Testing if channels linked to specified users are listed
+def test_2_multiple_users_multiple_channels(create_first_channel_and_user, create_first_channel_for_second_user):  
+    '''
+    Explanation:
+        Fixture create_first_channel_and_user is used to create the first user and channel. Fixture create_first_channel_for_second_user
+        is used to create the second user and a channel they have created. The assert is used to ensure both users
+        are able to recieve a non-empty dictionary from channels_list_v1.
+    '''                                                             
     first_user_first_channel = create_first_channel_and_user
     second_user_first_channel = create_first_channel_for_second_user
     assert(channels_list_v1(first_user_first_channel['auth_user1_id']) != {}) 
@@ -82,14 +99,26 @@ def test_2_multiple_users_multiple_channels(create_first_channel_and_user, creat
 
 
 # Testing if channels linked to specified users are listed
-def test_3_user_no_channel(create_first_channel_and_user, create_second_user):                                                        # Testing if channels linked to specified users are listed
+def test_3_user_no_channel(create_first_channel_and_user, create_second_user):   
+    '''
+    Explanation:
+        Fixture create_first_channel_and_user is used to create the first user and channel. Fixture create_second_user. The assert 
+        is used to ensure that the second user revieves an empty dictionary from channels_list_v1, as they are not in any channels.
+    '''                                                     
     create_first_channel_and_user
     second_user = create_second_user
     assert(channels_list_v1(second_user['auth_user2_id']) == {'channels': []}) 
 
 
 # Testing if invalid user raises an AccessError
-def test_4_invalid_user(create_first_channel_and_user):                                                                              # Testing if invalid user raises an AccessError 
+def test_4_invalid_user(create_first_channel_and_user):  
+    '''
+    Error raised:
+        InputError: Checking if auth_user_id passed in is invalid.
+    Explanation:
+        Fixture create_first_channel_and_user is used to create the first user and channel. The assert is used to ensure that 
+        an invalid user requesting channels_list_v1 raises a AccessError. 
+    '''                                         
     first_user_first_channel = create_first_channel_and_user
     with pytest.raises(AccessError):
        channels_list_v1(first_user_first_channel['auth_user1_id'] + 1)
@@ -98,14 +127,27 @@ def test_4_invalid_user(create_first_channel_and_user):                         
 # Test for channels_listall_v1
 
 # Testing output type as the testing requires going into the data    
-def test_0_output_type(create_first_channel_and_user, create_second_public_channel_for_first_user):  
+def test_0_output_type(create_first_channel_and_user, create_second_public_channel_for_first_user): 
+    '''
+    Explanation:
+        Fixture create_first_channel_and_user is used to create the first user and channel. Then the fixture 
+        create_second_public_channel_for_first_user will produce a second public channel for the first user. The assert is used to
+        ensure that the user is able to recieve a non-empty dictionary from channels_listall_v1.
+    '''             
     first_user_first_channel = create_first_channel_and_user
     create_second_public_channel_for_first_user                                                                                     
     assert(channels_listall_v1(first_user_first_channel['auth_user1_id']) != {})
 
 
 # Testing if invalid user raises an AccessError
-def test_1_invalid_user(create_first_channel_and_user):                                                                              # Testing if invalid user raises an AccessError 
+def test_1_invalid_user(create_first_channel_and_user):     
+    '''
+    Error raised:
+        InputError: Checking if auth_user_id passed in is invalid.
+    Explanation:
+        Fixture create_first_channel_and_user is used to create the first user and channel. The assert is used to ensure that 
+        an invalid user requetsing channels_listall_v1 raises a AccessError. 
+    '''                                                                                    
     first_user_first_channel = create_first_channel_and_user  
     create_second_public_channel_for_first_user                                                                                     
     with pytest.raises(AccessError):
