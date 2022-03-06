@@ -45,7 +45,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         raise InputError('u_id passed in is invalid')
 
     # test if u_id is already a member of the channel
-    if check_authorization(u_id, channel_status[1], store) == False:
+    if check_authorization(u_id, channel_status[1], store) == True:
         raise InputError(
             'u_id refers to a user who is already a member of the channel')
 

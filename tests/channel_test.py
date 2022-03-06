@@ -1,14 +1,13 @@
 import pytest
 from src.error import InputError, AccessError
 from src.channel import channel_messages_v1, channel_details_v1, channel_invite_v1, channel_join_v1
-from src.channels import channels_create_v1
+from src.channels import channels_create_v1, channels_list_v1
 from src.other import clear_v1
 from src.auth import auth_register_v1, auth_login_v1
 
 """
 Tests for channel_invite_v1
 """
-
 
 def test_invite_invalid_channel_id():
     clear_v1()
@@ -176,6 +175,19 @@ def test_invite_unauthorised_auth_id_inviting_existing_channel_member():
     with pytest.raises(AccessError):
         channel_invite_v1(u_id2, channel1, u_id1)
 
+def test_invited_user_in_channel_after_invite():
+    clear_v1()
+    u_id1 = int(auth_register_v1("valid_email@domain.com",
+                "Password1", "First", "Last")["auth_user_id"])
+    u_id2 = int(auth_register_v1("another_email@domain.com",
+                "Password2", "First", "Last")["auth_user_id"])
+
+    channel1 = int(channels_create_v1(u_id2, "Channel Name",
+                   True).get("channel_id"))   # returns channel_id
+
+    channel_invite_v1(u_id2, channel1, u_id1)
+
+    assert(channels_list_v1(u_id1) != {})
 
 """
 Tests for channel_details_v1
