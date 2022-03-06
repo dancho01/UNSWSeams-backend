@@ -81,12 +81,8 @@ def channels_create_v1(auth_user_id, name, is_public):
     if check_user_registered(auth_user_id, store) == False:
         raise AccessError('auth_user_id passed in is invalid')
 
-    if len(name) < 1:
-        raise InputError('Make sure channel name is more than 1 character')
-
-    if len(name) > 20:
-        raise InputError(
-            'Make sure channel name does not exceed 20 characters')
+    if len(name) < 1 or len(name) > 20:
+        raise InputError('Make sure channel name is no less than 1 character and no more than 20')
 
     # id of new channel is generated based on number of channels
     new_channel_id = len(store['channels']) + 1

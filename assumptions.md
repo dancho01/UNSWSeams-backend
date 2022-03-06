@@ -7,6 +7,7 @@
 #### auth_login_v1
 
 #### auth_register_v1
+1. To generate unique user ids, assumes user can not be deleted.
 
 1. Assumes that the first user that is registered is the ONLY one who has global owner permissions as there is currently no function to upgrade memberships.
 
@@ -20,7 +21,8 @@
 
 #### channel_details_v1
 
-1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing.
+1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing. Only checking return type. 
+
 
 #### channel_messages_v1
 
@@ -59,5 +61,6 @@ def test_channel_no_messages(create_first_channel_and_user):
 1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing.
 
 #### channels_create_v1
+1. To generate unnique channel ids, assumes channels can not be deleted.
 
 ---

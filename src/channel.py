@@ -31,25 +31,27 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     if check_user_registered(auth_user_id, store) == False:
         raise AccessError('auth_user_id passed in is invalid')
 
-    # returns a tuple (1,index) if channel is valid else 0
+    # returns a tuple (1,index) if channel is valid, else 0
     channel_status = check_valid_channel(channel_id, store)
 
     if channel_status == False:
         raise InputError('channel_id does not refer to a valid channel')
 
     if check_authorization(auth_user_id, channel_status[1], store) == False:
-        raise AccessError('u_id does not refer to a valid user')
+        raise AccessError('auth_user_id is not a member of channel')
 
     # u_id is invalid
     if check_user_registered(u_id, store) == False:
         raise InputError('u_id passed in is invalid')
 
     # test if u_id is already a member of the channel
-    if check_authorization(u_id, channel_status[1], store) == True:
+    channel_id = channel_status[1]
+    if check_authorization(u_id, channel_id, store) == True:
         raise InputError(
             'u_id refers to a user who is already a member of the channel')
+               
+    store['channels'][channel_id]['all_members'].append(u_id)
 
-    channel_join_v1(u_id, channel_id)
     return {
     }
 
@@ -178,31 +180,35 @@ def channel_join_v1(auth_user_id, channel_id):
         InputError      - Occurs when the authorized user is already a member of the channel
 
     Return Value:
-        Returns 
-
+        Return an empty dictionary in all cases
     '''
     store = data_store.get()
-
+    
+    # calls function that checks whether user_id is valid or not
     if check_user_registered(auth_user_id, store) == False:
         raise AccessError(' ')
 
+    # checks whether user is global owners and stores into permission_id variable
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
             permission_id = user['global_permissions']
-
+           
+    # calls function that checks if a channel with its given id is valid 
+    # returns False if not valid, or otherwise, (True, channel_index)
     channel_info = check_valid_channel(channel_id, store)
     if channel_info == False:
-        raise InputError('Channel_id does not refer to valid channel')
-    if check_authorization(auth_user_id, channel_info[1], store) == True:
+        raise InputError('Channel_id does not refer to valid channel')  
+        
+    # calls function that checks if the user is listed as a member 
+    channel_id = channel_info[1]        
+    if check_authorization(auth_user_id, channel_id, store) == True:
         raise InputError('You are already a channel member')
 
-    if store['channels'][channel_info[1]]['is_public'] == False and permission_id != 1:
-        # if channel_id is valid and the authorized user is not a member of the channel, AccessError is raised
-        raise AccessError(
-            'Cannot join a private channel as you are not a global owner')
+    if store['channels'][channel_id]['is_public'] == False and permission_id != 1:
+        # if channel_id is valid and the authorised user is not a member of the channel, AccessError is raised
+        raise AccessError('Cannot join a private channel as you are not a global owner')
 
-    new_member = auth_user_id
-    store['channels'][channel_info[1]]['all_members'].append(new_member)
+    store['channels'][channel_id]['all_members'].append(auth_user_id)
 
     data_store.set(store)
 
