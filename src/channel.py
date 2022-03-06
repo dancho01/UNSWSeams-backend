@@ -1,19 +1,19 @@
 from src.channels import channels_list_v1
 from src.channels import channels_listall_v1
 from src.error import InputError, AccessError
-from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered
+from src.data_store import messages_returned, check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
     '''
     Invites a user with ID u_id to join a channel with ID channel_id.
-    Once invited, the user is added to the channel immediately. 
-    In both public and private channels, all members are able to invite users. 
+    Once invited, the user is added to the channel immediately.
+    In both public and private channels, all members are able to invite users.
 
     Arguments:
         auth_user_id    int         - id of the user that is inviting
         channel_id      int         - id of the channel that the user is inviting u_id to
-        u_id            int         - id of the user that is being invited 
+        u_id            int         - id of the user that is being invited
 
     Exceptions:
         AccessError     - Occurs when auth_user_id passed in is invalid
@@ -70,7 +70,7 @@ def channel_details_v1(auth_user_id, channel_id):
         InputError      - Occurs when channel_id does not refer to a valid channel
 
     Return Value:
-        Returns store['channels'][channel_index] if all conditions are satisfied, which contains all the 
+        Returns store['channels'][channel_index] if all conditions are satisfied, which contains all the
                 information of the channel that is located at channel_index.
     '''
     store = data_store.get()
@@ -95,7 +95,7 @@ def channel_details_v1(auth_user_id, channel_id):
 def channel_messages_v1(auth_user_id, channel_id, start):
     '''
     channel_messages_v1 returns a list of dictionaries which contain the keys message_id, u_id, message
-    and time_sent, start and end once all error checks are satisfied. End can either be start + 50 if 
+    and time_sent, start and end once all error checks are satisfied. End can either be start + 50 if
     there are more messages that can be outputted or -1 if that is the end of all messages within that
     server.
 
@@ -121,40 +121,41 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     if check_user_registered(auth_user_id, store) == False:
         raise AccessError('auth_user_id passed in is invalid')
 
-    if start < 0:
+    auth_list_index = check_valid_channel(channel_id, store)
+
+    if check_valid_channel(channel_id, store) == False:
+        raise InputError('Channel_id does not refer to a valid channel')
+
+    if check_authorization(auth_user_id, auth_list_index[1], store) == False:
+        raise AccessError(
+            'channel_id is valid and the authorized user is not a member of the channel')
+
+    message_length = len(store['channels'][auth_list_index[1]]['messages'])
+
+    if start + 1 > message_length:
         raise InputError(
             'start is greater than the total number of messages in the channel')
 
-    auth_list_index = check_valid_channel(channel_id)
-    if auth_list_index == False:
-        assert InputError('Channel_id does not refer to a valid channel')
-
-    if check_authorization(auth_user_id, auth_list_index, store) == False:
-        assert AccessError(
-            'channel_id is valid and the authorized user is not a member of the channel')
-
-    # Function for returning messages will be added here
-
-    # Some pseudocode for next iteration
-    # if start + 50 > len (messages) - 1
-    #     end = -1
-
-    # This is to check if it has returned all the messages_returned
-
-    # Currently end will only return -1 as there are no messages and messages
-    # will return a empty list.
+    end = start + 50
+    if end + 1 > message_length:
+        message_return_list = messages_returned(
+            auth_list_index[1], start, message_length - 1, store)
+        end = -1
+    else:
+        message_return_list = messages_returned(
+            auth_list_index[1], start, end, store)
 
     return {
-        'messages': [],
+        'messages': message_return_list,
         'start': start,
-        'end': - 1,
+        'end': end,
     }
 
 
 def channel_join_v1(auth_user_id, channel_id):
     '''
     This function allows the authorised user to join a channel, given the 
-    channiel_id.
+    channel_id.
 
     Arguments:
         auth_user_id    int         - id of the user requesting to join the channel
@@ -180,21 +181,20 @@ def channel_join_v1(auth_user_id, channel_id):
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
             permission_id = user['global_permissions']
-            
+
     channel_info = check_valid_channel(channel_id, store)
     if channel_info == False:
-        raise InputError('Channel_id does not refer to valid channel')       
+        raise InputError('Channel_id does not refer to valid channel')
     if check_authorization(auth_user_id, channel_info[1], store) == True:
         raise InputError('You are already a channel member')
 
     if store['channels'][channel_info[1]]['is_public'] == False and permission_id != 1:
         # if channel_id is valid and the authorised user is not a member of the channel, AccessError is raised
-        raise AccessError('Cannot join a private channel as you are not a global owner')
+        raise AccessError(
+            'Cannot join a private channel as you are not a global owner')
 
     new_member = auth_user_id
     store['channels'][channel_info[1]]['all_members'].append(new_member)
-
- 
 
     data_store.set(store)
 

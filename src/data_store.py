@@ -169,20 +169,20 @@ def check_user_registered(auth_user_id, data_store):
     return False
 
 
-def messages_returned(channelIndex, start, data_store):
+def messages_returned(channel_index, start, end, data_store):
     '''
-    messages_returned takes the inde, finds it and accesses the 'messages' content. It goes through
-    the messages and attaces it to returnedMessages until k == 50 which it will then return the
-    returnedMessages variable.
+    messages_returned takes the index, finds it and accesses the 'messages' content. It goes through
+    the messages and attaces it to returned_messages until k == 50 which it will then return the
+    returned_messages variable.
     '''
-    returnedMessages = []
+    returned_messages = []
 
-    subject = data_store['channels'][channelIndex]
+    subject = data_store['channels'][channel_index]
 
-    k = 0
+    if subject == []:
+        return returned_messages
 
-    for i in subject['messages']:
-        if k == 50:
-            return returnedMessages
-        returnedMessages.append(i)
-        k += 1
+    for message in subject['messages']:
+        if message == end:
+            return returned_messages
+        returned_messages.append(message)

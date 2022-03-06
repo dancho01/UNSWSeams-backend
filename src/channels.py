@@ -61,10 +61,10 @@ def channels_create_v1(auth_user_id, name, is_public):
     if len(name) > 20:
         raise InputError(
             'Make sure channel name does not exceed 20 characters')
-    
+
     # id of new channel is generated based on number of channels
     new_channel_id = len(store['channels']) + 1
- 
+
     new_channel = {'channel_id': new_channel_id,
                    'name': name,
                    'is_public': is_public,
