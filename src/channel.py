@@ -45,7 +45,7 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         raise InputError('u_id passed in is invalid')
 
     # test if u_id is already a member of the channel
-    if check_authorization(u_id, channel_status[1], store) == False:
+    if check_authorization(u_id, channel_status[1], store) == True:
         raise InputError(
             'u_id refers to a user who is already a member of the channel')
 
@@ -111,6 +111,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
         AccessError     - Occurs when auth_user_id passed in is invalid
         AccessError     - Occurs when channel_id is valid and the authorized user is not a member of the channel
         InputError      - Occurs when channel_id does not refer to a valid channel
+        InputError      - Occurs when start is greater than the total number of messages in the channel
 
     Return Value:
         Returns a dictionary with the keys 'messages' which is a list of dictionaries, 'start' which is a integer
@@ -132,12 +133,12 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
     message_length = len(store['channels'][auth_list_index[1]]['messages'])
 
-    if start + 1 > message_length:
+    if start >= message_length:
         raise InputError(
             'start is greater than the total number of messages in the channel')
 
     end = start + 50
-    if end + 1 > message_length:
+    if end >= message_length:
         message_return_list = messages_returned(
             auth_list_index[1], start, message_length - 1, store)
         end = -1
@@ -154,7 +155,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
 def channel_join_v1(auth_user_id, channel_id):
     '''
-    This function allows the authorised user to join a channel, given the 
+    This function allows the authorized user to join a channel, given the 
     channel_id.
 
     Arguments:
@@ -164,10 +165,10 @@ def channel_join_v1(auth_user_id, channel_id):
     Exceptions:
         AccessError     - Occurs when auth_user_id passed in is invalid
         AccessError     - Occurs when channel_id refers to a channel that is private 
-                          and the authorised user is not already a channel member and 
+                          and the authorized user is not already a channel member and 
                           is not a global owner 
         InputError      - Occurs when channel_id does not refer to a valid channel
-        InputError      - Occurs when the authorised user is already a member of the channel
+        InputError      - Occurs when the authorized user is already a member of the channel
 
     Return Value:
         Returns 
@@ -189,7 +190,7 @@ def channel_join_v1(auth_user_id, channel_id):
         raise InputError('You are already a channel member')
 
     if store['channels'][channel_info[1]]['is_public'] == False and permission_id != 1:
-        # if channel_id is valid and the authorised user is not a member of the channel, AccessError is raised
+        # if channel_id is valid and the authorized user is not a member of the channel, AccessError is raised
         raise AccessError(
             'Cannot join a private channel as you are not a global owner')
 
