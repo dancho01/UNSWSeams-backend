@@ -34,7 +34,7 @@ def test_3_user_no_channel():                                                   
     first_id = auth_register_v1('fakeas@gmail.com', 'fakepassword', 'Calvin', 'Do')['auth_user_id']
     second_id = auth_register_v1('fakeas2@gmail.com', 'fakepassword2', 'Tom', 'Daniels')['auth_user_id']
     channels_create_v1(first_id, "First", True)
-    assert(channels_list_v1(second_id)) 
+    assert(channels_list_v1(second_id) == {'channels': []}) 
 
 def test_4_invalid_user():                                                                              # Testing if invalid user raises an AccessError 
     clear_v1()

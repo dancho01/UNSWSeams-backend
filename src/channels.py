@@ -3,6 +3,19 @@ from src.error import InputError, AccessError
 
 
 def channels_list_v1(auth_user_id):
+    '''
+    Provide a list of all channels (and their associated details) that the authorised user is part of.
+
+    Arguments:
+        auth_user_id    int         - id of the user requesting the channels they are part of and the associated details
+
+    Exceptions:
+        AccessError     - Occurs when auth_user_id passed in is invalid
+
+    Return Value:
+        Returns {channels} if all conditions are satisfied, which a dictionary containing a list
+        of dictionaries that contain { channel_id, name }.
+    '''
     store = data_store.get()
 
     if check_user_registered(auth_user_id, store) == False:
@@ -18,6 +31,19 @@ def channels_list_v1(auth_user_id):
 
 
 def channels_listall_v1(auth_user_id):
+    '''
+    Provide a list of all channels (and their associated details) that the authorised user is part of.
+
+    Arguments:
+        auth_user_id    int         - id of the user requesting a list of all channels and the associated details
+
+    Exceptions:
+        AccessError     - Occurs when auth_user_id passed in is invalid
+
+    Return Value:
+        Returns {channels} if all conditions are satisfied, which a dictionary containing a list
+        of dictionaries that contain { channel_id, name }.
+    '''
     store = data_store.get()
 
     if check_user_registered(auth_user_id, store) == False:
@@ -33,7 +59,7 @@ def channels_listall_v1(auth_user_id):
 
 def channels_create_v1(auth_user_id, name, is_public):
     '''
-    This function allows an autherised user to request to make a new channel
+    This function allows an authorized user to request to make a new channel
     with the given name that is either a public or private channel. The user
     then automatically joins the channel
 
@@ -57,10 +83,10 @@ def channels_create_v1(auth_user_id, name, is_public):
 
     if len(name) < 1 or len(name) > 20:
         raise InputError('Make sure channel name is no less than 1 character and no more than 20')
-    
+
     # id of new channel is generated based on number of channels
     new_channel_id = len(store['channels']) + 1
- 
+
     new_channel = {'channel_id': new_channel_id,
                    'name': name,
                    'is_public': is_public,
