@@ -177,7 +177,8 @@ def messages_returned(channel_index, start, end, data_store):
     '''
     returned_messages = []
 
-    subject = data_store['channels'][channel_index]
+    subject = data_store['channels'][channel_index]['messages']
+    print(subject)
 
     if subject == []:
         return returned_messages

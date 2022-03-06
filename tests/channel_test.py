@@ -1,3 +1,4 @@
+from src.data_store import data_store
 import pytest
 from src.error import InputError, AccessError
 from src.channel import channel_messages_v1, channel_details_v1, channel_invite_v1, channel_join_v1
@@ -279,13 +280,27 @@ def test_invalid_channel_channel_id():
         channel_messages_v1(first_auth_id, valid_channel_id + 1, 0)
 
 
-# def test_invalid_channel_start_index():
-#     clear_v1()
-#     auth_register_v1("bob.smith@gmail.com", "comp1531", "Bob", "Smith")
-#     first_auth_id = int(auth_login_v1(
-#         "bob.smith@gmail.com", "comp1531").get("auth_user_id"))
-#     valid_channel_id = int(channels_create_v1(
-#         first_auth_id, "first_channel", True)["channel_id"])
-#     print(channel_messages_v1(first_auth_id, valid_channel_id, -1))
-#     with pytest.raises(AccessError):
-#         channel_messages_v1(first_auth_id, valid_channel_id, 0)
+def test_channel_no_messages():
+    clear_v1()
+    auth_register_v1("bob.smith@gmail.com", "comp1531", "Bob", "Smith")
+    first_auth_id = int(auth_login_v1(
+        "bob.smith@gmail.com", "comp1531").get("auth_user_id"))
+    valid_channel_id = int(channels_create_v1(
+        first_auth_id, "first_channel", True)["channel_id"])
+    assert(channel_messages_v1(first_auth_id,
+           valid_channel_id, -1)['messages'] == [])
+
+
+def test_channel_messages_user_no_auth():
+    clear_v1()
+    auth_register_v1("bob.smith@gmail.com", "comp1531", "Bob", "Smith")
+    auth_register_v1("john.appleseed@gmail.com",
+                     "hello123", "John", "Appleseed")
+    first_auth_id = auth_login_v1(
+        "bob.smith@gmail.com", "comp1531").get("auth_user_id")
+    second_auth_id = (auth_login_v1(
+        "john.appleseed@gmail.com", "hello123").get("auth_user_id"))
+    valid_channel_id = int(channels_create_v1(
+        first_auth_id, "first_channel", True)["channel_id"])
+    with pytest.raises(AccessError):
+        channel_messages_v1(second_auth_id, valid_channel_id, 0)

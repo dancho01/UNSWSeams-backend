@@ -59,7 +59,7 @@ def channels_listall_v1(auth_user_id):
 
 def channels_create_v1(auth_user_id, name, is_public):
     '''
-    This function allows an autherised user to request to make a new channel
+    This function allows an authorized user to request to make a new channel
     with the given name that is either a public or private channel. The user
     then automatically joins the channel
 
