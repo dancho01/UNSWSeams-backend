@@ -333,19 +333,6 @@ def test_invalid_channel_channel_id(create_first_channel_and_user):
                             create_first_channel_and_user['first_new_channel_id'] + 1, 0)
 
 
-def test_channel_no_messages(create_first_channel_and_user):
-    '''
-    Return checked:
-        Checking to see if details returns a dictionary structure
-
-    Explanation:
-        Passing in all valid parameters where since there are no messages, the returned
-        'messages' key is expected to be an empty list.
-    '''
-    assert(channel_messages_v1(create_first_channel_and_user['auth_user1_id'],
-           create_first_channel_and_user['first_new_channel_id'], -1)['messages'] == [])
-
-
 def test_channel_messages_user_no_auth(create_first_channel_and_user, create_second_user):
     '''
     Error raised:
