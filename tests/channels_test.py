@@ -25,6 +25,22 @@ def create_first_channel_and_user(create_first_user):
     return {'auth_user1_id': auth_user1_id,
             'first_new_channel_id': first_new_channel_id}
 
+@pytest.fixture
+def create_second_public_channel_for_first_user(create_first_user):
+    auth_user1_id = create_first_user['auth_user1_id']
+    second_new_channel_id = channels_create_v1(
+        auth_user1_id, 'Channel Name 2', True)['channel_id']
+    return {'auth_user1_id': auth_user1_id,
+            'second_new_channel_id': second_new_channel_id}
+
+@pytest.fixture
+def create_second_private_channel_for_first_user(create_first_user):
+    auth_user1_id = create_first_user['auth_user1_id']
+    second_new_channel_id = channels_create_v1(
+        auth_user1_id, 'Channel Name 2', False)['channel_id']
+    return {'auth_user1_id': auth_user1_id,
+            'second_new_channel_id': second_new_channel_id}
+
 
 @pytest.fixture
 def create_second_user():
@@ -32,85 +48,68 @@ def create_second_user():
                                      'Password2', 'First', 'Last')['auth_user_id']
     return {'auth_user2_id': auth_user2_id}
 
+@pytest.fixture
+def create_first_channel_for_second_user(create_second_user):
+    auth_user2_id = create_second_user['auth_user2_id']
+    third_new_channel_id = channels_create_v1(
+        auth_user2_id, 'Channel Name 3', True)['channel_id']
+    return {'auth_user2_id': auth_user2_id, 'third_new_channel_id' : third_new_channel_id}
+
 # Test for channels_list_v1
 
 
 # Testing if all public channels in server linked to the individual
-def test_0_one_user_multiple_public_channels():
-    # users is able to be messaged.
-    clear_v1()
-    first_id = auth_register_v1(
-        'fakeas@gmail.com', 'fakepassword', 'Calvin', 'Do')['auth_user_id']
-    channels_create_v1(first_id, 'First', True)
-    channels_create_v1(first_id, "Second", True)
-    assert(channels_list_v1(first_id) != {})
+def test_0_one_user_multiple_public_channels(create_first_channel_and_user, create_second_public_channel_for_first_user):                                                       
+    first_user_first_channel = create_first_channel_and_user 
+    create_second_public_channel_for_first_user
+    assert(channels_list_v1(first_user_first_channel['auth_user1_id']) != {})  
 
 
 # Testing if all channels, public and private, linked to the individual
-def test_1_one_user_multiple_mixed_channels():
+def test_1_one_user_multiple_mixed_channels(create_first_channel_and_user, create_second_private_channel_for_first_user):
     # user is listed.
-    clear_v1()
-    first_id = auth_register_v1(
-        'fakeas@gmail.com', 'fakepassword', 'Calvin', 'Do')['auth_user_id']
-    channels_create_v1(first_id, 'First', False)
-    channels_create_v1(first_id, 'Second', True)
-    assert(channels_list_v1(first_id) != {})
+    first_user_first_channel = create_first_channel_and_user 
+    create_second_private_channel_for_first_user
+    assert(channels_list_v1(first_user_first_channel['auth_user1_id']) != {})  
 
 
 # Testing if channels linked to specified users are listed
-def test_2_multiple_users_multiple_channels():
-    clear_v1()
-    first_id = auth_register_v1(
-        'fakeas@gmail.com', 'fakepassword', 'Calvin', 'Do')['auth_user_id']
-    second_id = auth_register_v1(
-        'fakeas2@gmail.com', 'fakepassword2', 'Tom', 'Daniels')['auth_user_id']
-    channels_create_v1(first_id, 'First', True)
-    channels_create_v1(second_id, 'Second', False)
-    assert(channels_list_v1(first_id) != {})
-    assert(channels_list_v1(second_id) != {})
+def test_2_multiple_users_multiple_channels(create_first_channel_and_user, create_first_channel_for_second_user):                                                        # Testing if channels linked to specified users are listed
+    first_user_first_channel = create_first_channel_and_user
+    second_user_first_channel = create_first_channel_for_second_user
+    assert(channels_list_v1(first_user_first_channel['auth_user1_id']) != {}) 
+    assert(channels_list_v1(second_user_first_channel['auth_user2_id']) != {}) 
 
 
 # Testing if channels linked to specified users are listed
-def test_3_user_no_channel():
-    clear_v1()
-    first_id = auth_register_v1(
-        'fakeas@gmail.com', 'fakepassword', 'Calvin', 'Do')['auth_user_id']
-    second_id = auth_register_v1(
-        'fakeas2@gmail.com', 'fakepassword2', 'Tom', 'Daniels')['auth_user_id']
-    channels_create_v1(first_id, "First", True)
-    assert(channels_list_v1(second_id) == {'channels': []})
+def test_3_user_no_channel(create_first_channel_and_user, create_second_user):                                                        # Testing if channels linked to specified users are listed
+    create_first_channel_and_user
+    second_user = create_second_user
+    assert(channels_list_v1(second_user['auth_user2_id']) == {'channels': []}) 
 
 
 # Testing if invalid user raises an AccessError
-def test_4_invalid_user():
-    clear_v1()
-    first_id = auth_register_v1(
-        'fakeas@gmail.com', 'fakepassword', 'Calvin', 'Do')['auth_user_id']
-    first_channel = channels_create_v1(first_id, 'First', True)
+def test_4_invalid_user(create_first_channel_and_user):                                                                              # Testing if invalid user raises an AccessError 
+    first_user_first_channel = create_first_channel_and_user
     with pytest.raises(AccessError):
-        channels_list_v1(first_id + 1)
+       channels_list_v1(first_user_first_channel['auth_user1_id'] + 1)
 
 
 # Test for channels_listall_v1
 
-# Testing output type as the testing requires going into the data
-def test_0_output_type():
-    clear_v1()
-    first_id = auth_register_v1(
-        'fakeas@gmail.com', 'fakepassword', 'Calvin', 'Do')['auth_user_id']
-    first_channel = channels_create_v1(first_id, 'First', True)
-    second_channel = channels_create_v1(first_id, 'Second', True)
-    assert(channels_listall_v1(first_id) != {})
+# Testing output type as the testing requires going into the data    
+def test_0_output_type(create_first_channel_and_user, create_second_public_channel_for_first_user):  
+    first_user_first_channel = create_first_channel_and_user
+    create_second_public_channel_for_first_user                                                                                     
+    assert(channels_listall_v1(first_user_first_channel['auth_user1_id']) != {})
 
 
 # Testing if invalid user raises an AccessError
-def test_1_invalid_user():
-    clear_v1()
-    first_id = auth_register_v1(
-        'fakeas@gmail.com', 'fakepassword', 'Calvin', 'Do')['auth_user_id']
-    first_channel = channels_create_v1(first_id, "First", True)
+def test_1_invalid_user(create_first_channel_and_user):                                                                              # Testing if invalid user raises an AccessError 
+    first_user_first_channel = create_first_channel_and_user  
+    create_second_public_channel_for_first_user                                                                                     
     with pytest.raises(AccessError):
-        channels_listall_v1(first_id + 1)
+       channels_listall_v1(first_user_first_channel['auth_user1_id'] + 1)
 
 
 # channels_create_v1 tests
@@ -124,6 +123,7 @@ def test_0_invalid_channel_name_public():
         channels_create_v1(auth_user_id, '', True)
     with pytest.raises(InputError):
         channels_create_v1(auth_user_id, 'abcdefghijklmnopqrstuvwxyz', True)
+
 
 
 def test_invalid_channel_name_private():
