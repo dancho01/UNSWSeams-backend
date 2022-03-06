@@ -89,7 +89,14 @@ def channel_details_v1(auth_user_id, channel_id):
         raise AccessError(
             'channel_id is valid and the authorized user is not a member of the channel')
 
-    return store['channels'][channel_index]
+    channel_info = store['channels'][channel_index]
+
+    return {
+        "name": channel_info['name'],
+        "is_public": channel_info['is_public'],
+        "owner_members": channel_info['owner_members'],
+        "all_members": channel_info['all_members']
+    }
 
 
 def channel_messages_v1(auth_user_id, channel_id, start):
@@ -177,7 +184,7 @@ def channel_join_v1(auth_user_id, channel_id):
     store = data_store.get()
 
     if check_user_registered(auth_user_id, store) == False:
-        raise AccessError('auth_user_id passed in is invalid')
+        raise AccessError(' ')
 
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:

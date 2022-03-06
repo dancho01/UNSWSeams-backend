@@ -223,115 +223,142 @@ Tests for channel_details_v1
 '''
 
 
-def test_details_invalid_auth_user_id():
-    # when auth_user_id does not exist
-    clear_v1()
-    u_id1 = auth_register_v1('valid_email@domain.com',
-                             'Password1', 'First', 'Last')['auth_user_id']
-    channel1 = channels_create_v1(u_id1, 'Channel Name', True)[
-        'channel_id']   # returns an integer channel_id
+def test_details_invalid_auth_user_id(create_first_channel_and_user):
+    '''
+    Error raised:
+        AccessError: Checking if auth_user_id passed in is invalid.
 
+    Explanation:
+        Pytest fixture create_first_channel_and_user is run, the 'auth_user1_id' + 1 is 
+        passed in as an argument for channel_details_v1. Since this id does not exist
+        then AccessError is raised.
+    '''
     with pytest.raises(AccessError):
-        channel_details_v1(u_id1 + 1, channel1)
+        channel_details_v1(
+            create_first_channel_and_user['auth_user1_id'] + 1,
+            create_first_channel_and_user['first_new_channel_id'])
 
 
-def test_details_auth_user_not_in_channel():
-    # test both users not in channel and channel_id is valid
-    clear_v1()
-    u_id1 = auth_register_v1('valid_email@domain.com',
-                             'Password1', 'First', 'Last')['auth_user_id']
-    u_id2 = auth_register_v1('another_email@domain.com',
-                             'Password2', 'First', 'Last')['auth_user_id']
+def test_details_auth_user_not_in_channel(create_first_channel_and_user, create_second_user):
+    '''
+    Error raised:
+        AccessError: Checking if auth_user_id passed in is invalid.
 
-    channel1 = channels_create_v1(u_id2, 'Channel Name',
-                                  True).get('channel_id')   # returns channel_id
+    Explanation:
+        Pytest fixture create_first_channel_and_user is run, the 'auth_user1_id' + 1 is 
+        passed in as an argument for channel_details_v1. Since this id does not exist
+        then AccessError is raised.
+    '''
     with pytest.raises(AccessError):
-        channel_details_v1(u_id1, channel1)
+        channel_details_v1(
+            create_second_user, create_first_channel_and_user['first_new_channel_id'])
 
 
-def test_details_invalid_channel():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+def test_details_invalid_channel(create_first_channel_and_user):
+    '''
+    Error raised:
+        InputError: Occurs when channel_id does not refer to a valid channel
+
+    Explanation:
+        Channel details will raise an input error if the channel_id is invalid. Here we only
+        register one channel from the create_first_channel_and_user fixture, we input the 
+        channel_id returned from the fixture and pass that channel_id + 1 as an argument which
+        is not a valid channel.
+    '''
     with pytest.raises(InputError):
-        channel_details_v1(first_auth_id, valid_channel_id + 1)
+        channel_details_v1(
+            create_first_channel_and_user['auth_user1_id'], create_first_channel_and_user['first_new_channel_id'] + 1)
 
 
-def test_details_return_type():
-    clear_v1()
-    u_id1 = auth_register_v1('valid_email@domain.com',
-                             'Password1', 'First', 'Last')['auth_user_id']
+def test_details_return_type(create_first_channel_and_user):
+    '''
+    Return checked:
+        Checking to see if details returns a dictionary structure
 
-    channel1 = channels_create_v1(u_id1, 'Channel Name',
-                                  True).get('channel_id')   # returns channel_id
-    channel_details = channel_details_v1(u_id1, channel1)
-    assert type(channel_details) == dict
+    Explanation:
+        This test creates a user and a channel, it then checks if when channel_details_v1
+        is called with valid arguments, if it will return the correct datastructure.
+    '''
+    assert type(channel_details_v1(
+        create_first_channel_and_user['auth_user1_id'], create_first_channel_and_user['first_new_channel_id'])) == dict
 
 
-# tests for channel_messages_v1
+'''
+tests for channel_messages_v1
+'''
 
-def test_invalid_channel_user_id():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+
+def test_invalid_channel_user_id(create_first_channel_and_user):
+    '''
+    Error raised:
+        AccessError: Occurs when auth_user_id passed in is invalid
+
+    Explanation:
+        Passes in a valid auth_user_id + 1 which is not registered, expected outcome should 
+        be an access error.
+    '''
+
     with pytest.raises(AccessError):
-        channel_messages_v1(first_auth_id + 1, valid_channel_id, 0)
+        channel_messages_v1(
+            create_first_channel_and_user['auth_user1_id'] + 1, create_first_channel_and_user['first_new_channel_id'], 0)
 
-# length of the messages should be 0 as when a channel gets created, messages is a empty list.
 
+def test_invalid_channel_start_index(create_first_channel_and_user):
+    '''
+    Error raised:
+        InputError: Occurs when start is greater than the total number of messages in the channel
 
-def test_invalid_channel_start_index():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+    Explanation:
+        Both auth_user_id and channel_id is valid, all channels have 0 messages, so if start is >= 0,
+        an InputError is raised.
+    '''
     with pytest.raises(InputError):
-        channel_messages_v1(first_auth_id, valid_channel_id, 3)
+        channel_messages_v1(
+            create_first_channel_and_user['auth_user1_id'],
+            create_first_channel_and_user['first_new_channel_id'], 3)
 
 
-def test_invalid_channel_channel_id():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+def test_invalid_channel_channel_id(create_first_channel_and_user):
+    '''
+    Error raised:
+        InputError: Occurs when channel_id does not refer to a valid channel
+
+    Explanation:
+        Valid auth_user_id and channel_id from create_first_channel_and_user fixture,
+        however the 1 is added to the valid channel_id when being passed into
+        channel_messages_v1 making it invalid. Should raise InputError.
+    '''
     with pytest.raises(InputError):
-        channel_messages_v1(first_auth_id, valid_channel_id + 1, 0)
+        channel_messages_v1(create_first_channel_and_user['auth_user1_id'],
+                            create_first_channel_and_user['first_new_channel_id'] + 1, 0)
 
 
-def test_channel_no_messages():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
-    assert(channel_messages_v1(first_auth_id,
-           valid_channel_id, -1)['messages'] == [])
+def test_channel_no_messages(create_first_channel_and_user):
+    '''
+    Return checked:
+        Checking to see if details returns a dictionary structure
+
+    Explanation:
+        Passing in all valid parameters where since there are no messages, the returned
+        'messages' key is expected to be an empty list.
+    '''
+    assert(channel_messages_v1(create_first_channel_and_user['auth_user1_id'],
+           create_first_channel_and_user['first_new_channel_id'], -1)['messages'] == [])
 
 
-def test_channel_messages_user_no_auth():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    auth_register_v1('john.appleseed@gmail.com',
-                     'hello123', 'John', 'Appleseed')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    second_auth_id = (auth_login_v1(
-        'john.appleseed@gmail.com', 'hello123').get('auth_user_id'))
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+def test_channel_messages_user_no_auth(create_first_channel_and_user, create_second_user):
+    '''
+    Error raised:
+        AccessError: Occurs when channel_id is valid and the authorized user is not a member of the channel
+
+    Explanation:
+        The first channel is registered under the first users id, the second user then requests
+        the channel messages but an error is raised as he is not apart of the 'all_users' of 
+        that channel.
+    '''
     with pytest.raises(AccessError):
-        channel_messages_v1(second_auth_id, valid_channel_id, 0)
+        channel_messages_v1(
+            create_second_user['auth_user2_id'], create_first_channel_and_user['first_new_channel_id'], 0)
 
 
 '''
