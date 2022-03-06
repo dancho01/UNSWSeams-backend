@@ -35,7 +35,6 @@ def create_second_user():
 
 auth_register_v1('awinstonchurchhill@gmail.com',
                  'winniepooh', 'winstoney', 'churchhillon')
->>>>>>> 070854df7220ecf088d1d1cc13e6739fc78866f2
 
 
 def test_rego_invalid_fname():
