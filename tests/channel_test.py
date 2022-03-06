@@ -18,6 +18,8 @@ def create_first_user():
     return {'auth_user1_id': auth_user1_id}
 
 # creates first user and PUBLIC channel
+
+
 @pytest.fixture
 def create_first_channel_and_user(create_first_user):
     auth_user1_id = create_first_user['auth_user1_id']
@@ -27,13 +29,16 @@ def create_first_channel_and_user(create_first_user):
             'first_new_channel_id': first_new_channel_id}
 
 # creates first user and PRIVATE channel
+
+
 @pytest.fixture
 def create_first_private_channel_and_user(create_first_user):
     auth_user1_id = create_first_user['auth_user1_id']
     first_new_private_channel_id = channels_create_v1(
         auth_user1_id, 'Channel Name', False)['channel_id']
-    return {'auth_user1_id': auth_user1_id, 
-        'first_new_private_channel_id': first_new_private_channel_id}
+    return {'auth_user1_id': auth_user1_id,
+            'first_new_private_channel_id': first_new_private_channel_id}
+
 
 @pytest.fixture
 def create_second_user():
@@ -41,11 +46,13 @@ def create_second_user():
                                      'Password2', 'First', 'Last')['auth_user_id']
     return {'auth_user2_id': auth_user2_id}
 
+
 @pytest.fixture
 def create_third_user():
     auth_user3_id = auth_register_v1('third_email@domain.com',
                                      'Password3', 'First', 'Last')['auth_user_id']
     return {'auth_user3_id': auth_user3_id}
+
 
 '''
 Tests for channel_invite_v1
@@ -53,6 +60,7 @@ Tests for channel_invite_v1
 '''
     Testing single errors for channel_invite_v1
 '''
+
 
 def test_invite_invalid_channel_id(create_first_user, create_second_user, create_first_channel_and_user):
     '''
@@ -65,8 +73,9 @@ def test_invite_invalid_channel_id(create_first_user, create_second_user, create
     '''
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
-    with pytest.raises(InputError): 
-        channel_invite_v1(info['auth_user1_id'], info['first_new_channel_id'] + 1, auth_user2_id)
+    with pytest.raises(InputError):
+        channel_invite_v1(info['auth_user1_id'],
+                          info['first_new_channel_id'] + 1, auth_user2_id)
 
 
 def test_invite_invalid_u_id(create_first_user, create_first_channel_and_user):
@@ -80,7 +89,8 @@ def test_invite_invalid_u_id(create_first_user, create_first_channel_and_user):
     '''
     info = create_first_channel_and_user
     with pytest.raises(InputError):
-        channel_invite_v1(info['auth_user1_id'], info['first_new_channel_id'], info['auth_user1_id'] + 1)
+        channel_invite_v1(
+            info['auth_user1_id'], info['first_new_channel_id'], info['auth_user1_id'] + 1)
 
 
 def test_invite_already_channel_member(create_first_user, create_second_user, create_first_channel_and_user):
@@ -98,8 +108,8 @@ def test_invite_already_channel_member(create_first_user, create_second_user, cr
     print(auth_user2_id, info)
     channel_join_v1(auth_user2_id, info['first_new_channel_id'])
     with pytest.raises(InputError):  # should raise an exception
-        channel_invite_v1(info['auth_user1_id'], info['first_new_channel_id'], auth_user2_id)
-
+        channel_invite_v1(info['auth_user1_id'],
+                          info['first_new_channel_id'], auth_user2_id)
 
 
 def test_invite_auth_user_not_in_channel(create_first_user, create_second_user, create_first_channel_and_user, create_third_user):
@@ -121,7 +131,8 @@ def test_invite_auth_user_not_in_channel(create_first_user, create_second_user, 
     auth_user2_id = create_second_user['auth_user2_id']
     auth_user3_id = create_third_user['auth_user3_id']
     with pytest.raises(AccessError):
-        channel_invite_v1(auth_user2_id, info['first_new_channel_id'], auth_user3_id)
+        channel_invite_v1(
+            auth_user2_id, info['first_new_channel_id'], auth_user3_id)
 
 
 def test_invite_invalid_auth_user_id(create_first_user, create_second_user, create_first_channel_and_user):
@@ -137,11 +148,14 @@ def test_invite_invalid_auth_user_id(create_first_user, create_second_user, crea
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
     with pytest.raises(AccessError):
-        channel_invite_v1(auth_user2_id + 1, info['first_new_channel_id'], auth_user2_id)
+        channel_invite_v1(auth_user2_id + 1,
+                          info['first_new_channel_id'], auth_user2_id)
+
 
 '''
 Testing multiple simultaneous errors for channel_invite_v1
 '''
+
 
 def test_invite_2_input_errors(create_first_user, create_second_user, create_first_channel_and_user):
     '''
@@ -155,11 +169,13 @@ def test_invite_2_input_errors(create_first_user, create_second_user, create_fir
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
     with pytest.raises(InputError):
-        channel_invite_v1(info['auth_user1_id'], info['first_new_channel_id'] + 1, auth_user2_id + 1)
+        channel_invite_v1(
+            info['auth_user1_id'], info['first_new_channel_id'] + 1, auth_user2_id + 1)
 
     '''
     Testing both input and access errors - AccessErrors should be called when both Input and Access Errors can be thrown. 
     '''
+
 
 def test_invite_invalid_auth_invalid_channel(create_first_user, create_second_user, create_first_channel_and_user):
     '''
@@ -170,13 +186,14 @@ def test_invite_invalid_auth_invalid_channel(create_first_user, create_second_us
     Explanation: 
         AccessError: When the user calling the function does not exist.  
         InputError: When the channel is invalid, 
-        
+
         AccessErrors should be called when both Input and Access Errors can be thrown. 
     '''
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
     with pytest.raises(AccessError):
-        channel_invite_v1(auth_user2_id + 1, info['first_new_channel_id'] + 1, auth_user2_id)
+        channel_invite_v1(auth_user2_id + 1,
+                          info['first_new_channel_id'] + 1, auth_user2_id)
 
 
 def test_invite_invalid_auth_invalid_u_id(create_first_user, create_first_channel_and_user):
@@ -193,10 +210,11 @@ def test_invite_invalid_auth_invalid_u_id(create_first_user, create_first_channe
     '''
     info = create_first_channel_and_user
     with pytest.raises(AccessError):
-        channel_invite_v1(info['auth_user1_id'] + 1, info['first_new_channel_id'], info['auth_user1_id'] + 2)
-
+        channel_invite_v1(info['auth_user1_id'] + 1,
+                          info['first_new_channel_id'], info['auth_user1_id'] + 2)
 
     # test 1 access 1 input error
+
 
 def test_invite_invalid_auth_id_inviting_existing_member(create_first_user, create_first_channel_and_user):
     '''
@@ -213,8 +231,8 @@ def test_invite_invalid_auth_id_inviting_existing_member(create_first_user, crea
     # test auth_user_id doesn't exist & u_id already a member
     info = create_first_channel_and_user
     with pytest.raises(AccessError):
-        channel_invite_v1(info['auth_user1_id'] + 1, info['first_new_channel_id'], info['auth_user1_id'])
-
+        channel_invite_v1(info['auth_user1_id'] + 1,
+                          info['first_new_channel_id'], info['auth_user1_id'])
 
     # test 1 access 1 input error
 
@@ -234,7 +252,8 @@ def test_invite_unauthorised_auth_id_inviting_non_registered_user(create_first_u
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
     with pytest.raises(AccessError):
-        channel_invite_v1(auth_user2_id, info['first_new_channel_id'], auth_user2_id + 1)
+        channel_invite_v1(
+            auth_user2_id, info['first_new_channel_id'], auth_user2_id + 1)
 
     # test 1 access 1 input error
 
@@ -254,7 +273,9 @@ def test_invite_unauthorised_auth_id_inviting_existing_channel_member(create_fir
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
     with pytest.raises(AccessError):
-        channel_invite_v1(auth_user2_id, info['first_new_channel_id'], info['auth_user1_id'])
+        channel_invite_v1(
+            auth_user2_id, info['first_new_channel_id'], info['auth_user1_id'])
+
 
 def test_invite_invalid_auth_invalid_u_id_invalid_channel(create_first_user, create_first_channel_and_user):
     '''
@@ -271,12 +292,15 @@ def test_invite_invalid_auth_invalid_u_id_invalid_channel(create_first_user, cre
     '''
     info = create_first_channel_and_user
     with pytest.raises(AccessError):
-        channel_invite_v1(info['auth_user1_id'] + 1, info['first_new_channel_id'] + 1, info['auth_user1_id'] + 2)
+        channel_invite_v1(info['auth_user1_id'] + 1,
+                          info['first_new_channel_id'] + 1, info['auth_user1_id'] + 2)
+
 
 def test_invited_user_in_channel_after_invite(create_first_user, create_second_user, create_first_channel_and_user):
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
-    channel_invite_v1(info['auth_user1_id'], info['first_new_channel_id'], auth_user2_id)
+    channel_invite_v1(info['auth_user1_id'],
+                      info['first_new_channel_id'], auth_user2_id)
 
     assert(channels_list_v1(auth_user2_id) != {})
 
@@ -286,115 +310,133 @@ Tests for channel_details_v1
 '''
 
 
-def test_details_invalid_auth_user_id(create_first_user, create_first_channel_and_user):
+def test_details_invalid_auth_user_id(create_first_channel_and_user):
     '''
     Error raised:
-        AccessError 
-    Explanation: 
-        When the user calling the function does not exist
+        AccessError: Checking if auth_user_id passed in is invalid.
+
+    Explanation:
+        Pytest fixture create_first_channel_and_user is run, the 'auth_user1_id' + 1 is 
+        passed in as an argument for channel_details_v1. Since this id does not exist
+        then AccessError is raised.
     '''
-    info = create_first_channel_and_user
     with pytest.raises(AccessError):
-        channel_details_v1(info['auth_user1_id'] + 1, info['first_new_channel_id'])
+        channel_details_v1(
+            create_first_channel_and_user['auth_user1_id'] + 1,
+            create_first_channel_and_user['first_new_channel_id'])
 
 
-def test_details_auth_user_not_in_channel(create_first_user, create_second_user, create_first_channel_and_user):
+def test_details_auth_user_not_in_channel(create_first_channel_and_user, create_second_user):
     '''
-    Error raised: 
-        AccessError 
-    Explanation: 
-        When the user calling the function is not a member of the channel, and the channel id is valid. 
-        Therefore the user does not have permission to see the channel's details. 
+    Error raised:
+        AccessError: Checking if auth_user_id passed in is invalid.
+
+    Explanation:
+        Pytest fixture create_first_channel_and_user is run, the 'auth_user1_id' + 1 is 
+        passed in as an argument for channel_details_v1. Since this id does not exist
+        then AccessError is raised.
     '''
-    info = create_first_channel_and_user
-    auth_user2_id = create_second_user['auth_user2_id']
     with pytest.raises(AccessError):
-        channel_details_v1(auth_user2_id, info['first_new_channel_id'])
+        channel_details_v1(
+            create_second_user, create_first_channel_and_user['first_new_channel_id'])
 
 
-def test_details_invalid_channel(create_first_user, create_first_channel_and_user):
+def test_details_invalid_channel(create_first_channel_and_user):
     '''
-    Error raised: 
-        InputError
+    Error raised:
+        InputError: Occurs when channel_id does not refer to a valid channel
 
-    Explanation: 
-        When the given channel does not exist, raise an input error. 
+    Explanation:
+        Channel details will raise an input error if the channel_id is invalid. Here we only
+        register one channel from the create_first_channel_and_user fixture, we input the 
+        channel_id returned from the fixture and pass that channel_id + 1 as an argument which
+        is not a valid channel.
     '''
-    info = create_first_channel_and_user
     with pytest.raises(InputError):
-        channel_details_v1(info['auth_user1_id'], info['first_new_channel_id'] + 1)
+        channel_details_v1(
+            create_first_channel_and_user['auth_user1_id'],
+            create_first_channel_and_user['first_new_channel_id'] + 1)
 
 
-def test_details_return_type(create_first_user, create_first_channel_and_user):
+def test_details_return_type(create_first_channel_and_user):
     '''
-    Tests that the channel_details function returns a dictionary. 
+    Return checked:
+        Checking to see if details returns a dictionary structure
+
+    Explanation:
+        This test creates a user and a channel, it then checks if when channel_details_v1
+        is called with valid arguments, if it will return the correct datastructure.
     '''
-    info = create_first_channel_and_user
-    channel_details = channel_details_v1(info['auth_user1_id'], info['first_new_channel_id'])
-    assert type(channel_details) == dict
+    assert type(channel_details_v1(
+        create_first_channel_and_user['auth_user1_id'],
+        create_first_channel_and_user['first_new_channel_id'])) == dict
 
 
-# tests for channel_messages_v1
+'''
+tests for channel_messages_v1
+'''
 
-def test_invalid_channel_user_id():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+
+def test_invalid_channel_user_id(create_first_channel_and_user):
+    '''
+    Error raised:
+        AccessError: Occurs when auth_user_id passed in is invalid
+
+    Explanation:
+        Passes in a valid auth_user_id + 1 which is not registered, expected outcome should 
+        be an access error.
+    '''
+
     with pytest.raises(AccessError):
-        channel_messages_v1(first_auth_id + 1, valid_channel_id, 0)
+        channel_messages_v1(
+            create_first_channel_and_user['auth_user1_id'] + 1,
+            create_first_channel_and_user['first_new_channel_id'], 0)
 
-# length of the messages should be 0 as when a channel gets created, messages is a empty list.
 
+def test_invalid_channel_start_index(create_first_channel_and_user):
+    '''
+    Error raised:
+        InputError: Occurs when start is greater than the total number of messages in the channel
 
-def test_invalid_channel_start_index():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+    Explanation:
+        Both auth_user_id and channel_id is valid, all channels have 0 messages, so if start is >= 0,
+        an InputError is raised.
+    '''
     with pytest.raises(InputError):
-        channel_messages_v1(first_auth_id, valid_channel_id, 3)
+        channel_messages_v1(
+            create_first_channel_and_user['auth_user1_id'],
+            create_first_channel_and_user['first_new_channel_id'], 3)
 
 
-def test_invalid_channel_channel_id():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+def test_invalid_channel_channel_id(create_first_channel_and_user):
+    '''
+    Error raised:
+        InputError: Occurs when channel_id does not refer to a valid channel
+
+    Explanation:
+        Valid auth_user_id and channel_id from create_first_channel_and_user fixture,
+        however the 1 is added to the valid channel_id when being passed into
+        channel_messages_v1 making it invalid. Should raise InputError.
+    '''
     with pytest.raises(InputError):
-        channel_messages_v1(first_auth_id, valid_channel_id + 1, 0)
+        channel_messages_v1(create_first_channel_and_user['auth_user1_id'],
+                            create_first_channel_and_user['first_new_channel_id'] + 1, 0)
 
 
-def test_channel_no_messages():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
-    assert(channel_messages_v1(first_auth_id,
-           valid_channel_id, -1)['messages'] == [])
+def test_channel_messages_user_no_auth(create_first_channel_and_user, create_second_user):
+    '''
+    Error raised:
+        AccessError: Occurs when channel_id is valid and the authorized user is not a member of the channel
 
-
-def test_channel_messages_user_no_auth():
-    clear_v1()
-    auth_register_v1('bob.smith@gmail.com', 'comp1531', 'Bob', 'Smith')
-    auth_register_v1('john.appleseed@gmail.com',
-                     'hello123', 'John', 'Appleseed')
-    first_auth_id = auth_login_v1(
-        'bob.smith@gmail.com', 'comp1531').get('auth_user_id')
-    second_auth_id = (auth_login_v1(
-        'john.appleseed@gmail.com', 'hello123').get('auth_user_id'))
-    valid_channel_id = channels_create_v1(
-        first_auth_id, 'first_channel', True)['channel_id']
+    Explanation:
+        The first channel is registered under the first users id, the second user then requests
+        the channel messages but an error is raised as he is not apart of the 'all_users' of 
+        that channel.
+    '''
     with pytest.raises(AccessError):
-        channel_messages_v1(second_auth_id, valid_channel_id, 0)
+        channel_messages_v1(
+            create_second_user['auth_user2_id'],
+            create_first_channel_and_user['first_new_channel_id'], 0)
 
 
 '''
@@ -409,7 +451,8 @@ def test_0_invalid_channel_id(create_first_user, create_second_user, create_firs
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
     with pytest.raises(InputError):
-        channel_join_v1(info['auth_user1_id'], info['first_new_channel_id'] + 1)
+        channel_join_v1(info['auth_user1_id'],
+                        info['first_new_channel_id'] + 1)
 
 
 def test_1_auth_user_already_member(create_first_user, create_first_channel_and_user):
@@ -439,7 +482,8 @@ def test_3_invalid_auth_user_id(create_first_user, create_first_channel_and_user
     """
     info = create_first_channel_and_user
     with pytest.raises(AccessError):
-        channel_join_v1(info['auth_user1_id'] + 1, info['first_new_channel_id'])
+        channel_join_v1(info['auth_user1_id'] + 1,
+                        info['first_new_channel_id'])
 
 
 def test_invalid_channel_id_and_user_id(create_first_user, create_first_channel_and_user):
@@ -451,7 +495,8 @@ def test_invalid_channel_id_and_user_id(create_first_user, create_first_channel_
     """
     info = create_first_channel_and_user
     with pytest.raises(AccessError):
-        channel_join_v1(info['auth_user1_id'] + 1, info['first_new_channel_id'] + 1)
+        channel_join_v1(info['auth_user1_id'] + 1,
+                        info['first_new_channel_id'] + 1)
 
 
 def test_4_correct_return_type(create_first_user, create_second_user, create_first_channel_and_user):
@@ -463,6 +508,7 @@ def test_4_correct_return_type(create_first_user, create_second_user, create_fir
     # success case
     assert channel_join_v1(auth_user2_id, info['first_new_channel_id']) == {}
 
+
 def test_user_added(create_first_user, create_second_user, create_first_channel_and_user):
     """
     Test that user is successfully added to channel, by testing that they cannot be invited again
@@ -472,4 +518,5 @@ def test_user_added(create_first_user, create_second_user, create_first_channel_
     channel_join_v1(auth_user2_id, info['first_new_channel_id'])
     # should not be able to invite user 2 to this channel again
     with pytest.raises(InputError):
-        channel_invite_v1(info['auth_user1_id'], info['first_new_channel_id'], auth_user2_id)
+        channel_invite_v1(info['auth_user1_id'],
+                          info['first_new_channel_id'], auth_user2_id)
