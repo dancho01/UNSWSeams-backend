@@ -16,7 +16,12 @@
 
 #### channel_invite_v1
 
+1. Assumes there is at least 1 user in Seams for a channel to be created to invite others. If no user at all, will throw an access error. 
+
 #### channel_details_v1
+
+1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing. 
+
 
 #### channel_messages_v1
 
