@@ -1,5 +1,5 @@
 import pytest
-from src.auth import auth_register_v1, auth_login_v1
+from src.auth import auth_register_v1
 from src.error import InputError, AccessError
 from src.channel import channel_messages_v1, channel_details_v1, channel_invite_v1, channel_join_v1
 from src.channels import channels_create_v1, channels_list_v1
@@ -442,6 +442,7 @@ def test_channel_messages_user_no_auth(create_first_channel_and_user, create_sec
 '''
 channel_join_v1 tests
 '''
+
 
 def test_invalid_channel_id(create_first_user, create_second_user, create_first_channel_and_user):
     '''

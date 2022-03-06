@@ -1,5 +1,4 @@
 import pytest
-
 from src.auth import auth_register_v1, auth_login_v1
 from src.error import InputError
 from src.other import clear_v1
@@ -52,10 +51,11 @@ def test_rego_invalid_email():
     with pytest.raises(InputError):
         auth_register_v1('', 'winniepooh', 'winston', 'churchhill')
     with pytest.raises(InputError):
-        auth_register_v1('winstonchurchhill@gmail@com', 'winniepooh', 'winston', 'churchhill')
-    
-                         
-# Tests if password is invalid  
+        auth_register_v1('winstonchurchhill@gmail@com',
+                         'winniepooh', 'winston', 'churchhill')
+
+
+# Tests if password is invalid
 def test_rego_invalid_pass():
     '''
     Error raised:
@@ -72,6 +72,8 @@ def test_rego_invalid_pass():
                          'pooh', 'winston', 'churchh!ll')
 
 # Tests that there are no duplicate emails used
+
+
 def test_rego_no_repeats():
     '''
     Error raised:
@@ -89,13 +91,15 @@ def test_rego_no_repeats():
 
 # Tests for auth_login_v1
 # Tests that email entered during login is valid
+
+
 def test_login_invalid_email():
     '''
     Error raised:
         InputError
     Explanation:
         When an email entered does not belong to a user
-    ''' 
+    '''
     clear_v1()
     auth_register_v1('winstonchurchhill@gmail.com',
                      'winniepooh', 'winston', 'churchhill')
@@ -126,6 +130,8 @@ def test_rego_to_login():
         to ensuure both functions are successful     
     '''
     clear_v1()
-    rego_id = auth_register_v1('winstonchurchhill@gmail.com', 'winniepooh', 'winston', 'churchhill')['auth_user_id']
-    login_id = auth_login_v1('winstonchurchhill@gmail.com', 'winniepooh')['auth_user_id']
+    rego_id = auth_register_v1('winstonchurchhill@gmail.com',
+                               'winniepooh', 'winston', 'churchhill')['auth_user_id']
+    login_id = auth_login_v1(
+        'winstonchurchhill@gmail.com', 'winniepooh')['auth_user_id']
     assert rego_id == login_id
