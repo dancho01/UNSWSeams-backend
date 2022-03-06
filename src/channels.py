@@ -87,6 +87,7 @@ def channels_create_v1(auth_user_id, name, is_public):
     # id of new channel is generated based on number of channels
     new_channel_id = len(store['channels']) + 1
 
+    # new dictionary is created to store channel details
     new_channel = {'channel_id': new_channel_id,
                    'name': name,
                    'is_public': is_public,
@@ -94,6 +95,7 @@ def channels_create_v1(auth_user_id, name, is_public):
                    'all_members': [auth_user_id],
                    'messages': [],
                    }
+    # new_channel is then added to list of channels
     store['channels'].append(new_channel)
     data_store.set(store)
 

@@ -443,8 +443,7 @@ def test_channel_messages_user_no_auth(create_first_channel_and_user, create_sec
 channel_join_v1 tests
 '''
 
-
-def test_0_invalid_channel_id(create_first_user, create_second_user, create_first_channel_and_user):
+def test_invalid_channel_id(create_first_user, create_second_user, create_first_channel_and_user):
     '''
     InputError as user is trying to join a channel that does not yet exist
     '''
@@ -455,7 +454,7 @@ def test_0_invalid_channel_id(create_first_user, create_second_user, create_firs
                         info['first_new_channel_id'] + 1)
 
 
-def test_1_auth_user_already_member(create_first_user, create_first_channel_and_user):
+def test_auth_user_already_member(create_first_user, create_first_channel_and_user):
     """
     InputError as user is already a member of the channel
     """
@@ -464,7 +463,7 @@ def test_1_auth_user_already_member(create_first_user, create_first_channel_and_
         channel_join_v1(info['auth_user1_id'], info['first_new_channel_id'])
 
 
-def test_2_join_priv_channel(create_first_user, create_first_private_channel_and_user, create_second_user):
+def test_join_priv_channel(create_first_user, create_first_private_channel_and_user, create_second_user):
     """
     AccessError is thrown as user 2, who is not channel member/global owner, tries to join private channel
     """
@@ -476,7 +475,7 @@ def test_2_join_priv_channel(create_first_user, create_first_private_channel_and
         channel_join_v1(auth_user2_id, info['first_new_private_channel_id'])
 
 
-def test_3_invalid_auth_user_id(create_first_user, create_first_channel_and_user):
+def test_invalid_auth_user_id(create_first_user, create_first_channel_and_user):
     """
     AccessError is thrown as auth_user_id does not exist
     """
@@ -499,7 +498,7 @@ def test_invalid_channel_id_and_user_id(create_first_user, create_first_channel_
                         info['first_new_channel_id'] + 1)
 
 
-def test_4_correct_return_type(create_first_user, create_second_user, create_first_channel_and_user):
+def test_correct_return_type(create_first_user, create_second_user, create_first_channel_and_user):
     """
     Test that the function returns an empty dictionary
     """
