@@ -21,7 +21,8 @@
 
 #### channel_details_v1
 
-1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing.
+1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing. Only checking return type. 
+
 
 #### channel_messages_v1
 
