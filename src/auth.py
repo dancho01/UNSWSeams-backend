@@ -19,16 +19,19 @@ def auth_login_v1(email, password):
     '''
     store = data_store.get()
 
+    # iterates through users to check if email belongs to a user
     found = False
     for user in store['users']:
         if user['email'] == email:
             found = True
-
+            
+    # InputError is raised if valid email is not found
     if found != True:
         raise InputError("This email is not registered!")
 
     for user in store['users']:
         if user['email'] == email:
+        # InputError is raised if password does not match         
             if user['password'] != password:
                 raise InputError("Incorrect Password!")
             else:
@@ -96,18 +99,18 @@ def auth_register_v1(email, password, name_first, name_last):
     for char in name:
         if char.isalnum():
             handle += char.lower()
-    # 
+            
+    # if concatenated handle is longer than 20 characters, it is cut off at length of 20
     if len(handle) > 20:
         handle = handle[0:20]
     
     count = 0
-    exist_handle = handle
+    final_handle = handle
+    # iterates through list of users to check if handle is already taken
     for user in store['users']:
-        if user['handle'] == exist_handle:
-            exist_handle = handle + str(count)
-            count += 1
-                           
-    print(exist_handle)
+        if user['handle'] == final_handle:
+            final_handle = handle + str(count)
+            count += 1                        
 
     # associating channel permissions to user_id
     if new_id == 1:
@@ -117,7 +120,7 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # adding all information to dictionary 
     new_user = {'auth_user_id': new_id, 'name': name_first + ' ' +
-            name_last, 'email': email, 'password': password, 'handle': exist_handle, 
+            name_last, 'email': email, 'password': password, 'handle': final_handle, 
             'global_permissions': perms}
 
     store['users'].append(new_user)

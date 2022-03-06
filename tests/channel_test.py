@@ -338,7 +338,6 @@ def test_channel_messages_user_no_auth():
 channel_join_v1
 '''
 
-
 def test_0_invalid_channel_id():
     clear_v1()
     auth_register_return = auth_register_v1(
