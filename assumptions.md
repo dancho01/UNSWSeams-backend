@@ -35,7 +35,11 @@
 
 #### channels_list_v1
 
+1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing.  
+
 #### channels_listall_v1
+
+1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing. 
 
 #### channels_create_v1
 
