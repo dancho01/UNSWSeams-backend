@@ -96,13 +96,18 @@ def auth_register_v1(email, password, name_first, name_last):
     for char in name:
         if char.isalnum():
             handle += char.lower()
+    # 
+    if len(handle) > 20:
+        handle = handle[0:20]
     
-    handle = handle[0:20]
     count = 0
+    exist_handle = handle
     for user in store['users']:
-        if user['handle'] == handle:
-            handle += str(count)
+        if user['handle'] == exist_handle:
+            exist_handle = handle + str(count)
             count += 1
+                           
+    print(exist_handle)
 
     # associating channel permissions to user_id
     if new_id == 1:
@@ -112,7 +117,7 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # adding all information to dictionary 
     new_user = {'auth_user_id': new_id, 'name': name_first + ' ' +
-            name_last, 'email': email, 'password': password, 'handle': handle, 
+            name_last, 'email': email, 'password': password, 'handle': exist_handle, 
             'global_permissions': perms}
 
     store['users'].append(new_user)

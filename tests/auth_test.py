@@ -4,8 +4,14 @@ from src.auth import auth_register_v1, auth_login_v1
 from src.error import InputError
 from src.other import clear_v1
 
-auth_register_v1('awinstonchurchhill@gmail.com',
-                 'winniepooh', 'winstoney', 'churchhillon')
+
+auth_register_v1('daniel3@gmail.com', 'password', 'daniel', 'cho')
+auth_register_v1('winston@gmail.com', 'password', 'winston', 'churchill')
+auth_register_v1('winston2@gmail.com', 'password', 'winston', 'churchill')
+auth_register_v1('winston4@gmail.com', 'password', 'winston', 'churchill')
+auth_register_v1('winston1@gmail.com', 'password', 'winston', 'churchill')
+auth_register_v1('daniel1@gmail.com', 'password', 'daniel', 'cho')
+auth_register_v1('daniel2@gmail.com', 'password', 'daniel', 'cho')
 
 
 def test_rego_invalid_fname():
