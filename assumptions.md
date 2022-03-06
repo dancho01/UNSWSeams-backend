@@ -7,6 +7,7 @@
 #### auth_login_v1
 
 #### auth_register_v1
+1. To generate unique user ids, assumes user can not be deleted.
 
 ---
 
@@ -41,6 +42,7 @@
 1. Cannot check return value without knowing the data structure and making it white box testing. Therefore, we cannot test the return value is correct other than if the return type is correct with black box testing.
 
 #### channels_create_v1
+1. To generate unnique channel ids, assumes channels can not be deleted.
 
 ---
 
