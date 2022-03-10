@@ -1,5 +1,5 @@
 import pytest
-from tkinker.tix import Tree
+from tkinter import E
 from src.auth import auth_register_v1
 from src.channels import channels_create_v1, channels_list_v1, channels_listall_v1
 from src.error import InputError, AccessError
