@@ -1,4 +1,3 @@
-from tkinter.tix import Tree
 from src.error import InputError, AccessError
 from src.data_store import messages_returned, check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered, return_member_information
 
