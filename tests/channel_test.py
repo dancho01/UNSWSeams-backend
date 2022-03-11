@@ -1,4 +1,3 @@
-from tkinter import E
 import pytest
 from src.auth import auth_register_v1
 from src.error import InputError, AccessError
