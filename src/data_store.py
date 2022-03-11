@@ -26,6 +26,9 @@ Example usage:
 
 # YOU SHOULD MODIFY THIS OBJECT BELOW
 
+from email.mime import message
+
+
 initial_object = {
     'users': [],
     'channels': []
@@ -170,7 +173,7 @@ def check_user_registered(auth_user_id, data_store):
     return False
 
 
-def messages_returned(channel_index, start, end, data_store):
+def messages_returned(channel_index, start, store):
     '''
     messages_returned takes the index, finds it and accesses the 'messages' content. It goes through
     the messages and attaces it to returned_messages until k == 50 which it will then return the
@@ -178,15 +181,15 @@ def messages_returned(channel_index, start, end, data_store):
     '''
     returned_messages = []
 
-    subject = data_store['channels'][channel_index]['messages']
+    message_store = store['channels'][channel_index]['messages']
 
-    if subject == []:
+    if message_store == []:
         return returned_messages
 
-    for message in subject['messages']:
-        if message == end:
+    for message_index in len(message_store['messages']):
+        if message_index == start + 50:
             return returned_messages
-        returned_messages.append(message)
+        returned_messages.append(message_store['messages'][message_index])
 
 
 def return_member_information(auth_user_id, store):
