@@ -28,10 +28,6 @@ def channels_list_v1(auth_user_id):
                 channel_return.append(
                     {'channel_id': channel['channel_id'], 'name': channel['name']})
 
-        # if auth_user_id in channel['all_members']['auth_user_id']:
-        #     channel_return.append(
-        #         {'channel_id': channel['channel_id'], 'name': channel['name']})
-
     return {'channels': channel_return}
 
 
