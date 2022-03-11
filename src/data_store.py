@@ -173,7 +173,7 @@ def check_user_registered(auth_user_id, data_store):
     return False
 
 
-def messages_returned(channel_index, start, store):
+def messages_returned(channel_index, end, store):
     '''
     messages_returned takes the index, finds it and accesses the 'messages' content. It goes through
     the messages and attaces it to returned_messages until k == 50 which it will then return the
@@ -186,8 +186,8 @@ def messages_returned(channel_index, start, store):
     if message_store == []:
         return returned_messages
 
-    for message_index in len(message_store['messages']):
-        if message_index == start + 50:
+    for message_index in range(len(message_store['messages'])):
+        if message_index == end:
             return returned_messages
         returned_messages.append(message_store['messages'][message_index])
 

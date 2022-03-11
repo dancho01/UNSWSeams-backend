@@ -150,14 +150,14 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     end = start + 50
     if end >= message_length:
         message_return_list = messages_returned(
-            auth_list_index[1], start, message_length - 1, store)
+            auth_list_index[1], message_length - 1, store)
         end = -1
     else:
         message_return_list = messages_returned(
-            auth_list_index[1], start, end, store)
+            auth_list_index[1], end, store)
 
     return {
-        'messages': message_return_list,
+        'messages': [message_return_list],
         'start': start,
         'end': end,
     }
@@ -215,5 +215,4 @@ def channel_join_v1(auth_user_id, channel_id):
 
     data_store.set(store)
 
-    return {
-    }
+    return {}
