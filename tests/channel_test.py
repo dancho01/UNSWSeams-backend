@@ -449,7 +449,6 @@ def test_invalid_channel_id(create_first_user, create_second_user, create_first_
     InputError as user is trying to join a channel that does not yet exist
     '''
     info = create_first_channel_and_user
-    auth_user2_id = create_second_user['auth_user2_id']
     with pytest.raises(InputError):
         channel_join_v1(info['auth_user1_id'],
                         info['first_new_channel_id'] + 1)
