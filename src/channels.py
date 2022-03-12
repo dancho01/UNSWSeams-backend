@@ -1,4 +1,4 @@
-from src.data_store import data_store, check_user_registered
+from src.data_store import data_store, check_user_registered, return_member_information
 from src.error import InputError, AccessError
 
 
@@ -23,9 +23,10 @@ def channels_list_v1(auth_user_id):
 
     channel_return = []
     for channel in store['channels']:
-        if auth_user_id in channel['all_members']:
-            channel_return.append(
-                {'channel_id': channel['channel_id'], 'name': channel['name']})
+        for members in channel['all_members']:
+            if auth_user_id == members['u_id']:
+                channel_return.append(
+                    {'channel_id': channel['channel_id'], 'name': channel['name']})
 
     return {'channels': channel_return}
 
@@ -92,10 +93,15 @@ def channels_create_v1(auth_user_id, name, is_public):
     new_channel = {'channel_id': new_channel_id,
                    'name': name,
                    'is_public': is_public,
-                   'owner_members': [auth_user_id],
-                   'all_members': [auth_user_id],
+                   'owner_members': [],
+                   'all_members': [],
                    'messages': [],
                    }
+
+    new_channel['owner_members'].append(
+        return_member_information(auth_user_id, store))
+    new_channel['all_members'].append(
+        return_member_information(auth_user_id, store))
     # new_channel is then added to list of channels
     store['channels'].append(new_channel)
     data_store.set(store)

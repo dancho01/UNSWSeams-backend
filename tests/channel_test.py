@@ -103,9 +103,9 @@ def test_invite_already_channel_member(create_first_user, create_second_user, cr
         When the user being invited is already a member of the channel, throw an input error. 
     '''
     # tests that u_id is already in the channel
+
     info = create_first_channel_and_user
     auth_user2_id = create_second_user['auth_user2_id']
-    print(auth_user2_id, info)
     channel_join_v1(auth_user2_id, info['first_new_channel_id'])
     with pytest.raises(InputError):  # should raise an exception
         channel_invite_v1(info['auth_user1_id'],

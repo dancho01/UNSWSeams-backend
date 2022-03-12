@@ -1,5 +1,5 @@
 from src.error import InputError, AccessError
-from src.data_store import messages_returned, check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered
+from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered, return_member_information
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
@@ -43,12 +43,15 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
         raise InputError('u_id passed in is invalid')
 
     # test if u_id is already a member of the channel
-    channel_id = channel_status[1]
-    if check_authorization(u_id, channel_id, store) == True:
+    channel_index = channel_status[1]
+    if check_authorization(u_id, channel_index, store) == True:
         raise InputError(
             'u_id refers to a user who is already a member of the channel')
 
-    store['channels'][channel_id]['all_members'].append(u_id)
+    store['channels'][channel_index]['all_members'].append(
+        return_member_information(u_id, store))
+
+    data_store.set(store)
 
     return {
     }
@@ -140,7 +143,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
 
     message_length = len(store['channels'][auth_list_index[1]]['messages'])
 
-    if start >= message_length:
+    if start > message_length:
         raise InputError(
             'start is greater than the total number of messages in the channel')
 
@@ -207,9 +210,9 @@ def channel_join_v1(auth_user_id, channel_id):
         raise AccessError(
             'Cannot join a private channel as you are not a global owner')
 
-    store['channels'][channel_id]['all_members'].append(auth_user_id)
+    store['channels'][channel_id]['all_members'].append(
+        return_member_information(auth_user_id, store))
 
     data_store.set(store)
 
-    return {
-    }
+    return {}

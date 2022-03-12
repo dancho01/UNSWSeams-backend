@@ -12,7 +12,7 @@ def auth_login_v1(email, password):
 
     Exceptions:
         InputError      - Occurs when email entered does not belong to a user
-        InputError      - Occurs when password is not correct 
+        InputError      - Occurs when password is not correct
 
     Return Value:
         Returns a dictionary with the key 'auth_user_id', an integer value, if
@@ -40,7 +40,7 @@ def auth_login_v1(email, password):
 
 
 def auth_register_v1(email, password, name_first, name_last):
-    '''   
+    '''
     This function registers a user, given the input of their first name, last name,
     email address and password, creating a new account for them. It is also responsible
     for generating the handle for the user. The handle must be unique for each user,
@@ -122,9 +122,8 @@ def auth_register_v1(email, password, name_first, name_last):
         perms = 2
 
     # adding all information to dictionary
-    new_user = {'auth_user_id': new_id, 'name': name_first + ' ' +
-                name_last, 'email': email, 'password': password, 'handle': final_handle,
-                'global_permissions': perms}
+    new_user = {'auth_user_id': new_id, 'name_first': name_first, 'name_last': name_last,
+                'email': email, 'password': password, 'handle': final_handle, 'global_permissions': perms}
 
     store['users'].append(new_user)
 

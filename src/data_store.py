@@ -76,7 +76,7 @@ Example of what the data structure may look like
 #         {
 #             'channel_id': 1,
 #             'name': 'channel1',
-#             'all_members': [2, 4, 6, 8, 10], #authorized member ids (if its private)
+#             'all_members': [{'email': 'user1@example.com'}], #authorized member ids (if its private)
 #             'owner_members' : [1, 2, 3]  #user_id for admins
 #             'is_public': False,
 #             'messages': [
@@ -140,10 +140,11 @@ def check_authorization(auth_user_id, index, data_store):
         Returns False if user not in channels ['all_members'] list
     '''
     channel_authorization = data_store['channels'][index]['all_members']
-    if auth_user_id in channel_authorization:
-        return True
-    else:
-        return False
+    for user_index in range(len(channel_authorization)):
+        if channel_authorization[user_index]['u_id'] == auth_user_id:
+            return True
+
+    return False
 
 
 def check_user_registered(auth_user_id, data_store):
@@ -169,7 +170,7 @@ def check_user_registered(auth_user_id, data_store):
     return False
 
 
-def messages_returned(channel_index, start, end, data_store):
+def messages_returned(channel_index, start, end, store):
     '''
     messages_returned takes the index, finds it and accesses the 'messages' content. It goes through
     the messages and attaces it to returned_messages until k == 50 which it will then return the
@@ -177,13 +178,25 @@ def messages_returned(channel_index, start, end, data_store):
     '''
     returned_messages = []
 
-    subject = data_store['channels'][channel_index]['messages']
-    print(subject)
+    message_store = store['channels'][channel_index]['messages']
 
-    if subject == []:
+    if message_store == []:
         return returned_messages
 
-    for message in subject['messages']:
-        if message == end:
-            return returned_messages
-        returned_messages.append(message)
+    for message_index in range(start, end):
+        returned_messages.append(message_store[message_index])
+
+    return returned_messages
+
+
+def return_member_information(auth_user_id, store):
+
+    for user_index in range(len(store['users'])):
+        if store['users'][user_index]['auth_user_id'] == auth_user_id:
+            return {
+                'u_id': store['users'][user_index]['auth_user_id'],
+                'email': store['users'][user_index]['email'],
+                'name_first': store['users'][user_index]['name_first'],
+                'name_last': store['users'][user_index]['name_last'],
+                'handle_str': store['users'][user_index]['handle']
+            }
