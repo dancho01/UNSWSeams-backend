@@ -57,23 +57,16 @@ def auth_register_v1(email, password, name_first, name_last):
         InputError      - Occurs when email entered is not a valid channel
         InputError      - Occurs when email address is already being used by another user
         InputError      - Occurs when length of password is less than 6 characters
-        InputError      - Occurs when length of name_first is not between 1 and 50 characters inclusive
-        InputError      - Occurs when length of name_last is not between 1 and 50 characters inclusive
+        InputError      - Occurs when length of name_first is not between 1 and 50
+                        characters inclusive
+        InputError      - Occurs when length of name_last is not between 1 and 50 
+                        characters inclusive
 
     Return Value:
         Returns a dictionary with the key 'auth_user_id', which is an integer value, if
         account is successfully created
     '''
     store = data_store.get()
-
-    # according to the handle spec, alphanumeric + specials are allowed in names
-    # if not name_first.isalpha():
-    #     raise InputError(
-    #         "Special characters / numbers are not allowed in the name!")
-
-    # if not name_last.isalpha():
-    #     raise InputError(
-    #         "Special characters / numbers are not allowed in the name!")
 
     if len(name_first) < 1 or len(name_first) > 50:
         raise InputError(
