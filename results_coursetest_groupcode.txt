@@ -1,0 +1,1 @@
+auto_1.sh: line 27: timeout: command not found
