@@ -1,7 +1,7 @@
 import re
 from src.data_store import data_store
 from src.error import InputError
-
+from src.auth_helper import generate_new_jwt, encrypt_password, generate_new_session_id, generate_new_handle
 
 def auth_login_v1(email, password):
     '''
@@ -19,6 +19,9 @@ def auth_login_v1(email, password):
         login is successful
     '''
     store = data_store.get()
+    
+    # converts plaintext password to its hashed form 
+    encrypted_pw = encrypt_password(password)
 
     # iterates through users to check if email belongs to a user
     found = False
@@ -33,10 +36,18 @@ def auth_login_v1(email, password):
     for user in store['users']:
         if user['email'] == email:
             # InputError is raised if password does not match
-            if user['password'] != password:
+            if user['password'] != encrypted_pw:
                 raise InputError("Incorrect Password!")
             else:
-                return {'auth_user_id': user['auth_user_id']}
+                # generate new session_id to add to user's session_list 
+                session_id = generate_new_session_id()                           
+                user['session_list'].append(session_id)
+                
+                data_store.set(store)
+                
+                return {'auth_user_id': user['auth_user_id'],
+                        'token': generate_new_jwt(user['handle'], session_id)
+                }
 
 
 def auth_register_v1(email, password, name_first, name_last):
@@ -90,38 +101,32 @@ def auth_register_v1(email, password, name_first, name_last):
     new_id = len(store['users']) + 1
 
     # creating handle from first and last name
-    name = name_first + name_last
-    handle = ""
-    for char in name:
-        if char.isalnum():
-            handle += char.lower()
-
-    # if concatenated handle is longer than 20 characters, it is cut off at length of 20
-    if len(handle) > 20:
-        handle = handle[0:20]
-
-    count = 0
-    final_handle = handle
-    # iterates through list of users to check if handle is already taken
-    for user in store['users']:
-        if user['handle'] == final_handle:
-            final_handle = handle + str(count)
-            count += 1
-
-    # associating channel permissions to user_id
+    final_handle = generate_new_handle(name_first, name_last, store)
+    
+    # associating global permissions to user_id
     if new_id == 1:
         perms = 1
     else:
         perms = 2
+     
+    # converts the plaintext password to its hashed form    
+    encrypted_pw = encrypt_password(password)    
 
     # adding all information to dictionary
     new_user = {'auth_user_id': new_id, 'name_first': name_first, 'name_last': name_last,
-                'email': email, 'password': password, 'handle': final_handle, 'global_permissions': perms}
-
+                'email': email, 'password': encrypted_pw, 'handle': final_handle, 'global_permissions': perms
+                , 'session_list':[]}
+                
+    # generate new session_id to add to user's session_list 
+    session_id = generate_new_session_id()               
+    new_user['session_list'].append(session_id)
+        
     store['users'].append(new_user)
 
     data_store.set(store)
 
     return {
         'auth_user_id': new_id,
+        'token': generate_new_jwt(final_handle, session_id)
     }
+
