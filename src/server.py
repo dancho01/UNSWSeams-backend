@@ -5,6 +5,8 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src.auth import auth_login_v1, auth_register_v1
+from src.other import clear_v1
 
 
 def quit_gracefully(*args):
@@ -43,6 +45,38 @@ def echo():
     return dumps({
         'data': data
     })
+
+
+@APP.route("/auth/login/v2", methods=['POST'])
+def auth_login():
+    info = request.get_json()
+    login_return = auth_login_v1(info['email'], info['password'])
+          
+    return dumps({
+        'token': login_return['token'],
+        'auth_user_id': login_return['auth_user_id']
+    })
+    
+    
+@APP.route("/auth/register/v2", methods=['POST']) 
+def auth_register():
+    info = request.get_json()
+    register_return = auth_register_v1(info['email'], info['password'], info['name_first'], info['name_last'])
+        
+    return dumps({
+        'token': register_return['token'],
+        'auth_user_id': register_return['auth_user_id']
+    })
+    
+
+@APP.route("/clear/v1", methods=['DELETE'])
+def reset_all_data():
+    clear_v1()
+    
+    return dumps({})
+ 
+    
+    
 
 # NO NEED TO MODIFY BELOW THIS POINT
 
