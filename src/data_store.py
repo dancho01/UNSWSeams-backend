@@ -28,7 +28,8 @@ Example usage:
 
 initial_object = {
     'users': [],
-    'channels': []
+    'channels': [],
+    'dms': []
 }
 # YOU SHOULD MODIFY THIS OBJECT ABOVE
 
