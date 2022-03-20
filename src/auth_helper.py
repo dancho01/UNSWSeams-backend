@@ -74,3 +74,24 @@ def generate_new_handle(name_first, name_last, store):
     return final_handle
     
     
+def decode_jwt(hashed_jwt):
+    '''
+    Decodes the jwt string back into the user's data that was stored
+    Args:
+        hashed_jwt      str         the JWT string containing the header, payload and signature
+    Return:
+        Returns an object storing the user's data that was used to generate the JWT  
+    '''
+    return jwt.decode(hashed_jwt, SECRET, algorithms=['HS256']) 
+    
+    
+def check_valid_token(store, jwt_data):
+    for user in store['users']:
+        if user['handle'] == jwt_data['handle'] and jwt_data['session_id'] in user['session_list']:
+            return True, user['auth_user_id']
+    return False   
+    
+    
+    
+    
+    
