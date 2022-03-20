@@ -5,6 +5,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data
 from src.auth import auth_register_v1, auth_login_v1
@@ -36,7 +37,6 @@ APP.register_error_handler(Exception, defaultHandler)
 # NO NEED TO MODIFY ABOVE THIS POINT, EXCEPT IMPORTS
 
 # Example
-load_data()
 
 
 @APP.route("/echo", methods=['GET'])
@@ -68,6 +68,15 @@ def auth_register_v2():
 
     save_data()
     return dumps(result)
+
+
+@APP.route("/clear/v1", methods=['DELETE'])
+def clear_flask_v1():
+    clear_v1()
+
+    save_data()
+
+    return dumps({})
 
 
 # NO NEED TO MODIFY BELOW THIS POINT

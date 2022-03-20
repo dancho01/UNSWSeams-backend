@@ -75,22 +75,22 @@ def auth_register_v1(email, password, name_first, name_last):
 
     if len(name_first) < 1 or len(name_first) > 50:
         raise InputError(
-            message="First name must be between 1 and 50 characters inclusive")
+            description="First name must be between 1 and 50 characters inclusive")
 
     if len(name_last) < 1 or len(name_last) > 50:
         raise InputError(
-            message="Last name must be between 1 and 50 characters inclusive")
+            description="Last name must be between 1 and 50 characters inclusive")
 
     if len(password) < 6:
-        raise InputError(message="Password must be 6 or more characters!")
+        raise InputError(description="Password must be 6 or more characters!")
 
     if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
-        raise InputError(message="Invalid email!")
+        raise InputError(description="Invalid email!")
 
     for user in store['users']:
         if user['email'] == email:
             raise InputError(
-                message="This email is already in use by another user!")
+                description="This email is already in use by another user!")
 
     # creates a new id depending on how many users exist
     new_id = len(store['users']) + 1
