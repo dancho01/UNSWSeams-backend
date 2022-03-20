@@ -1,7 +1,9 @@
 import re
 from src.data_store import data_store
 from src.error import InputError
-from src.auth_helper import generate_new_jwt, encrypt_password, generate_new_session_id, generate_new_handle
+from src.token import hash, generate_token
+import jwt
+
 
 def auth_login_v1(email, password):
     '''
@@ -36,18 +38,12 @@ def auth_login_v1(email, password):
     for user in store['users']:
         if user['email'] == email:
             # InputError is raised if password does not match
-            if user['password'] != encrypted_pw:
+            if user['password'] != hash(password):
                 raise InputError("Incorrect Password!")
             else:
-                # generate new session_id to add to user's session_list 
-                session_id = generate_new_session_id()                           
-                user['session_list'].append(session_id)
-                
-                data_store.set(store)
-                
+                token = generate_token(user['auth_user_id'])
                 return {'auth_user_id': user['auth_user_id'],
-                        'token': generate_new_jwt(user['handle'], session_id)
-                }
+                        'token': token}
 
 
 def auth_register_v1(email, password, name_first, name_last):
@@ -81,24 +77,26 @@ def auth_register_v1(email, password, name_first, name_last):
 
     if len(name_first) < 1 or len(name_first) > 50:
         raise InputError(
-            "First name must be between 1 and 50 characters inclusive")
+            message="First name must be between 1 and 50 characters inclusive")
 
     if len(name_last) < 1 or len(name_last) > 50:
         raise InputError(
-            "Last name must be between 1 and 50 characters inclusive")
+            message="Last name must be between 1 and 50 characters inclusive")
 
     if len(password) < 6:
-        raise InputError("Password must be 6 or more characters!")
+        raise InputError(message="Password must be 6 or more characters!")
 
     if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
-        raise InputError("Invalid email!")
+        raise InputError(message="Invalid email!")
 
     for user in store['users']:
         if user['email'] == email:
-            raise InputError("This email is already in use by another user!")
+            raise InputError(
+                message="This email is already in use by another user!")
 
     # creates a new id depending on how many users exist
     new_id = len(store['users']) + 1
+    token = generate_token(new_id)
 
     # creating handle from first and last name
     final_handle = generate_new_handle(name_first, name_last, store)
@@ -114,19 +112,14 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # adding all information to dictionary
     new_user = {'auth_user_id': new_id, 'name_first': name_first, 'name_last': name_last,
-                'email': email, 'password': encrypted_pw, 'handle': final_handle, 'global_permissions': perms
-                , 'session_list':[]}
-                
-    # generate new session_id to add to user's session_list 
-    session_id = generate_new_session_id()               
-    new_user['session_list'].append(session_id)
-        
+                'email': email, 'password': hash(password), 'handle': final_handle, 'global_permissions': perms}
+
     store['users'].append(new_user)
 
     data_store.set(store)
 
     return {
         'auth_user_id': new_id,
-        'token': generate_new_jwt(final_handle, session_id)
+        'token': token,
     }
 

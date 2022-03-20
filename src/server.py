@@ -5,8 +5,8 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
-from src.auth import auth_login_v1, auth_register_v1
-from src.other import clear_v1
+from src.data_store import data_store
+from src.auth import auth_register_v1, auth_login_v1
 
 
 def quit_gracefully(*args):
@@ -48,39 +48,24 @@ def echo():
 
 
 @APP.route("/auth/login/v2", methods=['POST'])
-def auth_login():
-    info = request.get_json()
-    login_return = auth_login_v1(info['email'], info['password'])
-          
-    return dumps({
-        'token': login_return['token'],
-        'auth_user_id': login_return['auth_user_id']
-    })
-    
-    
-@APP.route("/auth/register/v2", methods=['POST']) 
-def auth_register():
-    info = request.get_json()
-    register_return = auth_register_v1(info['email'], info['password'], info['name_first'], info['name_last'])
-        
-    return dumps({
-        'token': register_return['token'],
-        'auth_user_id': register_return['auth_user_id']
-    })
-    
+def auth_login_v2():
+    data = request.get_json()
+    result = auth_login_v1(data['email'], data['password'])
 
-@APP.route("/clear/v1", methods=['DELETE'])
-def reset_all_data():
-    clear_v1()
-    
-    return dumps({})
- 
-    
-    
+    return dumps(result)
+
+
+@APP.route("/auth/register/v2", methods=['POST'])
+def auth_register_v2():
+    data = request.get_json()
+    result = auth_register_v1(
+        data['email'], data['password'], data['name_first'], data['name_last'])
+    store = data_store.get()
+    print(store)
+    return dumps(result)
+
 
 # NO NEED TO MODIFY BELOW THIS POINT
-
-
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port=config.port, debug=True)  # Do not edit this port
