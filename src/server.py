@@ -6,6 +6,7 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 from src.auth import auth_login_v1, auth_register_v1
+from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1
 from src.other import clear_v1
 
 
@@ -66,6 +67,74 @@ def auth_register():
     return dumps({
         'token': register_return['token'],
         'auth_user_id': register_return['auth_user_id']
+    })
+    
+@APP.route("/dm/create/v1", methods=['POST'])
+def dm_create():
+    info = request.get_json()
+    result = dm_create_v1(info['token'], info['u_ids'])
+    
+    return dumps({
+        'dm_id': result['dm_id'] 
+    })
+    
+@APP.route("/dm/list/v1", methods=['GET'])
+def dm_list():
+    token = request.args.get('token')
+    result = dm_list_v1(token)
+    
+    return dumps({
+        'dms': result['dms']
+    })
+
+@APP.route("/dm/remove/v1", methods=['DELETE'])
+def remove_dm():
+    info = request.get_json()
+    dm_remove_v1(info['token'], info['dm_id'])
+    
+    return dumps({})
+    
+@APP.route("/dm/details/v1", methods=['GET'])
+def get_dm_details():
+    token = request.args.get('token')
+    dm_id = request.args.get('dm_id') 
+    
+    result = dm_details_v1(token, dm_id)
+    
+    return dumps({
+        'name': result['name'],
+        'members': result['members']
+    })
+    
+@APP.route("/dm/leave/v1", methods=['POST'])
+def remove_member_from_dm():
+    info = request.get_json()
+    dm_leave_v1(info['token'], info['dm_id'])
+    
+    return dumps({})
+    
+@APP.route("/dm/messages/v1", methods=['GET'])
+def return_dm_messages():
+    token = request.args.get('token')
+    dm_id = request.args.get('dm_id')
+    start = request.args.get('start')
+    
+    result = dm_messages_v1(token, dm_id, start)
+    
+    return dumps({
+        'messages': result['messages'],
+        'start': result['start'],
+        'end': result['end']
+    })
+
+@APP.route("/message/senddm/v1", methods=['POST'])
+def send_message_to_dm():
+    info = request.get_json()
+    
+    result = message_senddm_v1(info['token'], info['dm_id'], info['message'])
+    
+    return dumps({
+        'message_id': result['message_id']
     })
     
 
