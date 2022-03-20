@@ -21,6 +21,9 @@ def auth_login_v1(email, password):
         login is successful
     '''
     store = data_store.get()
+    
+    # converts plaintext password to its hashed form 
+    encrypted_pw = encrypt_password(password)
 
     # iterates through users to check if email belongs to a user
     found = False
@@ -96,29 +99,16 @@ def auth_register_v1(email, password, name_first, name_last):
     token = generate_token(new_id)
 
     # creating handle from first and last name
-    name = name_first + name_last
-    handle = ""
-    for char in name:
-        if char.isalnum():
-            handle += char.lower()
-
-    # if concatenated handle is longer than 20 characters, it is cut off at length of 20
-    if len(handle) > 20:
-        handle = handle[0:20]
-
-    count = 0
-    final_handle = handle
-    # iterates through list of users to check if handle is already taken
-    for user in store['users']:
-        if user['handle'] == final_handle:
-            final_handle = handle + str(count)
-            count += 1
-
-    # associating channel permissions to user_id
+    final_handle = generate_new_handle(name_first, name_last, store)
+    
+    # associating global permissions to user_id
     if new_id == 1:
         perms = 1
     else:
         perms = 2
+     
+    # converts the plaintext password to its hashed form    
+    encrypted_pw = encrypt_password(password)    
 
     # adding all information to dictionary
     new_user = {'auth_user_id': new_id, 'name_first': name_first, 'name_last': name_last,
@@ -132,3 +122,4 @@ def auth_register_v1(email, password, name_first, name_last):
         'auth_user_id': new_id,
         'token': token,
     }
+
