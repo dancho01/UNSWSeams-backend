@@ -64,7 +64,6 @@ def auth_register_v2():
     data = request.get_json()
     result = auth_register_v1(
         data['email'], data['password'], data['name_first'], data['name_last'])
-    store = data_store.get()
 
     save_data()
     return dumps(result)
