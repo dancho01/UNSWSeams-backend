@@ -5,6 +5,10 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src.other import clear_v1
+from src.data_store import data_store
+from src.persistence import save_data, load_data
+from src.auth import auth_register_v1, auth_login_v1
 
 
 def quit_gracefully(*args):
@@ -40,13 +44,41 @@ def echo():
     data = request.args.get('data')
     if data == 'echo':
         raise InputError(description='Cannot echo "echo"')
+
     return dumps({
         'data': data
     })
 
+
+@APP.route("/auth/login/v2", methods=['POST'])
+def auth_login_v2():
+    data = request.get_json()
+    result = auth_login_v1(data['email'], data['password'])
+
+    save_data()
+    return dumps(result)
+
+
+@APP.route("/auth/register/v2", methods=['POST'])
+def auth_register_v2():
+    data = request.get_json()
+    result = auth_register_v1(
+        data['email'], data['password'], data['name_first'], data['name_last'])
+
+    save_data()
+    return dumps(result)
+
+
+@APP.route("/clear/v1", methods=['DELETE'])
+def clear_flask_v1():
+    clear_v1()
+
+    save_data()
+
+    return dumps({})
+
+
 # NO NEED TO MODIFY BELOW THIS POINT
-
-
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port=config.port, debug=True)  # Do not edit this port
