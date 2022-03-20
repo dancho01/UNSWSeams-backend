@@ -2,7 +2,8 @@ import re
 from src.data_store import data_store
 from src.error import InputError
 from src.token import hash, generate_token
-import jwt
+from src.auth_helper import generate_new_handle
+from src.token import hash, generate_token
 
 
 def auth_login_v1(email, password):
@@ -21,9 +22,6 @@ def auth_login_v1(email, password):
         login is successful
     '''
     store = data_store.get()
-    
-    # converts plaintext password to its hashed form 
-    encrypted_pw = encrypt_password(password)
 
     # iterates through users to check if email belongs to a user
     found = False
@@ -100,15 +98,12 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # creating handle from first and last name
     final_handle = generate_new_handle(name_first, name_last, store)
-    
+
     # associating global permissions to user_id
     if new_id == 1:
         perms = 1
     else:
         perms = 2
-     
-    # converts the plaintext password to its hashed form    
-    encrypted_pw = encrypt_password(password)    
 
     # adding all information to dictionary
     new_user = {'auth_user_id': new_id, 'name_first': name_first, 'name_last': name_last,
@@ -122,4 +117,3 @@ def auth_register_v1(email, password, name_first, name_last):
         'auth_user_id': new_id,
         'token': token,
     }
-
