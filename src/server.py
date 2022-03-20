@@ -6,6 +6,7 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 from src.data_store import data_store
+from src.persistence import save_data, load_data
 from src.auth import auth_register_v1, auth_login_v1
 
 
@@ -35,6 +36,7 @@ APP.register_error_handler(Exception, defaultHandler)
 # NO NEED TO MODIFY ABOVE THIS POINT, EXCEPT IMPORTS
 
 # Example
+load_data()
 
 
 @APP.route("/echo", methods=['GET'])
@@ -53,6 +55,7 @@ def auth_login_v2():
     data = request.get_json()
     result = auth_login_v1(data['email'], data['password'])
 
+    save_data()
     return dumps(result)
 
 
@@ -62,7 +65,8 @@ def auth_register_v2():
     result = auth_register_v1(
         data['email'], data['password'], data['name_first'], data['name_last'])
     store = data_store.get()
-    print(store)
+
+    save_data()
     return dumps(result)
 
 
