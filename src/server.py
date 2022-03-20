@@ -6,7 +6,7 @@ from flask_cors import CORS
 from src.error import InputError
 from src import config
 from src.data_store import data_store
-from src.auth import auth_register_v1
+from src.auth import auth_register_v1, auth_login_v1
 
 
 def quit_gracefully(*args):
@@ -47,14 +47,21 @@ def echo():
     })
 
 
+@APP.route("/auth/login/v2", methods=['POST'])
+def auth_login_v2():
+    data = request.get_json()
+    result = auth_login_v1(data['email'], data['password'])
+
+    return dumps(result)
+
+
 @APP.route("/auth/register/v2", methods=['POST'])
-def auth_register():
+def auth_register_v2():
     data = request.get_json()
     result = auth_register_v1(
         data['email'], data['password'], data['name_first'], data['name_last'])
-
-    data_store.set(data)
-
+    store = data_store.get()
+    print(store)
     return dumps(result)
 
 
