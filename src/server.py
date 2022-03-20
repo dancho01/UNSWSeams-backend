@@ -5,6 +5,8 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src.data_store import data_store
+from src.auth import auth_register_v1
 
 
 def quit_gracefully(*args):
@@ -44,9 +46,19 @@ def echo():
         'data': data
     })
 
+
+@APP.route("/auth/register/v2", methods=['POST'])
+def auth_register():
+    data = request.get_json()
+    result = auth_register_v1(
+        data['email'], data['password'], data['name_first'], data['name_last'])
+
+    data_store.set(data)
+
+    return dumps(result)
+
+
 # NO NEED TO MODIFY BELOW THIS POINT
-
-
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port=config.port, debug=True)  # Do not edit this port
