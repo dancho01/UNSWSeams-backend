@@ -5,6 +5,8 @@ from flask import Flask, request
 from flask_cors import CORS
 from src.error import InputError
 from src import config
+from src.data_store import data_store
+from src.persistence import save_data, load_data
 
 
 def quit_gracefully(*args):
