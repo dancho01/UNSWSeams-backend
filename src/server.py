@@ -8,7 +8,7 @@ from src import config
 from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data
-from src.auth import auth_register_v1, auth_login_v1
+from src.auth import auth_register_v1, auth_login_v1, auth_logout
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 
 
@@ -70,6 +70,15 @@ def auth_register_v2():
     return dumps(result)
 
 
+@APP.route("/auth/logout/v1", methods=['DELETE'])
+def auth_logout_v1():
+    data = request.get_json()
+    result = auth_logout(data['token'])
+
+    save_data()
+    return dumps(result)
+
+
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear_flask_v1():
     clear_v1()
@@ -85,11 +94,13 @@ def channels_list_v2():
     result = channels_list_v1(token)
     return dumps(result)
 
+
 @APP.route("/channels/listall/v2", methods=['GET'])
 def channels_listall_v2():
     token = request.args.get('token')
     result = channels_listall_v1(token)
     return dumps(result)
+
 
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create_v2():
@@ -100,6 +111,7 @@ def channels_create_v2():
     result = channels_create_v1(token, name, is_public)
     save_data()
     return dumps(result)
+
 
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
