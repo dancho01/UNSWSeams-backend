@@ -22,6 +22,9 @@ def generate_token(user_id):
     store['session_list'].append(hash(session_id))
     data_store.set(store)
 
+    store['session_list'].append(hash(session_id))
+    data_store.set(store)
+
     return ENCODED_JWT
 
 
@@ -37,7 +40,7 @@ def check_valid_token(token):
     Args:
         hashed_jwt      str         the JWT string containing the header, payload and signature
     Return:
-        Returns an object storing the user's data that was used to generate the JWT  
+        Returns an object storing the user's data that was used to generate the JWT
     '''
     try:
         token_decoded = jwt.decode(token, SECRET, algorithms=['HS256'])
