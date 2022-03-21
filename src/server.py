@@ -9,6 +9,7 @@ from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data
 from src.auth import auth_register_v1, auth_login_v1
+from src.channel import message_send_v1
 
 
 def quit_gracefully(*args):
@@ -69,12 +70,24 @@ def auth_register_v2():
     return dumps(result)
 
 
-@APP.route("/clear/v1", methods=['DELETE'])
-def clear_flask_v1():
-    clear_v1()
+# @APP.route("/channel/messages/v2", methods=['GET'])
+# def channel_messages_v2():
+
+
+@APP.route("/messages/send/v1", methods=['POST'])
+def messages_send_v1():
+    data = request.get_json()
+    result = message_send_v1(
+        data['token'], data['channel_id', data['message']])
 
     save_data()
+    return dumps(result)
 
+
+@APP.route("/clear/v1", methods=['DELETE'])
+def clear_v1():
+    clear_v1()
+    save_data()
     return dumps({})
 
 
