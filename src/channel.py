@@ -167,12 +167,12 @@ def messages_remove_v1(token, message_id):
     for channel in store['channels']:
         for messages in channel['messages']:
             channel['messages'] = list(
-                filter(lambda i: i['message_id'] != message_id, channel['messages']))
+                filter(lambda i: i['message_id'] != message_id, messages))
 
     for dms in store['dms']:
         for messages in dms['messages']:
             dms['messages'] = list(
-                filter(lambda i: i['message_id'] != message_id, dms['messages']))
+                filter(lambda i: i['message_id'] != message_id, messages))
 
     data_store.set(store)
 
