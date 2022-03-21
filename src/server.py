@@ -73,9 +73,12 @@ def auth_register_v2():
 
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
-    data = request.get_json()
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    print(type(channel_id))
+    start = int(request.args.get('start'))
     result = channel_messages_v1(
-        data['token'], data['channel_id'], data['start'])
+        token, channel_id, start)
 
     save_data()
     return dumps(result)
@@ -100,7 +103,7 @@ def channels_create_v2():
 
 
 @APP.route("/message/edit/v1", methods=['PUT'])
-def messages_edit_v1():
+def messages_edits_v1():
     data = request.get_json()
     result = messages_edit_v1(
         data['token'], data['message_id'], data['message'])
@@ -111,7 +114,7 @@ def messages_edit_v1():
 
 @APP.route("/message/remove/v1", methods=['DELETE'])
 def messages_delete_v1():
-    data = request.args.get('token')
+    data = request.get_json()
     result = messages_remove_v1(data['token'], data['message_id'])
 
     save_data()

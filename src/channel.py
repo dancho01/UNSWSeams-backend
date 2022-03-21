@@ -1,9 +1,9 @@
 from src.error import InputError, AccessError
-from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered, return_member_information
+from src.data_store import check_authorization, messages_returned, data_store, check_user_registered, return_member_information
 from src.channel_helper import check_message, time_now
 from src.token import check_valid_token
-from src.global_helper import check_valid_channel_user, check_authorized_user
-from src.message_helper import generate_new_message_id
+from src.global_helper import check_valid_channel, check_authorized_user
+from src.message_helper import generate_new_message_id, check_valid_message
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
@@ -85,16 +85,9 @@ def channel_details_v1(auth_user_id, channel_id):
     if check_user_registered(auth_user_id, store) == False:
         raise AccessError('auth_user_id passed in is invalid')
 
-    channel_status = check_valid_channel(channel_id, store)
+    channel_index = check_valid_channel(channel_id)
 
-    if channel_status == False:
-        raise InputError('channel_id does not refer to a valid channel')
-    else:
-        channel_index = channel_status[1]
-
-    if check_authorization(auth_user_id, channel_index, store) == False:
-        raise AccessError(
-            'channel_id is valid and the authorized user is not a member of the channel')
+    check_authorized_user(auth_user_id, channel_index)
 
     channel_info = store['channels'][channel_index]
 
@@ -135,20 +128,10 @@ def channel_messages_v1(token, channel_id, start):
 
     user_info = check_valid_token(token)
     auth_user_id = user_info['u_id']
+    auth_list_index = check_valid_channel(channel_id)
+    check_authorized_user(auth_user_id, auth_list_index)
 
-    if check_user_registered(auth_user_id, store) == False:
-        raise AccessError('auth_user_id passed in is invalid')
-
-    auth_list_index = check_valid_channel(channel_id, store)
-
-    if check_valid_channel(channel_id, store) == False:
-        raise InputError('Channel_id does not refer to a valid channel')
-
-    if check_authorization(auth_user_id, auth_list_index[1], store) == False:
-        raise AccessError(
-            'channel_id is valid and the authorized user is not a member of the channel')
-
-    message_length = len(store['channels'][auth_list_index[1]]['messages'])
+    message_length = len(store['channels'][auth_list_index]['messages'])
 
     if start > message_length:
         raise InputError(
@@ -173,9 +156,10 @@ def channel_messages_v1(token, channel_id, start):
 def message_send_v1(token, channel_id, message):
     user_id = check_valid_token(token)['u_id']
     check_message(message)
-    check_valid_channel_user(channel_id, user_id)
+    channel_index = check_valid_channel(channel_id)
+    check_authorized_user(user_id, channel_index)
 
-    new_message_id = generate_new_message_id
+    new_message_id = generate_new_message_id()
     new_message = {
         'message_id': new_message_id,
         'u_id': user_id,
@@ -194,13 +178,13 @@ def message_send_v1(token, channel_id, message):
 
 
 def messages_edit_v1(token, message_id, message):
+    store = data_store.get()
     user_id = check_valid_token(token)['u_id']
     check_message(message)
+    check_valid_message(message_id, user_id, store)
 
     if len(message) == 0:
         messages_remove_v1(token, message_id)
-
-    store = data_store.get()
 
     for channel in store['channels']:
         for messages in channel['messages']:
@@ -220,6 +204,7 @@ def messages_edit_v1(token, message_id, message):
 def messages_remove_v1(token, message_id):
     user_id = check_valid_token(token)['u_id']
     store = data_store.get()
+    check_valid_message(message_id, user_id, store)
 
     for channel in store['channels']:
         for messages in channel['messages']:

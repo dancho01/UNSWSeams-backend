@@ -9,8 +9,12 @@ from src import config
 @pytest.fixture
 def create_first_user():
     requests.delete(config.url + 'clear/v1')
-    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1 = requests.post(config.url + 'auth/register/v2', json={
+        "email": "email@gmail.com",
+        "password": "password123",
+        "name_first": "first",
+        "name_last": "last"
+    })
     user1_data = user1.json()
     return user1_data
 
@@ -20,15 +24,28 @@ def create_second_user():
     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'testemail@gmail.com',
                                                                  'password': 'elephant130', 'name_first': 'Daniel', 'name_last': 'Cho'})
     user2_data = user2.json()
+    print("create second user")
+    print(user2_data)
     return user2_data
 
 
 @pytest.fixture
-def create_public_channel(create_first_user):
+def create_public_channel():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={
+        "email": "email@gmail.com",
+        "password": "password123",
+        "name_first": "first",
+        "name_last": "last"
+    })
+    user1_data = user1.json()
+    print(user1_data)
     c1 = requests.post(config.url + 'channels/create/v2',
-                       json={'token': create_first_user['token'], 'name': 'ch1', 'is_public': True})
+                       json={'token': user1_data['token'], 'name': 'ch1', 'is_public': True})
     channel1 = c1.json()
-    return channel1
+    print(channel1)
+
+    return channel1, user1_data
 
 
 @pytest.fixture
@@ -39,43 +56,51 @@ def generate_invalid_message():
 
 
 @pytest.fixture
-def send_first_message(create_first_user, create_public_channel):
+def send_first_message():
     requests.delete(config.url + 'clear/v1')
-    message = "hello"
-    message_response = requests.get(config.url + 'message/send/v1', params={
-        'token': create_first_user['token'], 'channel_id': create_public_channel['channel_id'], 'message': message})
+    user1 = requests.post(config.url + 'auth/register/v2', json={
+        "email": "email@gmail.com",
+        "password": "password123",
+        "name_first": "first",
+        "name_last": "last"
+    })
+    user1_data = user1.json()
+    c1 = requests.post(config.url + 'channels/create/v2',
+                       json={'token': user1_data['token'], 'name': 'ch1', 'is_public': True})
+    channel1 = c1.json()
+    response = requests.post(config.url + 'message/send/v1', json={
+        'token': user1_data['token'], 'channel_id': channel1['channel_id'], 'message': "hello"})
+    message_response = response.json()
+    return message_response, user1_data, channel1
 
-    return message_response
 
-# messages v2
+'''
+ messages v2
+'''
 
 
-def test_messages_invalid_channel(create_first_user, create_public_channel):
+def test_messages_invalid_channel(create_public_channel):
     '''
     Error Raised:
-        Input Error: channel_id does not refer to a valid channel    
+        Input Error: channel_id does not refer to a valid channel
     Explanation:
         Passing in create_public_channel['channel_id'] + 1, which is invalid
     '''
-    print(type(create_first_user))
-    requests.delete(config.url + 'clear/v1')
     message_response = requests.get(config.url + 'channel/messages/v2', params={
-        'token': create_first_user['token'], 'channel_id': create_public_channel['channel_id'] + 1, 'start': 0})
+        'token': create_public_channel[1]['token'], 'channel_id': create_public_channel[0]['channel_id'] + 1, 'start': 0})
 
     assert message_response.status_code == 400
 
 
-def test_invalid_start(create_first_user, create_public_channel):
+def test_invalid_start(create_public_channel):
     '''
     Error Raised:
         Input Error: start is greater than the total number of messages in the channel
     Explanation:
         Currently no messages, has requested to return messages at index 1000 which does not exist
     '''
-    requests.delete(config.url + 'clear/v1')
-    message_response = requests.get(config.url + 'channel/messages/v2', json={
-        'token': create_first_user['token'], 'channel_id': create_public_channel['channel_id'], 'start': 1000})
-
+    message_response = requests.get(config.url + 'channel/messages/v2', params={
+        'token': create_public_channel[1]['token'], 'channel_id': create_public_channel[0]['channel_id'], 'start': 1000})
     assert message_response.status_code == 400
 
 
@@ -86,40 +111,41 @@ def test_unauthorised_user(create_public_channel, create_second_user):
     Explanation:
         Messages are requested by user2, who has no access to the server created by user1
     '''
-    requests.delete(config.url + 'clear/v1')
     message_response = requests.get(config.url + 'channel/messages/v2', params={
-        'token': create_second_user['token'], 'channel_id': create_public_channel['channel_id'], 'start': 0})
+        'token': create_second_user['token'], 'channel_id': create_public_channel[0]['channel_id'], 'start': 0})
 
     assert message_response.status_code == 403
 
 
-# messages send v1
-def test_send_invalid_channel(create_first_user, create_public_channel):
+'''
+messages send v1
+'''
+
+
+def test_send_invalid_channel(create_public_channel):
     '''
     Error Raised:
-        Input Error: channel_id does not refer to a valid channel    
+        Input Error: channel_id does not refer to a valid channel
     Explanation:
         Passing in create_public_channel['channel_id'] + 1, which is invalid
     '''
-    requests.delete(config.url + 'clear/v1')
     message = "hello"
     send_response = requests.post(config.url + 'message/send/v1', json={
-        'token': create_first_user['token'], 'channel_id': create_public_channel['channel_id'] + 1, 'message': message})
+        'token': create_public_channel[1]['token'], 'channel_id': create_public_channel[0]['channel_id'] + 1, 'message': message})
 
     assert send_response.status_code == 400
 
 
-def test_send_invalid_message(create_first_user, create_public_channel, generate_invalid_message):
+def test_send_invalid_message(create_public_channel, generate_invalid_message):
     '''
     Error Raised:
-        Input Error: channel_id does not refer to a valid channel    
+        Input Error: channel_id does not refer to a valid channel
     Explanation:
         Passing in create_public_channel['channel_id'] + 1, which is invalid
     '''
-    requests.delete(config.url + 'clear/v1')
     message = generate_invalid_message
     message_response = requests.post(config.url + 'message/send/v1', json={
-        'token': create_first_user['token'], 'channel_id': create_public_channel['channel_id'], 'message': message})
+        'token': create_public_channel[1]['token'], 'channel_id': create_public_channel[0]['channel_id'], 'message': message})
 
     assert message_response.status_code == 400
 
@@ -131,15 +157,19 @@ def test_send_unauthorised_user(create_public_channel, create_second_user):
     Explanation:
         Messages are requested by user2, who has no access to the server created by user1
     '''
-    requests.delete(config.url + 'clear/v1')
     message = "hello"
+    global TOKEN
     send_response = requests.post(config.url + 'message/send/v1', json={
-        'token': create_second_user['token'], 'channel_id': create_public_channel['channel_id'], 'message': message})
+        'token': create_second_user['token'], 'channel_id': create_public_channel[0]['channel_id'], 'message': message})
 
     assert send_response.status_code == 403
 
 
-# messagesedit v1
+'''
+messages edit v1
+'''
+
+
 def test_edit_invalid_message(create_first_user, send_first_message, generate_invalid_message):
     '''
     Error Raised:
@@ -147,7 +177,6 @@ def test_edit_invalid_message(create_first_user, send_first_message, generate_in
     Explanation:
         New_message is 1500 character string that is randomly generated
     '''
-    requests.delete(config.url + 'clear/v1')
     new_message = generate_invalid_message
     edit_response = requests.put(config.url + 'message/edit/v1', json={
         'token': create_first_user['token'], 'message_id': send_first_message, 'message': new_message})
@@ -155,63 +184,62 @@ def test_edit_invalid_message(create_first_user, send_first_message, generate_in
     assert edit_response.status_code == 400
 
 
-def test_edit_invalid_message_id(create_first_user, send_first_message):
+def test_edit_invalid_message_id(send_first_message):
     '''
     Error Raised:
-        Input Error: message_id does not refer to a valid message within a channel/DM that the authorised user has joined    
+        Input Error: message_id does not refer to a valid message within a channel/DM that the authorised user has joined
     Explanation:
         Accessing send_first_message + 1 which is not a valid id
     '''
-    requests.delete(config.url + 'clear/v1')
     new_message = "hello"
     edit_response = requests.put(config.url + 'message/edit/v1', json={
-        'token': create_first_user['token'], 'message_id': send_first_message + 1, 'message': new_message})
+        'token': send_first_message[1]['token'], 'message_id': send_first_message[0]['message_id'] + 1, 'message': new_message})
 
     assert edit_response.status_code == 400
 
 
-def test_send_invalid_channel(create_second_user, send_first_message):
+def test_send_invalid_channel(send_first_message, create_second_user):
     '''
     Error Raised:
-        Input Error: Message_id is valid, user is not authorised and does not have owner permissions    
+        Input Error: Message_id is valid, user is not authorised and does not have owner permissions
     Explanation:
         Second user tries to edit, has no owner and is not the original sender of message
     '''
-    requests.delete(config.url + 'clear/v1')
     new_message = "hello"
     edit_response = requests.put(config.url + 'message/edit/v1', json={
-        'token': create_second_user['token'], 'message_id': send_first_message, 'message': new_message})
+        'token': create_second_user['token'], 'message_id': send_first_message[0]['message_id'], 'message': new_message})
 
     assert edit_response.status_code == 403
 
-# messages remove v1
+
+'''
+messages remove v1
+'''
 
 
-def test_remove_invalid_message_id(create_first_user, send_first_message):
+def test_remove_invalid_message_id(send_first_message):
     '''
     Error Raised:
-        Input Error: message_id does not refer to a valid message within a channel/DM that the authorised user has joined    
+        Input Error: message_id does not refer to a valid message within a channel/DM that the authorised user has joined
     Explanation:
         Accessing send_first_message + 1 which is not a valid id
     '''
-    requests.delete(config.url + 'clear/v1')
     new_message = "hello"
     edit_response = requests.delete(config.url + 'message/remove/v1', json={
-        'token': create_first_user['token'], 'message_id': send_first_message + 1, 'message': new_message})
+        'token': send_first_message[1]['token'], 'message_id': send_first_message[0]['message_id'] + 1, 'message': new_message})
 
     assert edit_response.status_code == 400
 
 
-def test_remove_invalid_channel(create_second_user, send_first_message):
+def test_remove_invalid_channel(send_first_message):
     '''
     Error Raised:
-        Input Error: Message_id is valid, user is not authorised and does not have owner permissions    
+        Input Error: Message_id is valid, user is not authorised and does not have owner permissions
     Explanation:
         Second user tries to edit, has no owner and is not the original sender of message
     '''
-    requests.delete(config.url + 'clear/v1')
     new_message = "hello"
     edit_response = requests.delete(config.url + 'message/remove/v1', json={
-        'token': create_second_user['token'], 'message_id': send_first_message, 'message': new_message})
+        'token': create_second_user['token'], 'message_id': send_first_message[0]['message_id'], 'message': new_message})
 
     assert edit_response.status_code == 403

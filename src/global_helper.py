@@ -12,24 +12,28 @@ def check_valid_user(u_id):
     raise InputError(description="")
 
 
-def check_valid_channel_user(c_id, u_id):
+def check_valid_channel(c_id):
     store = data_store.get()
 
-    for channel in store['channels']:
-        if channel['channel_id'] == c_id:
-            if check_authorized_user(channel['all_members'], u_id) == True:
-                return True
-            else:
-                raise AccessError(
-                    description="channel_id is valid and the authorised user is not a member of the channel")
+    found = False
+    for i in range(len(store['channels'])):
+        if store['channels'][i]['channel_id'] == c_id:
+            found = True
+            return int(i)
 
-    raise InputError(
-        description="channel_id does not refer to a valid channel")
+    if found == False:
+        raise InputError(
+            description="channel_id does not refer to a valid channel")
 
 
-def check_authorized_user(channel_auth_list, u_id):
-    for user in channel_auth_list:
-        if user['auth_user_id'] == u_id:
-            return True
+def check_authorized_user(u_id, channel_index):
+    store = data_store.get()
 
-    return False
+    found = False
+    for users in store['channels'][channel_index]['all_members']:
+        if users['u_id'] == u_id:
+            found = True
+
+    if found == False:
+        raise AccessError(
+            description="channel_id is valid and the authorised user is not a member of the channel")

@@ -1,3 +1,4 @@
+from src.error import AccessError, InputError
 
 MESSAGE_ID_COUNTER = 0
 
@@ -26,4 +27,5 @@ def check_valid_message(message_id, u_id, store):
             if message['u_id'] == u_id and message['message_id'] == message_id:
                 return True
 
-    return False
+    raise InputError(
+        description="message_id does not refer to a valid message within a channel/DM that the authorised user has joined")
