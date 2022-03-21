@@ -56,6 +56,8 @@ def generate_DM_name(auth_user_id, u_ids, store):
         
     ordered_handles = sorted(list_handles)
     name = ', '.join(ordered_handles)
+    
+    return name
             
             
 def check_valid_dm(dm_id, store):
