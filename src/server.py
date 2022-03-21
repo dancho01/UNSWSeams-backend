@@ -78,6 +78,26 @@ def clear_flask_v1():
     return dumps({})
 
 
+@APP.route("/channels/list/v2", methods=['GET'])
+def channels_list_v2():
+    token = request.args.get('token')
+    result = channels_list_v1(token)
+    return dumps(result)
+
+@APP.route("/channels/listall/v2", methods=['GET'])
+def channels_listall_v2():
+    token = request.args.get('token')
+    result = channels_listall_v1(token)
+    return dumps(result)
+
+@APP.route("/channels/create/v2", methods=['GET'])
+def channels_create_v2():
+    token = request.args.get('token')
+    name = request.args.get('name')
+    is_public = request.args.get('is_public')
+    result = channels_create_v1(token, name, is_public)
+    return dumps(result)
+
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
