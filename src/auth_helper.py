@@ -1,3 +1,7 @@
+from src.error import InputError, AccessError
+from src.data_store import data_store
+import re
+
 
 def generate_new_handle(name_first, name_last, store):
     '''
@@ -28,3 +32,29 @@ def generate_new_handle(name_first, name_last, store):
             count += 1
 
     return final_handle
+
+
+def check_info(name_first, name_last, password, email):
+
+    if len(name_first) < 1 or len(name_first) > 50:
+        raise InputError(
+            description="First name must be between 1 and 50 characters inclusive")
+
+    if len(name_last) < 1 or len(name_last) > 50:
+        raise InputError(
+            description="Last name must be between 1 and 50 characters inclusive")
+
+    if len(password) < 6:
+        raise InputError(description="Password must be 6 or more characters!")
+
+    if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+        raise InputError(description="Invalid email!")
+
+    store = data_store.get()
+
+    for user in store['users']:
+        if user['email'] == email:
+            raise InputError(
+                description="This email is already in use by another user!")
+
+    return
