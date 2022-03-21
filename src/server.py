@@ -8,8 +8,13 @@ from src import config
 from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data
+<<<<<<< HEAD
 from src.auth import auth_register_v1, auth_login_v1
 from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1
+=======
+from src.auth import auth_register_v1, auth_login_v1, auth_logout
+from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
+>>>>>>> dad99a26cff97beb455d807e7643f1352e7433c5
 
 
 def quit_gracefully(*args):
@@ -157,6 +162,15 @@ def send_message_to_dm():
     })
     
 
+@APP.route("/auth/logout/v1", methods=['DELETE'])
+def auth_logout_v1():
+    data = request.get_json()
+    result = auth_logout(data['token'])
+
+    save_data()
+    return dumps(result)
+
+
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear_flask_v1():
     clear_v1()
@@ -164,6 +178,31 @@ def clear_flask_v1():
     save_data()
 
     return dumps({})
+
+
+@APP.route("/channels/list/v2", methods=['GET'])
+def channels_list_v2():
+    token = request.args.get('token')
+    result = channels_list_v1(token)
+    return dumps(result)
+
+
+@APP.route("/channels/listall/v2", methods=['GET'])
+def channels_listall_v2():
+    token = request.args.get('token')
+    result = channels_listall_v1(token)
+    return dumps(result)
+
+
+@APP.route("/channels/create/v2", methods=['POST'])
+def channels_create_v2():
+    data = request.get_json()
+    token = data['token']
+    name = data['name']
+    is_public = data['is_public']
+    result = channels_create_v1(token, name, is_public)
+    save_data()
+    return dumps(result)
 
 
 # NO NEED TO MODIFY BELOW THIS POINT

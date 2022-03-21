@@ -22,22 +22,35 @@ def generate_token(user_id):
     store['session_list'].append(hash(session_id))
     data_store.set(store)
 
+    store['session_list'].append(hash(session_id))
+    data_store.set(store)
+
     return ENCODED_JWT
 
 
 def generate_session_id():
     global SESSION_TRACKER
     SESSION_TRACKER += 1
+<<<<<<< HEAD
     return hash(SESSION_TRACKER)
     
     
+=======
+    return SESSION_TRACKER
+
+
+>>>>>>> dad99a26cff97beb455d807e7643f1352e7433c5
 def check_valid_token(token):
     '''
     Decodes the jwt string back into the user's data that was stored
     Args:
         hashed_jwt      str         the JWT string containing the header, payload and signature
     Return:
+<<<<<<< HEAD
         Returns an object storing the user's data that was used to generate the JWT
+=======
+        Returns an object storing the user's data that was used to generate the JWT  
+>>>>>>> dad99a26cff97beb455d807e7643f1352e7433c5
     '''
     try:
         token_decoded = jwt.decode(token, SECRET, algorithms=['HS256'])
