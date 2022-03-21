@@ -6,15 +6,16 @@ import json
 from src import config
 
 
-@pytest.fixtures
+@pytest.fixture
 def create_first_user():
-    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user1_data = user1.json()
     return user1_data
 
 
-@pytest.fixtures
+@pytest.fixture
 def create_second_user():
     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'testemail@gmail.com',
                                                                  'password': 'elephant130', 'name_first': 'Daniel', 'name_last': 'Cho'})
@@ -22,21 +23,22 @@ def create_second_user():
     return user2_data
 
 
-@pytest.fixtures
+@pytest.fixture
 def create_public_channel(create_first_user):
     c1 = requests.post(config.url + 'channels/create/v2',
                        json={'token': create_first_user['token'], 'name': 'ch1', 'is_public': True})
-    return c1
+    channel1 = c1.json()
+    return channel1
 
 
-@pytest.fixtures
+@pytest.fixture
 def generate_invalid_message():
     invalid_message = ''.join(random.choice(
         string.ascii_uppercase + string.digits) for _ in range(1500))
     return invalid_message
 
 
-@pytest.Fixture
+@pytest.fixture
 def send_first_message(create_first_user, create_public_channel):
     requests.delete(config.url + 'clear/v1')
     message = "hello"
@@ -55,6 +57,7 @@ def test_messages_invalid_channel(create_first_user, create_public_channel):
     Explanation:
         Passing in create_public_channel['channel_id'] + 1, which is invalid
     '''
+    print(type(create_first_user))
     requests.delete(config.url + 'clear/v1')
     message_response = requests.get(config.url + 'channel/messages/v2', params={
         'token': create_first_user['token'], 'channel_id': create_public_channel['channel_id'] + 1, 'start': 0})

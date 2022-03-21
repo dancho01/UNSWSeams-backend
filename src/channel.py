@@ -1,6 +1,9 @@
 from src.error import InputError, AccessError
 from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered, return_member_information
-from src.channel_helper import check_message
+from src.channel_helper import check_message, time_now
+from src.token import check_valid_token
+from src.global_helper import check_valid_channel_user, check_authorized_user
+from src.message_helper import generate_new_message_id
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
@@ -103,7 +106,7 @@ def channel_details_v1(auth_user_id, channel_id):
     }
 
 
-def channel_messages_v1(auth_user_id, channel_id, start):
+def channel_messages_v1(token, channel_id, start):
     '''
     channel_messages_v1 returns a list of dictionaries which contain the keys message_id, u_id, message
     and time_sent, start and end once all error checks are satisfied. End can either be start + 50 if
@@ -129,6 +132,9 @@ def channel_messages_v1(auth_user_id, channel_id, start):
                 and 'end' which is a int.
     '''
     store = data_store.get()
+
+    user_info = check_valid_token(token)
+    auth_user_id = user_info['u_id']
 
     if check_user_registered(auth_user_id, store) == False:
         raise AccessError('auth_user_id passed in is invalid')
@@ -164,9 +170,70 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     }
 
 
-def message_send_v1(token, channel_id, message) {
+def message_send_v1(token, channel_id, message):
+    user_id = check_valid_token(token)['u_id']
+    check_message(message)
+    check_valid_channel_user(channel_id, user_id)
 
-}
+    new_message_id = generate_new_message_id
+    new_message = {
+        'message_id': new_message_id,
+        'u_id': user_id,
+        'message': message,
+        'time': time_now()
+    }
+
+    store = data_store.get()
+    for channel in store['channels']:
+        if channel['channel_id'] == channel_id:
+            channel['messages'].append(new_message)
+
+    return {
+        'message_id': new_message_id
+    }
+
+
+def messages_edit_v1(token, message_id, message):
+    user_id = check_valid_token(token)['u_id']
+    check_message(message)
+
+    if len(message) == 0:
+        messages_remove_v1(token, message_id)
+
+    store = data_store.get()
+
+    for channel in store['channels']:
+        for messages in channel['messages']:
+            if messages['message_id'] == message_id:
+                messages['message'] = message_id
+                messages['time'] = time_now()
+                return {}
+
+    for dms in store['dms']:
+        for messages in dms['messages']:
+            if messages['message_id'] == message_id:
+                messages['message'] = message_id
+                messages['time'] = time_now()
+                return {}
+
+
+def messages_remove_v1(token, message_id):
+    user_id = check_valid_token(token)['u_id']
+    store = data_store.get()
+
+    for channel in store['channels']:
+        for messages in channel['messages']:
+            channel['messages'] = list(
+                filter(lambda i: i['message_id'] != message_id, channel['messages']))
+
+    for dms in store['dms']:
+        for messages in dms['messages']:
+            dms['messages'] = list(
+                filter(lambda i: i['message_id'] != message_id, dms['messages']))
+
+    data_store.set(store)
+
+    return {}
 
 
 def channel_join_v1(auth_user_id, channel_id):

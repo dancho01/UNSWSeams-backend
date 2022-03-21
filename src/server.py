@@ -3,13 +3,14 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
-from src.error import InputError
 from src import config
+from src.error import InputError
 from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data
 from src.auth import auth_register_v1, auth_login_v1
-from src.channel import message_send_v1
+from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1
+from src.channels import channels_create_v1
 
 
 def quit_gracefully(*args):
@@ -70,22 +71,55 @@ def auth_register_v2():
     return dumps(result)
 
 
-# @APP.route("/channel/messages/v2", methods=['GET'])
-# def channel_messages_v2():
-
-
-@APP.route("/messages/send/v1", methods=['POST'])
-def messages_send_v1():
+@APP.route("/channel/messages/v2", methods=['GET'])
+def channel_messages_v2():
     data = request.get_json()
-    result = message_send_v1(
-        data['token'], data['channel_id', data['message']])
+    result = channel_messages_v1(
+        data['token'], data['channel_id'], data['start'])
 
     save_data()
     return dumps(result)
 
 
-@APP.route("/clear/v1", methods=['DELETE'])
-def clear_v1():
+@APP.route("/message/send/v1", methods=['POST'])
+def messages_send_v1():
+    data = request.get_json()
+    result = message_send_v1(
+        data['token'], data['channel_id'], data['message'])
+
+    save_data()
+    return dumps(result)
+
+
+@APP.route("/channels/create/v2", methods=['POST'])
+def channels_create_v2():
+    data = request.get_json()
+    result = channels_create_v1(data['token'], data['name'], data['is_public'])
+    save_data()
+    return dumps(result)
+
+
+@APP.route("/message/edit/v1", methods=['PUT'])
+def messages_edit_v1():
+    data = request.get_json()
+    result = messages_edit_v1(
+        data['token'], data['message_id'], data['message'])
+
+    save_data()
+    return dumps(result)
+
+
+@APP.route("/message/remove/v1", methods=['DELETE'])
+def messages_delete_v1():
+    data = request.args.get('token')
+    result = messages_remove_v1(data['token'], data['message_id'])
+
+    save_data()
+    return dumps(result)
+
+
+@ APP.route("/clear/v1", methods=['DELETE'])
+def clear_flask_v1():
     clear_v1()
     save_data()
     return dumps({})
