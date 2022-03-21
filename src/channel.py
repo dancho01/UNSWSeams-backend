@@ -179,47 +179,19 @@ def messages_remove_v1(token, message_id):
     return {}
 
 
-def channel_join_v1(auth_user_id, channel_id):
-    '''
-    This function allows the authorized user to join a channel, given the 
-    channel_id.
+def channel_join_v1(token, channel_id):
 
-    Arguments:
-        auth_user_id    int         - id of the user requesting to join the channel
-        channel_id      int         - id of the channel that user wishes to join
-
-    Exceptions:
-        AccessError     - Occurs when auth_user_id passed in is invalid
-        AccessError     - Occurs when channel_id refers to a channel that is private 
-                          and the authorized user is not already a channel member and 
-                          is not a global owner 
-        InputError      - Occurs when channel_id does not refer to a valid channel
-        InputError      - Occurs when the authorized user is already a member of the channel
-
-    Return Value:
-        Return an empty dictionary in all cases
-    '''
+    auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
-
-    # calls function that checks whether user_id is valid or not
-    if check_user_registered(auth_user_id, store) == False:
-        raise AccessError(' ')
 
     # checks whether user is global owners and stores into permission_id variable
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
             permission_id = user['global_permissions']
 
-    # calls function that checks if a channel with its given id is valid
-    # returns False if not valid, or otherwise, (True, channel_index)
-    channel_info = check_valid_channel(channel_id, store)
-    if channel_info == False:
-        raise InputError('Channel_id does not refer to valid channel')
-
-    # calls function that checks if the user is listed as a member
-    channel_id = channel_info[1]
-    if check_authorization(auth_user_id, channel_id, store) == True:
-        raise InputError('You are already a channel member')
+    channel_index = check_valid_channel(channel_id)
+    check_already_auth(auth_user_id, channel_index)
+    check_authorized_user(auth_user_id, channel_index)
 
     if store['channels'][channel_id]['is_public'] == False and permission_id != 1:
         # if channel_id is valid and the authorised user is not a member of the channel, AccessError is raised
