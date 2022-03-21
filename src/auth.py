@@ -6,6 +6,7 @@ from src.auth_helper import generate_new_handle, check_info
 from src.token import hash, generate_token, check_valid_token
 
 
+
 def auth_login_v1(email, password):
     '''
     This function logs in a registered user, given their email and password

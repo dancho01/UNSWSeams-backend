@@ -58,3 +58,4 @@ def check_info(name_first, name_last, password, email):
                 description="This email is already in use by another user!")
 
     return
+
