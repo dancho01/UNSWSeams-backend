@@ -42,7 +42,7 @@ def check_valid_token(token):
     try:
         token_decoded = jwt.decode(token, SECRET, algorithms=['HS256'])
     except Exception as error:
-        raise AccessError(description=error)
+        raise AccessError(description="Invalid Token") from error
 
     store = data_store.get()
     print(token_decoded)
