@@ -1,8 +1,8 @@
 from src.error import InputError, AccessError
 from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered, return_member_information
+from src.token import check_valid_token
 
-
-def channel_invite_v1(auth_user_id, channel_id, u_id):
+def channel_invite_v1(token, channel_id, u_id):
     '''
     Invites a user with ID u_id to join a channel with ID channel_id.
     Once invited, the user is added to the channel immediately.
@@ -23,11 +23,8 @@ def channel_invite_v1(auth_user_id, channel_id, u_id):
     Return Value:
         Returns empty dict as required by spec
     '''
+    auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
-
-    # check if auth_user_id is a registered user
-    if check_user_registered(auth_user_id, store) == False:
-        raise AccessError('auth_user_id passed in is invalid')
 
     # returns a tuple (1,index) if channel is valid, else 0
     channel_status = check_valid_channel(channel_id, store)
@@ -163,7 +160,7 @@ def channel_messages_v1(auth_user_id, channel_id, start):
     }
 
 
-def channel_join_v1(auth_user_id, channel_id):
+def channel_join_v1(token, channel_id):
     '''
     This function allows the authorized user to join a channel, given the 
     channel_id.
@@ -183,11 +180,8 @@ def channel_join_v1(auth_user_id, channel_id):
     Return Value:
         Return an empty dictionary in all cases
     '''
+    auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
-
-    # calls function that checks whether user_id is valid or not
-    if check_user_registered(auth_user_id, store) == False:
-        raise AccessError(' ')
 
     # checks whether user is global owners and stores into permission_id variable
     for user in store['users']:
@@ -216,3 +210,46 @@ def channel_join_v1(auth_user_id, channel_id):
     data_store.set(store)
 
     return {}
+
+def channel_addowner_v1(token, channel_id, u_id):
+    """
+    Make user with user id u_id an owner of the channel.
+    Assume auth_user_id is valid because a token is passed in
+    
+    """
+    auth_user_id = check_valid_token(token)['u_id']
+    store = data_store.get()
+
+    # returns a tuple (1,index) if channel is valid, else 0
+    channel_status = check_valid_channel(channel_id, store)
+
+    if channel_status == False:
+        raise InputError('channel_id does not refer to a valid channel')
+
+    channel_index = channel_status[1]
+
+    # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
+    if auth_user_id not in store['channels'][channel_index]['owner_members'] or store['users'][auth_user_id]['global_permissions'] != 1:
+        raise AccessError('auth_user_id does not have owner permissions in the channel')
+
+    # u_id is invalid
+    if check_user_registered(u_id, store) == False:
+        raise InputError('u_id does not refer to a valid user')
+
+    # test if u_id is a member of the channel
+    if check_authorization(u_id, channel_index, store) == False:
+        raise InputError(
+            'u_id refers to a user who is not a member of the channel')
+
+    # test if u_id is already an owner of the channel
+    if u_id in store['channels'][channel_index]['owner_members']:
+        raise InputError(
+            'u_id refers to a user who is already an owner of the channel')
+
+    store['channels'][channel_index]['owner_members'].append(
+        return_member_information(u_id, store))
+
+    data_store.set(store)
+
+    return {
+    }
