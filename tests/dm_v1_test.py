@@ -198,6 +198,18 @@ def test_dm_leave_user_not_member(create_first_user, create_second_user):
     assert dm_leave.status_code == 403
     
     
+def test_dm_leave_success(create_first_user):
+
+    user1 = create_first_user
+    
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
+    dm_data = dm_response.json()
+    
+    dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id']})
+    
+    assert dm_leave.status_code == 200
+    
+    
 ''' tests for dm/messages/v1 '''
 def test_dm_messages_invalid_dm(create_first_user):
     
