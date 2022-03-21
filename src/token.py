@@ -39,11 +39,13 @@ def check_valid_token(token):
     Return:
         Returns an object storing the user's data that was used to generate the JWT  
     '''
-    token_decoded = jwt.decode(token, SECRET, algorithms=['HS256'])
+    try:
+        token_decoded = jwt.decode(token, SECRET, algorithms=['HS256'])
+    except Exception:
+        raise AccessError(description="Invalid Token")
 
     store = data_store.get()
-
-    if hash(token_decoded['session_id']) not in store['session_list']:
-        raise AccessError(message="Invalid Token")
+    if hash(token_decoded['session_id']) in store['session_list']:
+        return token_decoded
     else:
-        return token_decoded['session_id']
+        raise AccessError(description="Invalid Token")

@@ -97,6 +97,7 @@ def channels_create_v2():
     name = request.args.get('name')
     is_public = request.args.get('is_public')
     result = channels_create_v1(token, name, is_public)
+    save_data()
     return dumps(result)
 
 # NO NEED TO MODIFY BELOW THIS POINT
