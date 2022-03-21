@@ -1,5 +1,6 @@
 DM_ID_COUNTER = 0
 
+
 def generate_new_dm_id():
     '''
     Generates a new dm_id that is unique and sequentially increases by 1
@@ -11,7 +12,7 @@ def generate_new_dm_id():
     global DM_ID_COUNTER
     DM_ID_COUNTER += 1
     return DM_ID_COUNTER
-    
+
 
 def check_for_duplicates_uids(u_ids):
     '''
@@ -42,24 +43,24 @@ def return_handle(u_id, store):
     for user_index in range(len(store['users'])):
         if store['users'][user_index]['auth_user_id'] == u_id:
             return store['users'][user_index]['handle']
-            
-            
+
+
 def generate_DM_name(auth_user_id, u_ids, store):
     '''
-    
+
     '''
     list_handles = []
     for u_id in u_ids:
         list_handles.append(return_handle(u_id, store))
-        
+
     list_handles.append(return_handle(auth_user_id, store))
-        
+
     ordered_handles = sorted(list_handles)
     name = ', '.join(ordered_handles)
-    
+
     return name
-            
-            
+
+
 def check_valid_dm(dm_id, store):
     '''
     Checks if the dm_id passed in refers to a valid DM
@@ -73,10 +74,10 @@ def check_valid_dm(dm_id, store):
     '''
     for dm_index in range(len(store['dms'])):
         if store['dms'][dm_index]['dm_id'] == dm_id:
-            return True, dm_index     
-    return False   
-    
-    
+            return True, dm_index
+    return False
+
+
 def check_user_member_dm(u_id, store, dm_index):
     '''
     Checks if the authorised user is a member of the DM
@@ -92,8 +93,8 @@ def check_user_member_dm(u_id, store, dm_index):
         if u_id == member['u_id']:
             return True
     return False
-    
-    
+
+
 def return_dm_messages(dm_index, start, end, store):
     '''
     Returns a list of messages between the 'start' and 'end' indices
@@ -106,7 +107,7 @@ def return_dm_messages(dm_index, start, end, store):
         - Returns the list of messages that were appended between the two indices      
     '''
     returned_messages = []
-        
+
     message_store = store['dms'][dm_index]['messages']
 
     if message_store == []:
