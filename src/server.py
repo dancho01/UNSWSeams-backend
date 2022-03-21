@@ -73,9 +73,7 @@ def auth_register_v2():
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear_flask_v1():
     clear_v1()
-
     save_data()
-
     return dumps({})
 
 @APP.route("/channel/invite/v2", methods=['POST'])
