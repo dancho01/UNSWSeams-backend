@@ -37,12 +37,12 @@ def check_valid_token(token):
     Args:
         hashed_jwt      str         the JWT string containing the header, payload and signature
     Return:
-        Returns an object storing the user's data that was used to generate the JWT  
+        Returns an object storing the user's data that was used to generate the JWT
     '''
     try:
         token_decoded = jwt.decode(token, SECRET, algorithms=['HS256'])
-    except Exception:
-        raise AccessError(description="Invalid Token")
+    except Exception as error:
+        raise AccessError(description="Invalid Token") from error
 
     store = data_store.get()
     print(token_decoded)
@@ -50,4 +50,3 @@ def check_valid_token(token):
         return token_decoded
     else:
         raise AccessError(description="Invalid session_id")
-
