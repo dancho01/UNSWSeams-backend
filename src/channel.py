@@ -3,7 +3,7 @@ from src.data_store import check_authorization, messages_returned, data_store, c
 from src.channel_helper import check_message, time_now
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user
-from src.message_helper import generate_new_message_id, check_valid_message
+from src.message_helper import generate_new_message_id
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
