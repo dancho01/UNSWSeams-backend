@@ -198,7 +198,7 @@ def test_edit_invalid_message_id(send_first_message):
     assert edit_response.status_code == 400
 
 
-# def test_send_invalid_channel(send_first_message, create_second_user):
+# def test_edit_invalid_channel(send_first_message, create_second_user):
 #     '''
 #     Error Raised:
 #         Access Error: channel_id is valid and the authorised user is not a member of the channel
@@ -212,9 +212,9 @@ def test_edit_invalid_message_id(send_first_message):
 #     assert edit_response.status_code == 403
 
 
-# '''
-# messages remove v1
-# '''
+'''
+messages remove v1
+'''
 
 
 def test_remove_invalid_message_id(send_first_message):
@@ -238,8 +238,7 @@ def test_remove_invalid_message_id(send_first_message):
 #     Explanation:
 #         Second user tries to edit, has no owner and is not the original sender of message
 #     '''
-#     new_message = "hello"
 #     edit_response = requests.delete(config.url + 'message/remove/v1', json={
-#         'token': send_first_message[1]['token'], 'message_id': send_first_message[0]['message_id'], 'message': new_message})
+#         'token': send_first_message[1]['token'], 'message_id': send_first_message[0]['message_id']})
 
 #     assert edit_response.status_code == 403

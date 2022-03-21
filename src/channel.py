@@ -1,64 +1,26 @@
 from src.error import InputError, AccessError
-from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered, return_member_information
+from src.data_store import check_authorization, messages_returned, data_store, check_user_registered, return_member_information
 from src.channel_helper import check_message, time_now
 from src.token import check_valid_token
-from src.global_helper import check_valid_channel1, check_authorized_user
+from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user
 from src.message_helper import generate_new_message_id, check_valid_message
 
 
-def channel_invite_v1(auth_user_id, channel_id, u_id):
-    '''
-    Invites a user with ID u_id to join a channel with ID channel_id.
-    Once invited, the user is added to the channel immediately.
-    In both public and private channels, all members are able to invite users.
-
-    Arguments:
-        auth_user_id    int         - id of the user that is inviting
-        channel_id      int         - id of the channel that the user is inviting u_id to
-        u_id            int         - id of the user that is being invited
-
-    Exceptions:
-        AccessError     - Occurs when auth_user_id passed in is invalid
-        AccessError     - Occurs when channel_id is valid and the authorized user is not a member of the channel
-        InputError      - Occurs when channel_id does not refer to a valid channel
-        InputError      - Occurs when u_id does not refer to a valid user
-        InputError      - Occurs when u_id refers to a user who is already a member of the channel
-
-    Return Value:
-        Returns empty dict as required by spec
-    '''
+def channel_invite_v1(token, channel_id, u_id):
+    auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
-    # check if auth_user_id is a registered user
-    if check_user_registered(auth_user_id, store) == False:
-        raise AccessError('auth_user_id passed in is invalid')
-
-    # returns a tuple (1,index) if channel is valid, else 0
-    channel_status = check_valid_channel(channel_id, store)
-
-    if channel_status == False:
-        raise InputError('channel_id does not refer to a valid channel')
-
-    if check_authorization(auth_user_id, channel_status[1], store) == False:
-        raise AccessError('auth_user_id is not a member of channel')
-
-    # u_id is invalid
-    if check_user_registered(u_id, store) == False:
-        raise InputError('u_id passed in is invalid')
-
-    # test if u_id is already a member of the channel
-    channel_index = channel_status[1]
-    if check_authorization(u_id, channel_index, store) == True:
-        raise InputError(
-            'u_id refers to a user who is already a member of the channel')
+    channel_index = check_valid_channel(channel_id)
+    check_valid_user(u_id)
+    check_already_auth(auth_user_id, channel_index)
+    check_authorized_user(auth_user_id, channel_index)
 
     store['channels'][channel_index]['all_members'].append(
         return_member_information(u_id, store))
 
     data_store.set(store)
 
-    return {
-    }
+    return {}
 
 
 def channel_details_v1(auth_user_id, channel_id):
@@ -80,14 +42,11 @@ def channel_details_v1(auth_user_id, channel_id):
         Returns store['channels'][channel_index] if all conditions are satisfied, which contains all the
                 information of the channel that is located at channel_index.
     '''
-    store = data_store.get()
-
-    if check_user_registered(auth_user_id, store) == False:
-        raise AccessError('auth_user_id passed in is invalid')
 
     channel_index = check_valid_channel(channel_id)
-
     check_authorized_user(auth_user_id, channel_index)
+
+    store = data_store.get()
 
     channel_info = store['channels'][channel_index]
 
@@ -127,9 +86,8 @@ def channel_messages_v1(token, channel_id, start):
     store = data_store.get()
 
     user_info = check_valid_token(token)
-    auth_user_id = user_info['u_id']
     auth_list_index = check_valid_channel(channel_id)
-    check_authorized_user(auth_user_id, auth_list_index)
+    check_authorized_user(user_info['u_id'], auth_list_index)
 
     message_length = len(store['channels'][auth_list_index]['messages'])
 
@@ -156,7 +114,7 @@ def channel_messages_v1(token, channel_id, start):
 def message_send_v1(token, channel_id, message):
     user_id = check_valid_token(token)['u_id']
     check_message(message)
-    channel_index = check_valid_channel1(channel_id)
+    channel_index = check_valid_channel(channel_id)
     check_authorized_user(user_id, channel_index)
 
     new_message_id = generate_new_message_id()
@@ -254,7 +212,7 @@ def channel_join_v1(auth_user_id, channel_id):
 
     # calls function that checks if a channel with its given id is valid
     # returns False if not valid, or otherwise, (True, channel_index)
-    channel_info = check_valid_channel1(channel_id, store)
+    channel_info = check_valid_channel(channel_id, store)
     if channel_info == False:
         raise InputError('Channel_id does not refer to valid channel')
 

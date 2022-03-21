@@ -12,6 +12,7 @@ from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_lea
 from src.auth import auth_register_v1, auth_login_v1, auth_logout
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1
+from src.profile import set_name_v1, set_email_v1, set_handle_v1
 
 
 def quit_gracefully(*args):
@@ -189,6 +190,8 @@ def messages_send_v1():
         data['token'], data['channel_id'], data['message'])
 
     save_data()
+    store = data_store.get()
+    print(store)
     return dumps(result)
 
 
@@ -197,6 +200,8 @@ def channels_create_v2():
     data = request.get_json()
     result = channels_create_v1(data['token'], data['name'], data['is_public'])
     save_data()
+    store = data_store.get()
+    print(store)
     return dumps(result)
 
 
@@ -237,6 +242,33 @@ def channels_list_v2():
 def channels_listall_v2():
     token = request.args.get('token')
     result = channels_listall_v1(token)
+    return dumps(result)
+
+
+@APP.route("/user/profile/setname/v1", methods=['PUT'])
+def set_name():
+    data = request.get_json()
+    result = set_name_v1(data['token'], data['name_first'], data['name_last'])
+    store = data_store.get()
+    print(store)
+    return dumps(result)
+
+
+@APP.route("/user/profile/setemail/v1", methods=['PUT'])
+def set_email():
+    data = request.get_json()
+    result = set_email_v1(data['token'], data['email'])
+    store = data_store.get()
+    print(store)
+    return dumps(result)
+
+
+@ APP.route("/user/profile/sethandle/v1", methods=['PUT'])
+def set_handle():
+    data = request.get_json()
+    result = set_handle_v1(data['token'], data['handle'])
+    store = data_store.get()
+    print(store)
     return dumps(result)
 
 
