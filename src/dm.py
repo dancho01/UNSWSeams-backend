@@ -1,6 +1,6 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store, return_member_information, check_user_registered
-from src.auth_helper import decode_jwt, check_valid_token
+from src.token import check_valid_token
 from src.dm_helpers import check_for_duplicates_uids, return_handle, check_valid_dm, check_user_member_dm, return_dm_messages, generate_new_dm_id, generate_DM_name
 from src.message_helper import generate_new_message_id
 from datetime import timezone
@@ -27,12 +27,9 @@ def dm_create_v1(token, u_ids):
     store = data_store.get() 
       
     # checks whether the token is valid and verifies user
-    jwt_data = decode_jwt(token)    
-    if check_valid_token(store, jwt_data) == False:
-        raise AccessError(description='token passed in is invalid')
-     
-    # if user is verified, the id of authorised user is stored      
-    auth_user_id = check_valid_token(store, jwt_data)[1]
+    user_info = check_valid_token(token) 
+    auth_user_id = user_info['u_id']
+       
         
     # InputError raised if any u_id is not valid
     for u_id in u_ids:
@@ -80,11 +77,9 @@ def dm_list_v1(token):
     
     
     '''
-    jwt_data = decode_jwt(token)    
-    if check_valid_token(store, jwt_data) == False:
-        raise AccessError(description='token passed in is invalid')
-                
-    auth_user_id = check_valid_token(store, jwt_data)[1]
+
+    user_info = check_valid_token(token)
+    auth_user_id = user_info['u_id']
      
     list_dms = []
     for dm in store['dms']:
@@ -101,11 +96,8 @@ def dm_remove_v1(token, dm_id):
    
     store = data_store.get()
     
-    jwt_data = decode_jwt(token)    
-    if check_valid_token(store, jwt_data) == False:
-        raise AccessError(description='token passed in is invalid')
-                
-    auth_user_id = check_valid_token(store, jwt_data)[1]
+    user_info = check_valid_token(token)
+    auth_user_id = user_info['u_id']
     
     if check_valid_dm(dm_id, store) == False:
         raise InputError(description='dm_id does not refer to a valid DM')
@@ -133,12 +125,8 @@ def dm_details_v1(token, dm_id):
     store = data_store.get()
 
     # checks if token is valid, verifying user
-    jwt_data = decode_jwt(token)    
-    if check_valid_token(store, jwt_data) == False:
-        raise AccessError(description='token passed in is invalid')
-                
-    auth_user_id = check_valid_token(store, jwt_data)[1]
-    
+    user_info = check_valid_token(token)
+    auth_user_id = user_info['u_id']   
     
     is_dm_valid = check_valid_dm(dm_id, store)
     if is_dm_valid == False:
@@ -160,11 +148,8 @@ def dm_details_v1(token, dm_id):
 def dm_leave_v1(token, dm_id):
     store = data_store.get()
     
-    jwt_data = decode_jwt(token)    
-    if check_valid_token(store, jwt_data) == False:
-        raise AccessError(description='token passed in is invalid')
-                
-    auth_user_id = check_valid_token(store, jwt_data)[1]
+    user_info = check_valid_token(token)
+    auth_user_id = user_info['u_id']
     
     if check_valid_dm(dm_id, store) == False:
         raise InputError(description='dm_id does not refer to a valid DM')
@@ -183,11 +168,8 @@ def dm_leave_v1(token, dm_id):
 def dm_messages_v1(token, dm_id, start):
     store = data_store.get()
     
-    jwt_data = decode_jwt(token)    
-    if check_valid_token(store, jwt_data) == False:
-        raise AccessError(description='token passed in is invalid')
-                
-    auth_user_id = check_valid_token(store, jwt_data)[1]
+    user_info = check_valid_token(token)
+    auth_user_id = user_info['u_id']
     
     is_dm_valid = check_valid_dm(dm_id, store)
     if is_dm_valid == False:
@@ -219,11 +201,8 @@ def dm_messages_v1(token, dm_id, start):
 def message_senddm_v1(token, dm_id, message):
     store = data_store.get()
     
-    jwt_data = decode_jwt(token)    
-    if check_valid_token(store, jwt_data) == False:
-        raise AccessError(description='token passed in is invalid')
-                
-    auth_user_id = check_valid_token(store, jwt_data)[1]
+    user_info = check_valid_token(token)
+    auth_user_id = user_info['u_id']
 
     is_dm_valid = check_valid_dm(dm_id, store)
     if is_dm_valid == False:
