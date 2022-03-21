@@ -12,7 +12,7 @@ def check_valid_user(u_id):
     raise InputError(description="")
 
 
-def check_valid_channel(c_id):
+def check_valid_channel1(c_id):
     store = data_store.get()
 
     found = False

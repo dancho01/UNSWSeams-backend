@@ -201,7 +201,7 @@ def test_edit_invalid_message_id(send_first_message):
 # def test_send_invalid_channel(send_first_message, create_second_user):
 #     '''
 #     Error Raised:
-#         Input Error: Message_id is valid, user is not authorised and does not have owner permissions
+#         Access Error: channel_id is valid and the authorised user is not a member of the channel
 #     Explanation:
 #         Second user tries to edit, has no owner and is not the original sender of message
 #     '''

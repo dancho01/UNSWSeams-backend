@@ -1,9 +1,9 @@
 from src.error import InputError, AccessError
-from src.data_store import check_authorization, messages_returned, data_store, check_user_registered, return_member_information
+from src.data_store import check_valid_channel, check_authorization, messages_returned, data_store, check_user_registered, return_member_information
 from src.channel_helper import check_message, time_now
 from src.token import check_valid_token
-from src.global_helper import check_valid_channel, check_authorized_user
-from src.message_helper import generate_new_message_id
+from src.global_helper import check_valid_channel1, check_authorized_user
+from src.message_helper import generate_new_message_id, check_valid_message
 
 
 def channel_invite_v1(auth_user_id, channel_id, u_id):
@@ -156,7 +156,7 @@ def channel_messages_v1(token, channel_id, start):
 def message_send_v1(token, channel_id, message):
     user_id = check_valid_token(token)['u_id']
     check_message(message)
-    channel_index = check_valid_channel(channel_id)
+    channel_index = check_valid_channel1(channel_id)
     check_authorized_user(user_id, channel_index)
 
     new_message_id = generate_new_message_id()
@@ -254,7 +254,7 @@ def channel_join_v1(auth_user_id, channel_id):
 
     # calls function that checks if a channel with its given id is valid
     # returns False if not valid, or otherwise, (True, channel_index)
-    channel_info = check_valid_channel(channel_id, store)
+    channel_info = check_valid_channel1(channel_id, store)
     if channel_info == False:
         raise InputError('Channel_id does not refer to valid channel')
 
