@@ -100,3 +100,13 @@ def auth_register_v1(email, password, name_first, name_last):
         'auth_user_id': new_id,
         'token': token,
     }
+
+
+def auth_logout(token):
+    store = data_store.get()
+    user_info = check_valid_token(token)
+
+    store['session_list'].remove(hash(user_info['session_id']))
+    data_store.set(store)
+
+    return {}
