@@ -119,7 +119,7 @@ def test_auth_user_already_member(create_first_user):
 
 def test_join_priv_channel(create_first_user):
     '''
-    A simple test to check that non-global owner can join a private channel they are not invited to
+    A simple test to check that non-global owner cannot join a private channel they are not invited to
     '''
     user1 = create_first_user()
     user2 = requests.post(config.url + 'auth/register/v2', params={'email' : 'email2@gmail.com', 
@@ -127,7 +127,7 @@ def test_join_priv_channel(create_first_user):
     channel_1 = requests.post(config.url + 'channels/create/v2', params = {'token': user1['token'], 'name': 'First Channel', 
         'is_public': False})
     response = requests.post(config.url + 'channel/join/v2', params={'token': user2['token'], 'channel_id': channel_1['channel_id']})
-    assert response.status_code == 400  # inputError
+    assert response.status_code == 403  # AccessError
 
 def test_invalid_auth_user_id(create_first_user):
     """
@@ -179,3 +179,88 @@ def test_user_added(create_first_user):
     response2 = requests.post(config.url + 'channel/invite/v2', params={'token': user1['token'], 'channel_id': channel_1['channel_id'], 
         'u_id': user2['token']})
     assert response2.status_code == 400 # InputError
+
+"""
+    channel/addowner/v1 tests
+    Make user with user id u_id an owner of the channel.
+
+    Arguments: 
+    { token, channel_id, u_id }
+
+    Returns: 
+    {}
+"""
+
+def test_channel_addowner_invalid_channel(create_first_user):
+    """
+    channel_id does not refer to a valid channel
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = create_first_user()
+    user2 = requests.post(config.url + 'auth/register/v2', params={'email' : 'email2@gmail.com', 
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    channel_1 = requests.post(config.url + 'channels/create/v2', params = {'token': user1['token'], 'name': 'First Channel', 
+        'is_public': True})
+
+    response = requests.post(config.url + 'channel/addowner/v1', params={'token': user1['token'], 'channel_id': channel_1['channel_id'] + 1, 
+        'u_id': user2['token']})    # don't know how to name a non existent channel id
+    assert response.status_code == 400  # inputError
+
+def test_channel_addowner_u_id_invalid(create_first_user):
+    """
+        u_id does not refer to a valid user
+    """
+    user1 = create_first_user()
+    channel_1 = requests.post(config.url + 'channels/create/v2', params = {'token': user1['token'], 'name': 'First Channel', 
+        'is_public': True})
+
+    response = requests.post(config.url + 'channel/addownder/v1', params={'token': user1['token'], 'channel_id': channel_1['channel_id'], 
+        'u_id': 'nonexistent_token'})    # don't know how to name a non existent user id
+    assert response.status_code == 400  # inputError
+
+def test_channel_addowner_user_not_member(create_first_user):
+    """
+        token refers to a user who is not a member of the channel
+    """
+    user1 = create_first_user()
+    user2 = requests.post(config.url + 'auth/register/v2', params={'email' : 'email2@gmail.com', 
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user3 = requests.post(config.url + 'auth/register/v2', params={'email' : 'email3@gmail.com', 
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    channel_1 = requests.post(config.url + 'channels/create/v2', params = {'token': user1['token'], 'name': 'First Channel', 
+        'is_public': True})
+    response = requests.post(config.url + 'channel/addowner/v1', params={'token': user3['token'], 'channel_id': channel_1['channel_id'], 
+        'u_id': user2['token']})    
+    assert response.status_code == 400  # InputError
+
+def test_channel_addowner_user_already_owner(create_first_user):
+    """
+        u_id refers to a user who is already an owner of the channel
+    """
+    user1 = create_first_user()
+    user2 = requests.post(config.url + 'auth/register/v2', params={'email' : 'email2@gmail.com', 
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    channel_1 = requests.post(config.url + 'channels/create/v2', params = {'token': user1['token'], 'name': 'First Channel', 
+        'is_public': True})
+    requests.post(config.url + 'channel/join/v2', params={'token': user2['token'], 'channel_id': channel_1['channel_id']})
+    requests.post(config.url + 'channel/addowner/v1', params={'token': user1['token'], 'channel_id': channel_1['channel_id'], 
+        'u_id': user2['token']})
+    response = requests.post(config.url + 'channel/addowner/v1', params={'token': user1['token'], 'channel_id': channel_1['channel_id'], 
+        'u_id': user2['token']})
+    assert response.status_code == 400  # inputError
+
+def test_channel_addowner_user_no_owner_permission(create_first_user):
+    """
+        channel_id is valid and the authorised user does not have owner permissions in the channel
+    """
+    user1 = create_first_user()
+    user2 = requests.post(config.url + 'auth/register/v2', params={'email' : 'email2@gmail.com', 
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user3 = requests.post(config.url + 'auth/register/v2', params={'email' : 'email3@gmail.com', 
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    channel_1 = requests.post(config.url + 'channels/create/v2', params = {'token': user1['token'], 'name': 'First Channel', 
+        'is_public': True})
+    requests.post(config.url + 'channel/join/v2', params={'token': user2['token'], 'channel_id': channel_1['channel_id']})
+    response = requests.post(config.url + 'channel/addowner/v1', params={'token': user2['token'], 'channel_id': channel_1['channel_id'], 
+        'u_id': user3['token']})
+    assert response.status_code == 403  # AccessError

@@ -3,6 +3,7 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
+from src.channel import channel_invite_v1
 from src.error import InputError
 from src import config
 from src.other import clear_v1
@@ -76,6 +77,23 @@ def clear_flask_v1():
     save_data()
 
     return dumps({})
+
+@APP.route("/channel/invite/v2", methods=['POST'])
+def channel_invite_v2():
+    data = request.get_json()
+    result = channel_invite_v1(data['auth_user1_id'], data['channel_id'], data['auth_user2_id'])
+
+    save_data()
+    return dumps({})
+
+@APP.route("/channel/invite/v2", methods=['POST'])
+def channel_join_v2():
+    data = request.get_json()
+    result = channel_invite_v1(data['auth_user_id'], data['channel_id'])
+
+    save_data()
+    return dumps({})
+
 
 
 # NO NEED TO MODIFY BELOW THIS POINT
