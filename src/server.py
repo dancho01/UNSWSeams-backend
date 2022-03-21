@@ -240,17 +240,6 @@ def channels_listall_v2():
     return dumps(result)
 
 
-@APP.route("/channels/create/v2", methods=['POST'])
-def channels_create_v2():
-    data = request.get_json()
-    token = data['token']
-    name = data['name']
-    is_public = data['is_public']
-    result = channels_create_v1(token, name, is_public)
-    save_data()
-    return dumps(result)
-
-
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
