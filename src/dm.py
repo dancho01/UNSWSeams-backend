@@ -1,17 +1,31 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store, return_member_information, check_user_registered
 from src.auth_helper import decode_jwt, check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, return_handle, check_valid_dm, check_user_member_dm, return_dm_messages, generate_new_dm_id
+from src.dm_helpers import check_for_duplicates_uids, return_handle, check_valid_dm, check_user_member_dm, return_dm_messages, generate_new_dm_id, generate_DM_name
 from src.message_helper import generate_new_message_id
 from datetime import timezone
 import datetime
 
 
 # DM Functions/Implementation details
-def dm_create_v1(token, u_ids):
- 
-    store = data_store.get()
+def dm_create_v1(token, u_ids): 
+    '''
+    Creates a new DM where the members are the creator of this DM and the users
+    that it was directed to. The name of the DM is generated based on the users' handles.
+    The new DM is added to the list of all DMs
     
+    Args:
+        token       str             the encoded JWT string to verify user
+        u_ids       list            a list of users the DM is directed to  
+    Exceptions:
+        InputError      occurs when any u_id in the list does not refer to valid user
+        InputError      occurs when there are any duplicate u_ids in the list
+        
+    Return:
+        Returns a dictionary with the key 'dm_id', the DM's new id           
+    '''
+    store = data_store.get() 
+      
     # checks whether the token is valid and verifies user
     jwt_data = decode_jwt(token)    
     if check_valid_token(store, jwt_data) == False:
@@ -20,23 +34,19 @@ def dm_create_v1(token, u_ids):
     # if user is verified, the id of authorised user is stored      
     auth_user_id = check_valid_token(store, jwt_data)[1]
         
+    # InputError raised if any u_id is not valid
     for u_id in u_ids:
         if check_user_registered(u_id, store) == False:
             raise InputError(description='one of the user ids does not refer to valid user')
             
+    # InputError raised if any duplicate u_ids exist
     if check_for_duplicates_uids(u_ids) == True:
         raise InputError(description='duplicate user ids not allowed')
     
+    
     new_dm_id = generate_new_dm_id()
     
-    list_handles = []
-    for u_id in u_ids:
-        list_handles.append(return_handle(u_id, store))
-        
-    list_handles.append(return_handle(auth_user_id, store))
-        
-    ordered_handles = sorted(list_handles)
-    name = ', '.join(ordered_handles)
+    name = generate_DM_name(auth_user_id, u_ids, store)
        
     new_dm = {'dm_id': new_dm_id,
               'name': name,
@@ -53,7 +63,7 @@ def dm_create_v1(token, u_ids):
         
     # only original creator of DM is added to owner
     new_dm['owner'] = return_member_information(auth_user_id, store)
-    print(new_dm_id)
+
     
     store['dms'].append(new_dm)   
     data_store.set(store)
@@ -66,7 +76,10 @@ def dm_create_v1(token, u_ids):
 
 def dm_list_v1(token):
     store = data_store.get()
-        
+    '''
+    
+    
+    '''
     jwt_data = decode_jwt(token)    
     if check_valid_token(store, jwt_data) == False:
         raise AccessError(description='token passed in is invalid')
@@ -132,8 +145,6 @@ def dm_details_v1(token, dm_id):
         raise InputError(description='dm_id does not refer to a valid DM')    
    
     dm_index = is_dm_valid[1]
-       
-    dm_index = check_valid_dm(dm_id, store)[1]  
          
     if check_user_member_dm(auth_user_id, store, dm_index) == False:
         raise AccessError(description='authorised user is not member of DM')
