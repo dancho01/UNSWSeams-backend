@@ -45,7 +45,8 @@ def check_valid_token(token):
         raise AccessError(description="Invalid Token")
 
     store = data_store.get()
+    print(token_decoded)
     if hash(token_decoded['session_id']) in store['session_list']:
         return token_decoded
     else:
-        raise AccessError(description="Invalid Token")
+        raise AccessError(description="Invalid session_id")

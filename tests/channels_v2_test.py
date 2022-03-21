@@ -140,12 +140,12 @@ def test_2_multiple_users_multiple_channels():
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
     'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-
+    
     user1_data = user1.json()
 
     user2 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'EMAIL@gmail.com', 
     'password' : 'password1', 'name_first' : 'FIRST', 'name_last' : 'LAST'})
-    
+
     user2_data = user2.json()
 
     channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
@@ -154,11 +154,13 @@ def test_2_multiple_users_multiple_channels():
     channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user2_data['token'], 
     'name' : 'Second Channel', 'is_public' : False})
 
-    response = requests.get(config.url + 'channels/list/v2', params = {'token' : user1_data['token']})
+    response = requests.get(config.url + 'channels/listall/v2', params = {'token' : user1_data['token']})
 
     assert response.status_code == 200
 
-    response = requests.post(config.url + 'channels/list/v2', params = {'token' : user2['token']})
+    # assert json.loads(response.text) == {'channels': [{'channel_id' : channel_1['channel_id'], 'name' : 'First Channel'}]}
+
+    response = requests.get(config.url + 'channels/listall/v2', params = {'token' : user2_data['token']})
 
     assert response.status_code == 200
 
@@ -182,7 +184,7 @@ def test_3_user_no_channel():
     channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'Second Channel', 'is_public' : False})
 
-    response = requests.get(config.url + 'channels/list/v2', params = {'token' : user2_data['token']})
+    response = requests.get(config.url + 'channels/listall/v2', params = {'token' : user2_data['token']})
 
     assert response.status_code == 200;
 

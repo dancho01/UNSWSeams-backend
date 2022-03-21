@@ -93,9 +93,10 @@ def channels_listall_v2():
 
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create_v2():
-    token = request.args.get('token')
-    name = request.args.get('name')
-    is_public = request.args.get('is_public')
+    data = request.get_json()
+    token = data['token']
+    name = data['name']
+    is_public = data['is_public']
     result = channels_create_v1(token, name, is_public)
     save_data()
     return dumps(result)
