@@ -158,7 +158,6 @@ def test_send_unauthorised_user(create_public_channel, create_second_user):
         Messages are requested by user2, who has no access to the server created by user1
     '''
     message = "hello"
-    global TOKEN
     send_response = requests.post(config.url + 'message/send/v1', json={
         'token': create_second_user['token'], 'channel_id': create_public_channel[0]['channel_id'], 'message': message})
 
