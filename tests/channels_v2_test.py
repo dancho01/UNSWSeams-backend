@@ -5,7 +5,7 @@ from src import config
 
 '''test for list'''
 
-def test_0_one_user_multiple_public_channels():
+def list_one_user_multiple_public_channels():
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -13,17 +13,17 @@ def test_0_one_user_multiple_public_channels():
     
     user1_data = user1.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
-    channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'Second Channel', 'is_public' : True})
 
     response = requests.get(config.url + 'channels/list/v2', params = {'token' : user1_data['token']})
 
     assert response.status_code == 200
 
-def test_1_one_user_multiple_mixed_channels():
+def list_one_user_multiple_mixed_channels():
     requests.delete(config.url + 'clear/v1')
     
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -31,10 +31,10 @@ def test_1_one_user_multiple_mixed_channels():
 
     user1_data = user1.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
-    channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'Second Channel', 'is_public' : False})
 
     response = requests.get(config.url + 'channels/list/v2', params = {'token' : user1_data['token']})
@@ -44,7 +44,7 @@ def test_1_one_user_multiple_mixed_channels():
     # assert json.loads(response.text) == {'channels': [{'channel_id' : channel_1['channel_id'], 'name' : 'First Channel'},
     # {'channel_id' : channel_2['channel_id'], 'name' : 'Second Channel'}]}
 
-def test_2_multiple_users_multiple_channels():
+def list_multiple_users_multiple_channels():
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -57,10 +57,10 @@ def test_2_multiple_users_multiple_channels():
 
     user2_data = user2.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
-    channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user2_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user2_data['token'], 
     'name' : 'Second Channel', 'is_public' : False})
 
     response = requests.get(config.url + 'channels/list/v2', params = {'token' : user1_data['token']})
@@ -75,7 +75,7 @@ def test_2_multiple_users_multiple_channels():
 
     # assert json.loads(response.text) == {'channels': [{'channel_id' : channel_2['channel_id'], 'name' : 'Second Channel'}]}
 
-def test_3_user_no_channel():
+def list_user_no_channel():
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -88,7 +88,7 @@ def test_3_user_no_channel():
 
     user2_data = user2.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
     response = requests.get(config.url + 'channels/list/v2', params = {'token' : user2_data['token']})
@@ -99,7 +99,7 @@ def test_3_user_no_channel():
 
 '''test for listall'''
 
-def test_0_one_user_multiple_public_channels():
+def listall_one_user_multiple_public_channels():
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -107,17 +107,17 @@ def test_0_one_user_multiple_public_channels():
 
     user1_data = user1.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
-    channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'Second Channel', 'is_public' : True})
 
     response = requests.get(config.url + 'channels/listall/v2', params = {'token' : user1_data['token']})
 
     assert response.status_code == 200
 
-def test_1_one_user_multiple_mixed_channels():
+def listall_one_user_multiple_mixed_channels():
     requests.delete(config.url + 'clear/v1')
     
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -125,17 +125,17 @@ def test_1_one_user_multiple_mixed_channels():
 
     user1_data = user1.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
-    channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'Second Channel', 'is_public' : False})
 
     response = requests.get(config.url + 'channels/listall/v2', params = {'token' : user1_data['token']})
 
     assert response.status_code == 200
 
-def test_2_multiple_users_multiple_channels():
+def listall_multiple_users_multiple_channels():
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -148,10 +148,10 @@ def test_2_multiple_users_multiple_channels():
 
     user2_data = user2.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
-    channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user2_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user2_data['token'], 
     'name' : 'Second Channel', 'is_public' : False})
 
     response = requests.get(config.url + 'channels/listall/v2', params = {'token' : user1_data['token']})
@@ -165,7 +165,7 @@ def test_2_multiple_users_multiple_channels():
     assert response.status_code == 200
 
 
-def test_3_user_no_channel():
+def listall_user_no_channel():
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -178,19 +178,19 @@ def test_3_user_no_channel():
 
     user2_data = user2.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
-    channel_2 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
+    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'Second Channel', 'is_public' : False})
 
     response = requests.get(config.url + 'channels/listall/v2', params = {'token' : user2_data['token']})
 
-    assert response.status_code == 200;
+    assert response.status_code == 200
 
 '''test for create'''
 
-def test_invalid_channel_name_greater_than_20():
+def create_invalid_channel_name_greater_than_20():
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -201,9 +201,9 @@ def test_invalid_channel_name_greater_than_20():
     response = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'abcdefghijklmnopqrstuvwxyz', 'is_public' : True})
         
-    assert response.status_code == 400;
+    assert response.status_code == 400
 
-def test_invalid_channel_name_less_than_1():
+def create_invalid_channel_name_less_than_1():
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -214,9 +214,9 @@ def test_invalid_channel_name_less_than_1():
     response = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : '', 'is_public' : True})
         
-    assert response.status_code == 400;
+    assert response.status_code == 400
 
-def test_valid_response_code():
+def create_valid_response_code():
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -227,4 +227,4 @@ def test_valid_response_code():
     response = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
     'name' : 'First Channel', 'is_public' : True})
 
-    assert response.status_code == 200;
+    assert response.status_code == 200
