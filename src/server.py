@@ -3,7 +3,7 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
-from src.channel import channel_invite_v1, channel_join_v1
+from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1
 from src.error import InputError
 from src import config
 from src.other import clear_v1
@@ -80,7 +80,7 @@ def clear_flask_v1():
 @APP.route("/channel/invite/v2", methods=['POST'])
 def channel_invite_v2():
     data = request.get_json()
-    result = channel_invite_v1(data['token'], data['channel_id'], data['auth_user_id'])
+    result = channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
     return dumps({})
@@ -94,17 +94,18 @@ def channel_join_v2():
     return dumps({})
 
 @APP.route("/channel/addowner/v1", methods=['POST'])
-def channel_addowner_v1():
+def channel_addowner_v1_wrapper():
     data = request.get_json()
-    result = channel_addowner_v1(data['token'], data['channel_id'], data['auth_user_id'])
-
+    result = channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
+    store = data_store.get()
+    print(store)
     save_data()
     return dumps({})
 
 @APP.route("/channel/removeowner/v1", methods=['POST'])
-def channel_removeowner_v1():
+def channel_removeowner_v1_wrapper():
     data = request.get_json()
-    result = channel_removeowner_v1(data['token'], data['channel_id'], data['auth_user_id'])
+    result = channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
     return dumps({})

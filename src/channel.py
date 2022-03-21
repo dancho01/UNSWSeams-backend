@@ -216,6 +216,7 @@ def channel_addowner_v1(token, channel_id, u_id):
     Make user with user id u_id an owner of the channel.    
     """
     auth_user_id = check_valid_token(token)['u_id']
+    print(auth_user_id)
     store = data_store.get()
 
     # returns a tuple (1,index) if channel is valid, else 0
@@ -225,8 +226,12 @@ def channel_addowner_v1(token, channel_id, u_id):
         raise InputError('channel_id does not refer to a valid channel')
 
     channel_index = channel_status[1]
+    print(store['channels'][channel_index]['owner_members'])
 
     # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
+    # for user in store['channels'][channel_index]['owner_members']:
+    #     if auth_user_id == user['u_id']:
+    #         raise AccessError('auth_user_id does not have owner permissions in the channel')
     if auth_user_id not in store['channels'][channel_index]['owner_members'] or store['users'][auth_user_id]['global_permissions'] != 1:
         raise AccessError('auth_user_id does not have owner permissions in the channel')
 
