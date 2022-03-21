@@ -99,7 +99,7 @@ def get_dm_details():
     token = request.args.get('token')
     dm_id = request.args.get('dm_id') 
     
-    result = dm_details_v1(token, dm_id)
+    result = dm_details_v1(token, int(dm_id))
     
     return dumps({
         'name': result['name'],
@@ -119,7 +119,7 @@ def return_dm_messages():
     dm_id = request.args.get('dm_id')
     start = request.args.get('start')
     
-    result = dm_messages_v1(token, dm_id, start)
+    result = dm_messages_v1(token, int(dm_id), int(start))
     
     return dumps({
         'messages': result['messages'],
