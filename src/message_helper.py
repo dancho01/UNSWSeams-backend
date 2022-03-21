@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from src.error import AccessError, InputError
 
 MESSAGE_ID_COUNTER = 0
@@ -29,3 +30,25 @@ def check_valid_message(message_id, u_id, store):
 
     raise InputError(
         description="message_id does not refer to a valid message within a channel/DM that the authorised user has joined")
+=======
+
+MESSAGE_ID_COUNTER = 0
+    
+def generate_new_message_id():
+    '''
+    Generates a new message_id that is unique and sequentially increases by 1
+    Args:
+        None
+    Return:
+        Returns the next message_id
+    ''' 
+    global MESSAGE_ID_COUNTER
+    MESSAGE_ID_COUNTER += 1
+    return MESSAGE_ID_COUNTER
+    
+
+   
+                
+                
+    
+>>>>>>> cadb01d1f93e27fe7e40f9a5208d122a60d6637c
