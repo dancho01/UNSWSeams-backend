@@ -102,6 +102,13 @@ def channel_addowner_v1():
     save_data()
     return dumps({})
 
+@APP.route("/channel/removeowner/v1", methods=['POST'])
+def channel_removeowner_v1():
+    data = request.get_json()
+    result = channel_removeowner_v1(data['token'], data['channel_id'], data['auth_user_id'])
+
+    save_data()
+    return dumps({})
 
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
