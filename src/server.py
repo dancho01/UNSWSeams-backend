@@ -8,7 +8,7 @@ from src import config
 from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data
-from src.auth import auth_register_v1, auth_login_v1
+from src.auth import auth_register_v1, auth_login_v1, auth_logout
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 
 

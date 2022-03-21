@@ -92,5 +92,20 @@ def test_logout():
     r1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                               'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     register_response = r1.json()
-    logout_response = requests.post(
+    logout_response = requests.delete(
         config.url + 'auth/logout/v1', json={'token': register_response['token']})
+
+    assert logout_response.status_code == 200
+
+
+def test_logout_return():
+    requests.delete(config.url + 'clear/v1')
+    r1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                              'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    register_response = r1.json()
+    logout_response = requests.delete(
+        config.url + 'auth/logout/v1', json={'token': register_response['token']})
+
+    logout_return = logout_response.json()
+
+    assert logout_return == {}
