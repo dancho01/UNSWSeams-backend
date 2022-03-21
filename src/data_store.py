@@ -29,10 +29,7 @@ Example usage:
 initial_object = {
     'users': [],
     'channels': [],
-<<<<<<< HEAD
     'dms': [],
-=======
->>>>>>> dad99a26cff97beb455d807e7643f1352e7433c5
     'session_list': []
 }
 # YOU SHOULD MODIFY THIS OBJECT ABOVE

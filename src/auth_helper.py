@@ -33,8 +33,6 @@ def generate_new_handle(name_first, name_last, store):
 
     return final_handle
 
-<<<<<<< HEAD
-=======
 
 def check_info(name_first, name_last, password, email):
 
@@ -60,4 +58,4 @@ def check_info(name_first, name_last, password, email):
                 description="This email is already in use by another user!")
 
     return
->>>>>>> dad99a26cff97beb455d807e7643f1352e7433c5
+

@@ -2,12 +2,9 @@ import re
 from src.data_store import data_store
 from src.error import InputError
 from src.token import hash, generate_token
-<<<<<<< HEAD
-from src.auth_helper import generate_new_handle
-=======
 from src.auth_helper import generate_new_handle, check_info
 from src.token import hash, generate_token, check_valid_token
->>>>>>> dad99a26cff97beb455d807e7643f1352e7433c5
+
 
 
 def auth_login_v1(email, password):
