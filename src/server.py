@@ -3,6 +3,8 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
+from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1
+from src.error import InputError
 from src import config
 from src.error import InputError
 from src.other import clear_v1
@@ -11,7 +13,7 @@ from src.persistence import save_data, load_data
 from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1
 from src.auth import auth_register_v1, auth_login_v1, auth_logout
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
-from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1
+from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1
 from src.profile import set_name_v1, set_email_v1, set_handle_v1
 
 
@@ -170,6 +172,36 @@ def auth_logout_v1():
     return dumps(result)
 
 
+@APP.route("/clear/v1", methods=['DELETE'])
+def clear_flask_v1():
+    clear_v1()
+    save_data()
+    return dumps({})
+
+@APP.route("/channel/invite/v2", methods=['POST'])
+def channel_invite_v2():
+    data = request.get_json()
+    channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
+
+    save_data()
+    return dumps({})
+
+@APP.route("/channel/join/v2", methods=['POST'])
+def channel_join_v2():
+    data = request.get_json()
+    channel_join_v1(data['token'], data['channel_id'])
+
+    save_data()
+    return dumps({})
+
+@APP.route("/channel/addowner/v1", methods=['POST'])
+def channel_addowner_v1_wrapper():
+    data = request.get_json()
+    channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
+
+    save_data()
+    return dumps({})
+    
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
     token = request.args.get('token')
@@ -224,12 +256,13 @@ def messages_delete_v1():
     return dumps(result)
 
 
-@ APP.route("/clear/v1", methods=['DELETE'])
-def clear_flask_v1():
-    clear_v1()
+@APP.route("/channel/removeowner/v1", methods=['POST'])
+def channel_removeowner_v1_wrapper():
+    data = request.get_json()
+    channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
+
     save_data()
     return dumps({})
-
 
 @APP.route("/channels/list/v2", methods=['GET'])
 def channels_list_v2():
@@ -271,8 +304,15 @@ def set_handle():
     print(store)
     return dumps(result)
 
+@APP.route("/channel/details/v2", methods=['GET'])
+def get_channel_details_v2():
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    result = channel_details_v1(token, channel_id)
+    return dumps(result)
+
 
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port, debug=True)  # Do not edit this port
+    APP.run(port=config.port)  # Do not edit this port
