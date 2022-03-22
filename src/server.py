@@ -3,11 +3,8 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
-<<<<<<< HEAD
 from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1
 from src.error import InputError
-=======
->>>>>>> master
 from src import config
 from src.error import InputError
 from src.other import clear_v1
@@ -175,7 +172,6 @@ def auth_logout_v1():
     return dumps(result)
 
 
-<<<<<<< HEAD
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear_flask_v1():
     clear_v1()
@@ -202,9 +198,10 @@ def channel_join_v2():
 def channel_addowner_v1_wrapper():
     data = request.get_json()
     result = channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
-    store = data_store.get()
-    print(store)
-=======
+
+    save_data()
+    return dumps({})
+    
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
     token = request.args.get('token')
@@ -258,13 +255,6 @@ def messages_delete_v1():
     save_data()
     return dumps(result)
 
-
-@ APP.route("/clear/v1", methods=['DELETE'])
-def clear_flask_v1():
-    clear_v1()
->>>>>>> master
-    save_data()
-    return dumps({})
 
 @APP.route("/channel/removeowner/v1", methods=['POST'])
 def channel_removeowner_v1_wrapper():

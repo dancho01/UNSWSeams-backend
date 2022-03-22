@@ -4,6 +4,8 @@ from src.channel_helper import check_message, time_now
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user
 from src.message_helper import generate_new_message_id, check_valid_message
+from flask import Response
+from json import dumps
 
 '''
     Invites a user with ID u_id to join a channel with ID channel_id.
@@ -230,17 +232,15 @@ def channel_addowner_v1(token, channel_id, u_id):
     Make user with user id u_id an owner of the channel.    
     """
     auth_user_id = check_valid_token(token)['u_id']
-    print(auth_user_id)
     store = data_store.get()
 
     # returns a tuple (1,index) if channel is valid, else 0
-    channel_status = check_valid_channel(channel_id, store)
+    channel_status = check_valid_channel(channel_id)
 
     if channel_status == False:
         raise InputError('channel_id does not refer to a valid channel')
 
-    channel_index = channel_status[1]
-    print(store['channels'][channel_index]['owner_members'])
+    channel_index = channel_status
 
     # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
     # for user in store['channels'][channel_index]['owner_members']:
@@ -278,12 +278,12 @@ def channel_removeowner_v1(token, channel_id, u_id):
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
-    channel_status = check_valid_channel(channel_id, store)     # returns a tuple (1,index) if channel is valid, else 0
+    channel_status = check_valid_channel(channel_id)     # returns a tuple (1,index) if channel is valid, else 0
 
     if channel_status == False:
         raise InputError('channel_id does not refer to a valid channel')
 
-    channel_index = channel_status[1]
+    channel_index = channel_status
 
     # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
     if auth_user_id not in store['channels'][channel_index]['owner_members'] or store['users'][auth_user_id]['global_permissions'] != 1:
