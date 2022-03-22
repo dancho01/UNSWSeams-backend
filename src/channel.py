@@ -45,7 +45,7 @@ def channel_invite_v1(token, channel_id, u_id):
     return {}
 
 
-def channel_details_v1(auth_user_id, channel_id):
+def channel_details_v1(token, channel_id):
     '''
     channel_details_v1 takes the output of check_valid_channel and stores it in channel_status,
     it then ensures that the user is apart of the 'all_users' list within that channel and returns
@@ -65,10 +65,11 @@ def channel_details_v1(auth_user_id, channel_id):
                 information of the channel that is located at channel_index.
     '''
 
-    channel_index = check_valid_channel(channel_id)
-    check_authorized_user(auth_user_id, channel_index)
-
     store = data_store.get()
+
+    user_info = check_valid_token(token)
+    channel_index = check_valid_channel(channel_id)
+    check_authorized_user(user_info['u_id'], channel_index)
 
     channel_info = store['channels'][channel_index]
 
