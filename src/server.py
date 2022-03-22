@@ -16,6 +16,7 @@ from src.channels import channels_list_v1, channels_listall_v1, channels_create_
 from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1
 from src.profile import set_name_v1, set_email_v1, set_handle_v1
 from src.user import user_profile_v1 
+from src.users import users_all_v1
 
 
 def quit_gracefully(*args):
@@ -317,6 +318,13 @@ def get_channel_details_v2():
     token = request.args.get('token')
     channel_id = int(request.args.get('channel_id'))
     result = channel_details_v1(token, channel_id)
+    return dumps(result)
+
+@APP.route("/users/all/v1", methods = ['GET'])
+def users_all():
+
+    token = request.args.get('token')
+    result = users_all_v1(token)
     return dumps(result)
 
 
