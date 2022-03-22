@@ -181,7 +181,7 @@ def clear_flask_v1():
 @APP.route("/channel/invite/v2", methods=['POST'])
 def channel_invite_v2():
     data = request.get_json()
-    result = channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
+    channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
     return dumps({})
@@ -189,7 +189,7 @@ def channel_invite_v2():
 @APP.route("/channel/join/v2", methods=['POST'])
 def channel_join_v2():
     data = request.get_json()
-    result = channel_join_v1(data['token'], data['channel_id'])
+    channel_join_v1(data['token'], data['channel_id'])
 
     save_data()
     return dumps({})
@@ -197,7 +197,7 @@ def channel_join_v2():
 @APP.route("/channel/addowner/v1", methods=['POST'])
 def channel_addowner_v1_wrapper():
     data = request.get_json()
-    result = channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
+    channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
     return dumps({})
@@ -259,7 +259,7 @@ def messages_delete_v1():
 @APP.route("/channel/removeowner/v1", methods=['POST'])
 def channel_removeowner_v1_wrapper():
     data = request.get_json()
-    result = channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
+    channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
     return dumps({})
