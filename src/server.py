@@ -310,6 +310,7 @@ def get_profile():
     token = request.args.get('token')
     u_id = int(request.args.get('u_id'))
     result = user_profile_v1(token, u_id)
+    return dumps(result)
 
 @APP.route("/channel/details/v2", methods=['GET'])
 def get_channel_details_v2():
