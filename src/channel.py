@@ -235,7 +235,6 @@ def channel_addowner_v1(token, channel_id, u_id):
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
-    # returns a tuple (1,index) if channel is valid, else 0
     channel_status = check_valid_channel(channel_id)
 
     if channel_status == False:
