@@ -33,7 +33,7 @@ def admin_user_remove_v1(token, u_id):
     # find the channels the user is in
     for channel in store['channels']:
         for message in channel['messages']:
-            if message['u_id'] == u_id #and message['message_id'] == message_id:
+            if message['u_id'] == u_id:
                 message_id = message['message_id']
                 check_valid_message(message_id, u_id, store)
                 messages_edit_v1(token, message_id, 'Removed user')

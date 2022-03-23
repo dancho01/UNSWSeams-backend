@@ -14,9 +14,15 @@ from src.persistence import save_data, load_data
 from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1
 from src.auth import auth_register_v1, auth_login_v1, auth_logout
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
-from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1
+from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1
 from src.profile import set_name_v1, set_email_v1, set_handle_v1
+<<<<<<< HEAD
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
+=======
+from src.user import user_profile_v1
+from src.users import users_all_v1
+
+>>>>>>> master
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -175,17 +181,34 @@ def auth_logout_v1():
 
 @APP.route("/clear/v1", methods=['DELETE'])
 def clear_flask_v1():
-    clear_v1()
+    result = clear_v1()
     save_data()
-    return dumps({})
+    return dumps(result)
+
 
 @APP.route("/channel/invite/v2", methods=['POST'])
 def channel_invite_v2():
     data = request.get_json()
     result = channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
-
+<<<<<<< HEAD
+=======
     save_data()
     return dumps(result)
+
+>>>>>>> master
+
+@APP.route("/channel/leave/v1", methods=['POST'])
+def channel_leave():
+    data = request.get_json()
+    result = channel_leave_v1(data['token'], data['channel_id'])
+    save_data()
+<<<<<<< HEAD
+    return dumps(result)
+=======
+    print(data_store.get())
+    return dumps(result)
+
+>>>>>>> master
 
 @APP.route("/channel/join/v2", methods=['POST'])
 def channel_join_v2():
@@ -195,14 +218,21 @@ def channel_join_v2():
     save_data()
     return dumps(result)
 
+
 @APP.route("/channel/addowner/v1", methods=['POST'])
 def channel_addowner_v1_wrapper():
     data = request.get_json()
     result = channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
+<<<<<<< HEAD
     return dumps(result)
     
+=======
+    return dumps({})
+
+
+>>>>>>> master
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
     token = request.args.get('token')
@@ -265,6 +295,7 @@ def channel_removeowner_v1_wrapper():
     save_data()
     return dumps(result)
 
+
 @APP.route("/channels/list/v2", methods=['GET'])
 def channels_list_v2():
     token = request.args.get('token')
@@ -305,6 +336,15 @@ def set_handle():
     print(store)
     return dumps(result)
 
+
+@APP.route("/user/profile/v1", methods=['GET'])
+def get_profile():
+    token = request.args.get('token')
+    u_id = int(request.args.get('u_id'))
+    result = user_profile_v1(token, u_id)
+    return dumps(result)
+
+
 @APP.route("/channel/details/v2", methods=['GET'])
 def get_channel_details_v2():
     token = request.args.get('token')
@@ -328,8 +368,20 @@ def admin_userpermission_change_v1_wrapper():
     save_data()
     return dumps(result)
 
+@APP.route("/users/all/v1", methods=['GET'])
+def users_all():
+
+    token = request.args.get('token')
+    result = users_all_v1(token)
+    return dumps(result)
+
+
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
+<<<<<<< HEAD
     APP.run(port=config.port)  # Do not edit this port
 
+=======
+    APP.run(port=config.port, debug=True)  # Do not edit this port
+>>>>>>> master
