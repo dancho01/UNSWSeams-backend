@@ -72,7 +72,7 @@ def auth_login_v2():
 
 
 @APP.route("/auth/register/v2", methods=['POST'])
-def auth_register_v2():
+def auth_register_wrapper():
     data = request.get_json()
     result = auth_register_v1(
         data['email'], data['password'], data['name_first'], data['name_last'])
@@ -85,7 +85,7 @@ def auth_register_v2():
 
 
 @APP.route("/dm/create/v1", methods=['POST'])
-def dm_create():
+def dm_create_wrapper():
     info = request.get_json()
     result = dm_create_v1(info['token'], info['u_ids'])
 
@@ -195,7 +195,6 @@ def channel_leave():
     data = request.get_json()
     result = channel_leave_v1(data['token'], data['channel_id'])
     save_data()
-    print(data_store.get())
     return dumps(result)
 
 
@@ -211,19 +210,28 @@ def channel_join_v2():
 @APP.route("/channel/addowner/v1", methods=['POST'])
 def channel_addowner_v1_wrapper():
     data = request.get_json()
-    result = channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
+    result = channel_addowner_v1(
+        data['token'], data['channel_id'], data['u_id'])
 
     save_data()
     return dumps(result)
-    
+
+
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
+    print(data_store.get())
     token = request.args.get('token')
+    print("==================================================================================")
+    print(token)
     channel_id = int(request.args.get('channel_id'))
-    print(type(channel_id))
+    print("==================================================================================")
+    print(channel_id)
     start = int(request.args.get('start'))
-    result = channel_messages_v1(
-        token, channel_id, start)
+    print("==================================================================================")
+    print(start)
+    result = channel_messages_v1(token, channel_id, start)
+
+    print(result)
 
     save_data()
     return dumps(result)
@@ -234,10 +242,8 @@ def messages_send_v1():
     data = request.get_json()
     result = message_send_v1(
         data['token'], data['channel_id'], data['message'])
-
+    print(data_store.get())
     save_data()
-    store = data_store.get()
-    print(store)
     return dumps(result)
 
 
@@ -246,8 +252,6 @@ def channels_create_v2():
     data = request.get_json()
     result = channels_create_v1(data['token'], data['name'], data['is_public'])
     save_data()
-    store = data_store.get()
-    print(store)
     return dumps(result)
 
 
@@ -273,7 +277,8 @@ def messages_delete_v1():
 @APP.route("/channel/removeowner/v1", methods=['POST'])
 def channel_removeowner_v1_wrapper():
     data = request.get_json()
-    result = channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
+    result = channel_removeowner_v1(
+        data['token'], data['channel_id'], data['u_id'])
 
     save_data()
     return dumps(result)
@@ -298,7 +303,6 @@ def set_name():
     data = request.get_json()
     result = set_name_v1(data['token'], data['name_first'], data['name_last'])
     store = data_store.get()
-    print(store)
     return dumps(result)
 
 
@@ -306,8 +310,6 @@ def set_name():
 def set_email():
     data = request.get_json()
     result = set_email_v1(data['token'], data['email'])
-    store = data_store.get()
-    print(store)
     return dumps(result)
 
 
@@ -315,8 +317,6 @@ def set_email():
 def set_handle():
     data = request.get_json()
     result = set_handle_v1(data['token'], data['handle'])
-    store = data_store.get()
-    print(store)
     return dumps(result)
 
 
@@ -335,6 +335,7 @@ def get_channel_details_v2():
     result = channel_details_v1(token, channel_id)
     return dumps(result)
 
+
 @APP.route("/admin/user/remove/v1", methods=['DELETE'])
 def admin_user_remove_v1_wrapper():
     data = request.get_json()
@@ -343,14 +344,16 @@ def admin_user_remove_v1_wrapper():
     save_data()
     return dumps(result)
 
+
 @APP.route("/admin/userpermission/change/v1", methods=['POST'])
 def admin_userpermission_change_v1_wrapper():
     data = request.get_json()
-    result = admin_userpermission_change_v1(data['token'], data['u_id'], data['permission_id'])
+    result = admin_userpermission_change_v1(
+        data['token'], data['u_id'], data['permission_id'])
 
     save_data()
-    #print(data_store.get())
     return dumps(result)
+
 
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
@@ -363,4 +366,4 @@ def users_all():
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port=config.port, debug=True)  # Do not edit this port
