@@ -35,7 +35,6 @@ def admin_user_remove_v1(token, u_id):
         for message in channel['messages']:
             if message['u_id'] == u_id:
                 message_id = message['message_id']
-                check_valid_message(message_id, u_id, store)
                 messages_edit_v1(token, message_id, 'Removed user')
         
         # remove from channels/DMs
@@ -48,17 +47,26 @@ def admin_user_remove_v1(token, u_id):
             if messages['u_id'] == u_id:
                 message_id = message['message_id']
                 messages_edit_v1(u_id_token, message_id, 'Removed user')
-    for dm in dm_list_v1(token):
-        dm_id = dm['dm_id']
-        dm_leave_v1(u_id_token, dm_id)      # remove from DMs
+    dm_list = dm_list_v1(u_id_token)['dms']    # dm_list is a dictionary of lists of dictionaries
+    for i in range(len(dm_list)):
+        dm_leave_v1(u_id_token, dm_list[i]['dm_id'])      # remove from DMs
         #for channel in store['channels']['members']:
         # channel['messages']['message_id']
 
 # change name in data store
-    for user in store['users']:
-        if user['u_id'] == u_id:
-            user['name_first'] = 'Removed'
-            user['name_last'] = 'user'
+    # for i in range(len(store['users'])):
+    #     for j in 
+    #     print("++++++"")
+    #     print(type(store['users']))
+    #     if store['users'][i]['user_id'] == u_id:
+    #         store['users'][i]['name_first'] = 'Removed'
+    #         store['users'][i]['name_last'] = 'user'
+
+    for i in range(len(store['users'])):
+        if store['users'][i]['auth_user_id'] == u_id:
+            store['users'][i]['name_first'] == 'Removed'
+            store['users'][i]['name_last'] == 'user'
+
 
 # Last step: invalidate their token (remove session list)
     auth_logout(u_id_token)

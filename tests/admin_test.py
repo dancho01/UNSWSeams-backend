@@ -1,37 +1,37 @@
-# from ast import Global
-# import pytest
-# import requests
-# import json
-# from src import config
+from ast import Global
+import pytest
+import requests
+import json
+from src import config
 
-# GLOBAL_OWNER = 1
-# MEMBER_ONLY_GLOBAL_PERMISSIONS = 2
+GLOBAL_OWNER = 1
+MEMBER_ONLY_GLOBAL_PERMISSIONS = 2
 
-# def test_admin_user_remove_u_id_not_valid():
-#     """
-#     u_id does not refer to a valid user
-#     """
-#     requests.delete(config.url + 'clear/v1')
-#     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user1_data = user1.json()
+def test_admin_user_remove_u_id_not_valid():
+    """
+    u_id does not refer to a valid user
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
 
-#     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-#         'u_id': user1_data['auth_user_id'] + 1})
-#     assert response.status_code == 400  # inputError
+    response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
+        'u_id': user1_data['auth_user_id'] + 1})
+    assert response.status_code == 400  # inputError
 
-# def test_admin_user_remove_only_global_owner_left():
-#     """
-#         u_id refers to a user who is the only global owner
-#     """
-#     requests.delete(config.url + 'clear/v1')
-#     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user1_data = user1.json()
+def test_admin_user_remove_only_global_owner_left():
+    """
+        u_id refers to a user who is the only global owner
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
 
-#     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-#         'u_id': user1_data['auth_user_id']})
-#     assert response.status_code == 400  # inputError
+    response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
+        'u_id': user1_data['auth_user_id']})
+    assert response.status_code == 400  # inputError
 
 # def test_admin_user_remove_auth_user_not_global_owner():
 #     '''
