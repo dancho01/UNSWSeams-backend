@@ -107,32 +107,33 @@ def channel_messages_v1(token, channel_id, start):
         Returns a dictionary with the keys 'messages' which is a list of dictionaries, 'start' which is a integer
                 and 'end' which is a int.
     '''
-    store = data_store.get()
-
     user_info = check_valid_token(token)
     auth_list_index = check_valid_channel(channel_id)
     check_authorized_user(user_info['u_id'], auth_list_index)
+
+    store = data_store.get()
 
     message_length = len(store['channels'][auth_list_index]['messages'])
 
     if start > message_length:
         raise InputError(
             'start is greater than the total number of messages in the channel')
-
-    end = start + 50
-    if end >= message_length:
-        message_return_list = messages_returned(
-            auth_list_index, start, message_length - 1, store)
-        end = -1
+    elif start + 50 <= message_length:
+        end_return = end = start + 50
     else:
-        message_return_list = messages_returned(
-            auth_list_index, start, end, store)
+        end_return = message_length
+        end = -1
 
-    return {
-        'messages': message_return_list,
-        'start': start,
-        'end': end,
-    }
+    return_messages = []
+
+    for i in range(start, end_return):
+        return_messages.append(
+            store['channels'][auth_list_index]['messages'][i])
+
+    return {'messages': return_messages,
+            'start': start,
+            'end': end
+            }
 
 
 def message_send_v1(token, channel_id, message):
@@ -154,6 +155,7 @@ def message_send_v1(token, channel_id, message):
         if channel['channel_id'] == channel_id:
             channel['messages'].append(new_message)
 
+    data_store.set(store)
     return {
         'message_id': new_message_id
     }
@@ -189,15 +191,15 @@ def messages_remove_v1(token, message_id):
     store = data_store.get()
     check_valid_message(message_id, user_id, store)
 
-    for channel in store['channels']:
-        for messages in channel['messages']:
-            channel['messages'] = list(
-                filter(lambda i: i['message_id'] != message_id, messages))
+    for i in range(len(store['channels'])):
+        for j in range(len(store['channels'][i]['messages'])):
+            if store['channels'][i]['messages'][j]['message_id'] == message_id:
+                del store['channels'][i]['messages'][j]
 
-    for dms in store['dms']:
-        for messages in dms['messages']:
-            dms['messages'] = list(
-                filter(lambda i: i['message_id'] != message_id, messages))
+    for i in range(len(store['dms'])):
+        for j in range(len(store['dms'][i]['messages'])):
+            if store['dms'][i]['messages'][j]['dm_id'] == message_id:
+                del store['dms'][i]['messages'][j]
 
     data_store.set(store)
 
@@ -253,7 +255,7 @@ def channel_join_v1(token, channel_id):
 
 def channel_addowner_v1(token, channel_id, u_id):
     """
-    Make user with user id u_id an owner of the channel.    
+    Make user with user id u_id an owner of the channel.
     """
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
@@ -298,7 +300,7 @@ def channel_addowner_v1(token, channel_id, u_id):
 
 def channel_removeowner_v1(token, channel_id, u_id):
     """
-    Remove user with user id u_id as an owner of the channel.    
+    Remove user with user id u_id as an owner of the channel.
     """
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
