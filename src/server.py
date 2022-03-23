@@ -302,7 +302,6 @@ def channels_listall_v2():
 def set_name():
     data = request.get_json()
     result = set_name_v1(data['token'], data['name_first'], data['name_last'])
-    store = data_store.get()
     return dumps(result)
 
 
