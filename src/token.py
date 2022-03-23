@@ -22,9 +22,6 @@ def generate_token(user_id):
     store['session_list'].append(hash(session_id))
     data_store.set(store)
 
-    store['session_list'].append(hash(session_id))
-    data_store.set(store)
-
     return ENCODED_JWT
 
 
