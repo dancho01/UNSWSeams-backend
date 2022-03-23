@@ -8,9 +8,9 @@ import datetime
 
 def users_all_v1(token):
     store = data_store.get()
-       
+
     check_valid_token(token)
-        
-    users_info = return_users_information(store)
+
+    users_info = return_users_information()
 
     return {'users': users_info}
