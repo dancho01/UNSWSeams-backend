@@ -27,7 +27,8 @@ from json import dumps
     Return Value:
         Returns empty dict as required by spec
     '''
-    
+
+
 def channel_invite_v1(token, channel_id, u_id):
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
@@ -202,6 +203,26 @@ def messages_remove_v1(token, message_id):
     return {}
 
 
+def channel_leave_v1(token, channel_id):
+    user_info = check_valid_token(token)
+    # InputError
+    channel_index = check_valid_channel(channel_id)
+    # AccessError
+    check_authorized_user(user_info['u_id'], channel_index)
+
+    store = data_store.get()
+
+    store['channels'][channel_index]['all_members'] = list(filter(
+        lambda x: x['u_id'] != user_info['u_id'], store['channels'][channel_index]['all_members']))
+
+    store['channels'][channel_index]['owner_members'] = list(filter(
+        lambda x: x['u_id'] != user_info['u_id'], store['channels'][channel_index]['owner_members']))
+
+    data_store.set(store)
+
+    return {}
+
+
 def channel_join_v1(token, channel_id):
 
     auth_user_id = check_valid_token(token)['u_id']
@@ -228,6 +249,7 @@ def channel_join_v1(token, channel_id):
 
     return {}
 
+
 def channel_addowner_v1(token, channel_id, u_id):
     """
     Make user with user id u_id an owner of the channel.    
@@ -248,7 +270,8 @@ def channel_addowner_v1(token, channel_id, u_id):
     #     if auth_user_id == user['u_id']:
     #         raise AccessError('auth_user_id does not have owner permissions in the channel')
     if auth_user_id not in store['channels'][channel_index]['owner_members'] or store['users'][auth_user_id]['global_permissions'] != 1:
-        raise AccessError('auth_user_id does not have owner permissions in the channel')
+        raise AccessError(
+            'auth_user_id does not have owner permissions in the channel')
 
     # u_id is invalid
     if check_user_registered(u_id, store) == False:
@@ -272,6 +295,7 @@ def channel_addowner_v1(token, channel_id, u_id):
     return {
     }
 
+
 def channel_removeowner_v1(token, channel_id, u_id):
     """
     Remove user with user id u_id as an owner of the channel.    
@@ -279,7 +303,8 @@ def channel_removeowner_v1(token, channel_id, u_id):
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
-    channel_status = check_valid_channel(channel_id)     # returns a tuple (1,index) if channel is valid, else 0
+    # returns a tuple (1,index) if channel is valid, else 0
+    channel_status = check_valid_channel(channel_id)
 
     if channel_status == False:
         raise InputError('channel_id does not refer to a valid channel')
@@ -288,7 +313,8 @@ def channel_removeowner_v1(token, channel_id, u_id):
 
     # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
     if auth_user_id not in store['channels'][channel_index]['owner_members'] or store['users'][auth_user_id]['global_permissions'] != 1:
-        raise AccessError('auth_user_id does not have owner permissions in the channel')
+        raise AccessError(
+            'auth_user_id does not have owner permissions in the channel')
 
     # u_id is invalid
     if check_user_registered(u_id, store) == False:

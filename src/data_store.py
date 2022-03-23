@@ -57,47 +57,55 @@ data_store = Datastore()
 
 
 '''
-Example of what the data structure may look like
+Example of what the data structure look like
 '''
 
-# data = {
-#     'users': [
-#         {
-#             'auth_user_id': 1,
-#             'name': 'user1',
-#             'global_permissions': 1,
-#             'handle' : ''
-#         },
-#         {
-#             'auth_user_id': 2,
-#             'name': 'user2',
-#             'global_permissions': 2,
-#         },
-#     ],
-#     'channels': [
-#         {
-#             'channel_id': 1,
-#             'name': 'channel1',
-#             'all_members': [{'email': 'user1@example.com'}], #authorized member ids (if its private)
-#             'owner_members' : [1, 2, 3]  #user_id for admins
-#             'is_public': False,
-#             'messages': [
-#                 {
-#                     'message_id': 1,
-#                     'u_id': 1,
-#                     'message': 'Hello world',
-#                     'time_created': 4132,
-#                 },
-#                 {
-#                     'message_id': 1,
-#                     'u_id': 1,
-#                     'message': 'Hello world',
-#                     'time_created': 2313,
-#                 },
-#             ],
-#         },
-#     ],
-# }
+'''
+data = {
+    'users': [
+        {
+            'auth_user_id': 1,
+            'name': 'user1',
+            'global_permissions': 1,
+            'handle' : ''
+        },
+        {
+            'auth_user_id': 2,
+            'name': 'user2',
+            'global_permissions': 2,
+        },
+    ],
+    'channels': [
+        {
+            'channel_id': 1,
+            'name': 'channel1',
+            'all_members': [{'email': 'user1@example.com'}], #authorized member ids (if its private)
+            'owner_members' : [1, 2, 3]  #user_id for admins
+            'is_public': False,
+            'messages': [
+                {
+                    'message_id': 1,
+                    'u_id': 1,
+                    'message': 'Hello world',
+                    'time_created': 4132,
+                },
+                {
+                    'message_id': 1,
+                    'u_id': 1,
+                    'message': 'Hello world',
+                    'time_created': 2313,
+                },
+            ],
+        },
+    ],
+    'session_list': ['eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1X2lkIjoxLCJzZXNzaW9uX2lkIjoxfQ.28WKin5WZMLred8_JiUtse4O4BZCvB5AQXRehRrWrHU'],
+    'dms': [{'dm_id': new_dm_id,
+              'name': name,
+              'all_members': [],
+              'messages': [],
+            ],
+}
+'''
 
 
 def check_valid_channel(channel_id, data_store):
@@ -191,14 +199,13 @@ def messages_returned(channel_index, start, end, store):
     return returned_messages
 
 
-def return_member_information(auth_user_id, store):
-
-    for user_index in range(len(store['users'])):
-        if store['users'][user_index]['auth_user_id'] == auth_user_id:
+def return_member_information(u_id, store):
+    for user in store['users']:
+        if user['auth_user_id'] == u_id:
             return {
-                'u_id': store['users'][user_index]['auth_user_id'],
-                'email': store['users'][user_index]['email'],
-                'name_first': store['users'][user_index]['name_first'],
-                'name_last': store['users'][user_index]['name_last'],
-                'handle_str': store['users'][user_index]['handle']
+                'u_id': user['auth_user_id'],
+                'email': user['email'],
+                'name_first': user['name_first'],
+                'name_last': user['name_last'],
+                'handle_str': user['handle']
             }
