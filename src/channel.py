@@ -159,6 +159,9 @@ def message_send_v1(token, channel_id, message):
 
 
 def messages_edit_v1(token, message_id, message):
+    """
+    as long as you have a message_id, can find the message in either channels or dms and edit it
+    """
     store = data_store.get()
     user_id = check_valid_token(token)['u_id']
     check_message(message)

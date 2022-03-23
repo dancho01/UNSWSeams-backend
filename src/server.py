@@ -3,6 +3,7 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
+from numpy import result_type
 from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1
 from src.error import InputError
 from src import config
@@ -15,7 +16,7 @@ from src.auth import auth_register_v1, auth_login_v1, auth_logout
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1
 from src.profile import set_name_v1, set_email_v1, set_handle_v1
-
+from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 
 def quit_gracefully(*args):
     '''For coverage'''
@@ -181,26 +182,26 @@ def clear_flask_v1():
 @APP.route("/channel/invite/v2", methods=['POST'])
 def channel_invite_v2():
     data = request.get_json()
-    channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
+    result = channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
-    return dumps({})
+    return dumps(result)
 
 @APP.route("/channel/join/v2", methods=['POST'])
 def channel_join_v2():
     data = request.get_json()
-    channel_join_v1(data['token'], data['channel_id'])
+    result = channel_join_v1(data['token'], data['channel_id'])
 
     save_data()
-    return dumps({})
+    return dumps(result)
 
 @APP.route("/channel/addowner/v1", methods=['POST'])
 def channel_addowner_v1_wrapper():
     data = request.get_json()
-    channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
+    result = channel_addowner_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
-    return dumps({})
+    return dumps(result)
     
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
@@ -259,10 +260,10 @@ def messages_delete_v1():
 @APP.route("/channel/removeowner/v1", methods=['POST'])
 def channel_removeowner_v1_wrapper():
     data = request.get_json()
-    channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
+    result = channel_removeowner_v1(data['token'], data['channel_id'], data['u_id'])
 
     save_data()
-    return dumps({})
+    return dumps(result)
 
 @APP.route("/channels/list/v2", methods=['GET'])
 def channels_list_v2():
@@ -311,8 +312,24 @@ def get_channel_details_v2():
     result = channel_details_v1(token, channel_id)
     return dumps(result)
 
+@APP.route("/admin/user/remove/v1", methods=['DELETE'])
+def admin_user_remove_v1_wrapper():
+    data = request.get_json()
+    result = admin_user_remove_v1(data['token'], data['u_id'])
+
+    save_data()
+    return dumps(result)
+
+@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+def admin_userpermission_change_v1_wrapper():
+    data = request.get_json()
+    result = admin_userpermission_change_v1(data['token'], data['u_id'])
+
+    save_data()
+    return dumps(result)
 
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
     APP.run(port=config.port)  # Do not edit this port
+

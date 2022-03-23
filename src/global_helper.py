@@ -48,3 +48,15 @@ def check_already_auth(u_id, channel_index):
                 description="u_id refers to a user who is already a member of the channel")
 
     return
+
+def check_global_owner(auth_user_id):
+    """
+        takes a user_id and returns true if global owner, else false if not global owner
+    """
+    store = data_store.get()
+    for user in store['users']: 
+        if user['auth_user_id'] == auth_user_id and user['global_permissions'] == 1:
+            return True
+        else:
+            return False
+    
