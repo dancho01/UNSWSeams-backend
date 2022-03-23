@@ -17,7 +17,7 @@ def admin_user_remove_v1(token, u_id):
     global_owners = 0
     # check u_id is not the only global owner
     for user in store['users']:
-        if check_global_owner(user['user_id']):
+        if check_global_owner(user['auth_user_id']):
             global_owners += 1
     
     if global_owners == 1:
@@ -75,18 +75,20 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
     Return Type:{}
     """
     auth_user_id = check_valid_token(token)['u_id']
-    check_global_owner(auth_user_id)
+    if check_global_owner(auth_user_id) == False:
+        raise AccessError('authorised user is not a global owner')
     check_valid_user(u_id)
     store = data_store.get()
     global_owners = 0
     # check u_id is not the only global owner
     for user in store['users']:
-        if check_global_owner(user['user_id']):
+        if check_global_owner(user['auth_user_id']):
             global_owners += 1
     
     if global_owners == 1:
-        raise InputError('user you are trying to remove is the only global owner')
-    if permission_id is not 1 or permission_id is not 2:
+        if check_global_owner(u_id):
+            raise InputError('user you are trying to remove is the only global owner')
+    if permission_id != 1 and permission_id != 2:
         raise InputError('permission_id is invalid')
     
     for user in store['users']: 
@@ -97,6 +99,5 @@ def admin_userpermission_change_v1(token, u_id, permission_id):
                 user['global_permissions'] == permission_id
                 data_store.set(store)
                 return {}
-        else:
-            continue
+
 

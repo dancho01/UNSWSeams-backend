@@ -55,8 +55,9 @@ def check_global_owner(auth_user_id):
     """
     store = data_store.get()
     for user in store['users']: 
-        if user['auth_user_id'] == auth_user_id and user['global_permissions'] == 1:
-            return True
-        else:
-            return False
+        if user['auth_user_id'] == auth_user_id:
+            if user['global_permissions'] == 1:
+                return True
+            else:
+                return False
     

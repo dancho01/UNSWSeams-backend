@@ -1,3 +1,4 @@
+from ast import Global
 import pytest
 import requests
 import json
@@ -50,14 +51,14 @@ def test_admin_user_remove_auth_user_not_global_owner():
         'permission_id': GLOBAL_OWNER})
     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user3_data['token'], 
         'u_id': user1_data['auth_user_id']})
-    assert response.status_code == 403  # AccessError
+    assert response.status_code == 400  # InputError
 
 
 """
     admin/userpermission/change/v1 tests
 
 """
-def admin_userpermission_change_u_id_invalid():
+def test_admin_userpermission_change_u_id_invalid():
     """
     u_id does not refer to a valid user
     """
@@ -70,7 +71,7 @@ def admin_userpermission_change_u_id_invalid():
         'permission_id': GLOBAL_OWNER})
     assert response.status_code == 400  # inputError
 
-def admin_userpermission_change_u_id_is_sole_global_owner():
+def test_admin_userpermission_change_u_id_is_sole_global_owner():
     """
     u_id refers to a user who is the only global owner and they are being demoted to a user
     - basically means demoting themselves since ONLY global owners can change users' permissions
@@ -84,7 +85,7 @@ def admin_userpermission_change_u_id_is_sole_global_owner():
         'permission_id': MEMBER_ONLY_GLOBAL_PERMISSIONS})
     assert response.status_code == 400  # inputError
 
-def admin_userpermission_change_u_id_permission_id_invalid():
+def test_admin_userpermission_change_u_id_permission_id_invalid():
     """
     permission_id is invalid
     """
@@ -99,10 +100,11 @@ def admin_userpermission_change_u_id_permission_id_invalid():
         'permission_id': 3})
     assert response.status_code == 400  # inputError
 
-def admin_userpermission_change_u_id_permissions_already_given():
+def test_admin_userpermission_change_u_id_permissions_already_given():
     """
     the user already has the permissions level of permission_id
     """
+    #global GLOBAL_OWNER
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -110,14 +112,14 @@ def admin_userpermission_change_u_id_permissions_already_given():
     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user2_data = user2.json()
-    response1 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'], 
-        'permission_id': GLOBAL_OWNER})
-    assert response1 == 200     # success
-    response2 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'], 
-        'permission_id': GLOBAL_OWNER})
+    # response1 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 
+    #     'u_id': user2_data['auth_user_id'], 'permission_id': 1})
+    # assert response1.status_code == 200     # success
+    response2 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 
+        'u_id': user2_data['auth_user_id'], 'permission_id': 2})
     assert response2.status_code == 400  # inputError
 
-def admin_userpermission_change_auth_user_not_global_owner():
+def test_admin_userpermission_change_auth_user_not_global_owner():
     """
     the authorised user is not a global owner
     """
@@ -130,6 +132,9 @@ def admin_userpermission_change_auth_user_not_global_owner():
     user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user3_data = user3.json()
-    response = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user2_data['token'], 'u_id': user3_data['auth_user_id'], 
-        'permission_id': GLOBAL_OWNER})
+    response = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user2_data['token'], 
+        'u_id': user3_data['auth_user_id'], 'permission_id': 1})
     assert response.status_code == 403  # AccessError
+
+
+# test a successful case
