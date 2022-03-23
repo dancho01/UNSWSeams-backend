@@ -240,14 +240,13 @@ def channel_join_v1(token, channel_id):
 
     channel_index = check_valid_channel(channel_id)
     check_already_auth(auth_user_id, channel_index)
-    check_authorized_user(auth_user_id, channel_index)
 
-    if store['channels'][channel_id]['is_public'] == False and permission_id != 1:
+    if store['channels'][channel_index]['is_public'] == False and permission_id != 1:
         # if channel_id is valid and the authorised user is not a member of the channel, AccessError is raised
         raise AccessError(
             'Cannot join a private channel as you are not a global owner')
 
-    store['channels'][channel_id]['all_members'].append(
+    store['channels'][channel_index]['all_members'].append(
         return_member_information(auth_user_id, store))
 
     data_store.set(store)
