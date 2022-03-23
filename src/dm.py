@@ -179,20 +179,25 @@ def dm_messages_v1(token, dm_id, start):
         raise AccessError(description='authorised user is not member of DM')
 
     message_length = len(store['dms'][dm_index]['messages'])
+    
     if start > message_length:
         raise InputError(
             description='start is greater than total number of messages in the DM')
-
-    end = start + 50
-    if end >= message_length:
-        messages_list = return_dm_messages(
-            dm_index, start, message_length - 1, store)
-        end = -1
+    
+    elif start + 50 <= message_length:
+        end_return = end = start + 50
     else:
-        messages_list = return_dm_messages(dm_index, start, end, store)
+        end_return = message_length
+        end = -1
 
+    return_messages = []
+    
+    for i in range(start, end_return):
+        return_messages.append(
+            store['dms'][dm_index]['messages'][i])
+    
     return {
-        'messages': messages_list,
+        'messages': return_messages,
         'start': start,
         'end': end,
     }

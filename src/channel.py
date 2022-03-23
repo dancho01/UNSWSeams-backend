@@ -199,7 +199,7 @@ def messages_remove_v1(token, message_id):
 
     for i in range(len(store['dms'])):
         for j in range(len(store['dms'][i]['messages'])):
-            if store['dms'][i]['messages'][j]['dm_id'] == message_id:
+            if store['dms'][i]['messages'][j]['message_id'] == message_id:
                 del store['dms'][i]['messages'][j]
                 return
 
