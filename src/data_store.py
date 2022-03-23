@@ -191,14 +191,13 @@ def messages_returned(channel_index, start, end, store):
     return returned_messages
 
 
-def return_member_information(auth_user_id, store):
-
-    for user_index in range(len(store['users'])):
-        if store['users'][user_index]['auth_user_id'] == auth_user_id:
+def return_member_information(u_id, store):
+    for user in store['users']:
+        if user['auth_user_id'] == u_id:
             return {
-                'u_id': store['users'][user_index]['auth_user_id'],
-                'email': store['users'][user_index]['email'],
-                'name_first': store['users'][user_index]['name_first'],
-                'name_last': store['users'][user_index]['name_last'],
-                'handle_str': store['users'][user_index]['handle']
+                'u_id': user['auth_user_id'],
+                'email': user['email'],
+                'name_first': user['name_first'],
+                'name_last': user['name_last'],
+                'handle_str': user['handle']
             }
