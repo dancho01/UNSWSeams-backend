@@ -13,8 +13,10 @@ from src.persistence import save_data, load_data
 from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1
 from src.auth import auth_register_v1, auth_login_v1, auth_logout
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
-from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_leave_v1
+from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1
 from src.profile import set_name_v1, set_email_v1, set_handle_v1
+from src.user import user_profile_v1
+from src.users import users_all_v1
 
 
 def quit_gracefully(*args):
@@ -315,6 +317,30 @@ def set_handle():
     result = set_handle_v1(data['token'], data['handle'])
     store = data_store.get()
     print(store)
+    return dumps(result)
+
+
+@APP.route("/user/profile/v1", methods=['GET'])
+def get_profile():
+    token = request.args.get('token')
+    u_id = int(request.args.get('u_id'))
+    result = user_profile_v1(token, u_id)
+    return dumps(result)
+
+
+@APP.route("/channel/details/v2", methods=['GET'])
+def get_channel_details_v2():
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    result = channel_details_v1(token, channel_id)
+    return dumps(result)
+
+
+@APP.route("/users/all/v1", methods=['GET'])
+def users_all():
+
+    token = request.args.get('token')
+    result = users_all_v1(token)
     return dumps(result)
 
 
