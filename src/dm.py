@@ -184,7 +184,7 @@ def dm_messages_v1(token, dm_id, start):
         raise InputError(
             description='start is greater than total number of messages in the DM')
     
-    elif start + 50 <= message_length:
+    elif start + 49 <= message_length:
         end_return = end = start + 50
     else:
         end_return = message_length
