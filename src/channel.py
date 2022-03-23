@@ -146,7 +146,7 @@ def message_send_v1(token, channel_id, message):
         'message_id': new_message_id,
         'u_id': user_id,
         'message': message,
-        'time': time_now()
+        'time_sent': time_now()
     }
 
     store = data_store.get()
@@ -174,15 +174,13 @@ def messages_edit_v1(token, message_id, message):
     for channel in store['channels']:
         for messages in channel['messages']:
             if messages['message_id'] == message_id:
-                messages['message'] = message_id
-                messages['time'] = time_now()
+                messages['message'] = message
                 return {}
 
     for dms in store['dms']:
         for messages in dms['messages']:
             if messages['message_id'] == message_id:
-                messages['message'] = message_id
-                messages['time'] = time_now()
+                messages['message'] = message
                 return {}
 
 
