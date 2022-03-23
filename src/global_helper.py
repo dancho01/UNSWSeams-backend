@@ -22,8 +22,8 @@ def check_valid_channel(c_id):
         if store['channels'][i]['channel_id'] == c_id:
             return int(i)
 
-        raise InputError(
-            description="channel_id does not refer to a valid channel")
+    raise InputError(
+        description="channel_id does not refer to a valid channel")
 
 
 def check_authorized_user(u_id, channel_index):

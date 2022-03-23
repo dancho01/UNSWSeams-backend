@@ -35,7 +35,7 @@ def channel_invite_v1(token, channel_id, u_id):
 
     channel_index = check_valid_channel(channel_id)
     check_valid_user(u_id)
-    check_already_auth(auth_user_id, channel_index)
+    check_already_auth(u_id, channel_index)
     check_authorized_user(auth_user_id, channel_index)
 
     store['channels'][channel_index]['all_members'].append(
