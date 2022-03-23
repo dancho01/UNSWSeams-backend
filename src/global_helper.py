@@ -66,6 +66,31 @@ def check_global_owner(auth_user_id):
                 return False
 
 
+def check_owner(channel_index, auth_user_id):
+
+    store = data_store.get()
+
+    owner_members = store['channels'][channel_index]['owner_members']
+
+    for owner in owner_members:
+        if owner['u_id'] == auth_user_id and check_global_owner:
+            return
+
+    raise AccessError(
+        'auth_user_id does not have owner permissions in the channel')
+
+
+def check_already_owner(channel_index, auth_user_id):
+    store = data_store.get()
+
+    owner_members = store['channels'][channel_index]['owner_members']
+
+    for owner in owner_members:
+        if owner['u_id'] == auth_user_id and check_global_owner:
+            raise InputError(
+                description="u_id refers to a user who is already an owner of the channel")
+
+
 def generate_user_id():
     global AUTH_COUNTER
     AUTH_COUNTER += 1

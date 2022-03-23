@@ -1,4 +1,5 @@
 from src.error import AccessError, InputError
+from src.global_helper import check_global_owner
 
 MESSAGE_ID_COUNTER = 0
 
@@ -19,13 +20,21 @@ def generate_new_message_id():
 def check_valid_message(message_id, u_id, store):
     for dm in store['dms']:
         for message in dm['messages']:
-            if message['u_id'] == u_id and message['message_id'] == message_id:
-                return True
+            if message['message_id'] == message_id:
+                if message['u_id'] == u_id:
+                    return True
+                elif check_global_owner != True:
+                    raise AccessError(
+                        description="user not global owner or this message is not written by them")
 
     for channel in store['channels']:
         for message in channel['messages']:
-            if message['u_id'] == u_id and message['message_id'] == message_id:
-                return True
+            if message['message_id'] == message_id:
+                if message['u_id'] == u_id:
+                    return True
+                elif check_global_owner != True:
+                    raise AccessError(
+                        description="user not global owner or this message is not written by them")
 
     raise InputError(
         description="message_id does not refer to a valid message within a channel/DM that the authorised user has joined")
