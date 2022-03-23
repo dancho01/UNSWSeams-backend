@@ -1,5 +1,5 @@
 from src.error import InputError, AccessError
-from src.data_store import check_authorization, messages_returned, data_store, check_user_registered, return_member_information
+from src.data_store import check_authorization, data_store, check_user_registered, return_member_information
 from src.channel_helper import check_message, time_now
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user
@@ -118,7 +118,7 @@ def channel_messages_v1(token, channel_id, start):
     if start > message_length:
         raise InputError(
             'start is greater than the total number of messages in the channel')
-    elif start + 50 <= message_length:
+    elif start + 49 <= message_length:
         end_return = end = start + 50
     else:
         end_return = message_length
@@ -195,11 +195,13 @@ def messages_remove_v1(token, message_id):
         for j in range(len(store['channels'][i]['messages'])):
             if store['channels'][i]['messages'][j]['message_id'] == message_id:
                 del store['channels'][i]['messages'][j]
+                return
 
     for i in range(len(store['dms'])):
         for j in range(len(store['dms'][i]['messages'])):
             if store['dms'][i]['messages'][j]['message_id'] == message_id:
                 del store['dms'][i]['messages'][j]
+                return
 
     data_store.set(store)
 

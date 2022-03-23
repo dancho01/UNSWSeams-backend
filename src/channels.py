@@ -1,6 +1,7 @@
 from src.data_store import data_store, check_user_registered, return_member_information
 from src.error import InputError, AccessError
 from src.token import check_valid_token
+from src.global_helper import generate_channel_id
 
 
 def channels_list_v1(token):
@@ -94,7 +95,7 @@ def channels_create_v1(token, name, is_public):
             'Make sure channel name is no less than 1 character and no more than 20')
 
     # id of new channel is generated based on number of channels
-    new_channel_id = len(store['channels']) + 1
+    new_channel_id = generate_channel_id()
 
     # new dictionary is created to store channel details
     new_channel = {'channel_id': new_channel_id,

@@ -1,6 +1,9 @@
 from src.data_store import data_store
 from src.error import InputError, AccessError
 
+AUTH_COUNTER = 0
+CHANNEL_COUNTER = 0
+
 
 def check_valid_user(u_id):
     store = data_store.get()
@@ -49,15 +52,27 @@ def check_already_auth(u_id, channel_index):
 
     return
 
+
 def check_global_owner(auth_user_id):
     """
         takes a user_id and returns true if global owner, else false if not global owner
     """
     store = data_store.get()
-    for user in store['users']: 
+    for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
             if user['global_permissions'] == 1:
                 return True
             else:
                 return False
-    
+
+
+def generate_user_id():
+    global AUTH_COUNTER
+    AUTH_COUNTER += 1
+    return AUTH_COUNTER
+
+
+def generate_channel_id():
+    global CHANNEL_COUNTER
+    CHANNEL_COUNTER += 1
+    return CHANNEL_COUNTER
