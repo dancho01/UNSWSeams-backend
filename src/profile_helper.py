@@ -28,8 +28,6 @@ def check_email(email):
             raise InputError(
                 description="This email is already in use by another user!")
 
-    return
-
 
 def check_handle(handle):
 
