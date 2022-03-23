@@ -4,6 +4,9 @@ from src.error import InputError
 from src.token import hash, generate_token
 from src.auth_helper import generate_new_handle, check_info
 from src.token import hash, generate_token, check_valid_token
+from src.global_helper import generate_user_id
+
+AUTH_COUNTER = 0
 
 
 def auth_login_v1(email, password):
@@ -71,12 +74,13 @@ def auth_register_v1(email, password, name_first, name_last):
         Returns a dictionary with the key 'auth_user_id', which is an integer value, if
         account is successfully created
     '''
+
     store = data_store.get()
 
     check_info(name_first, name_last, password, email)
 
     # creates a new id depending on how many users exist
-    new_id = len(store['users']) + 1
+    new_id = generate_user_id()
     token = generate_token(new_id)
 
     # creating handle from first and last name

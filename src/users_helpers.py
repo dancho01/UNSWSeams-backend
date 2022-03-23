@@ -1,13 +1,18 @@
-def return_users_information(store):
+from src.data_store import data_store
+
+
+def return_users_information():
+    store = data_store.get()
 
     users = []
 
-    for user_index in range(len(store['users'])):
-            users.append({
-                'u_id': store['users'][user_index]['auth_user_id'],
-                'email': store['users'][user_index]['email'],
-                'name_first': store['users'][user_index]['name_first'],
-                'name_last': store['users'][user_index]['name_last'],
-                'handle_str': store['users'][user_index]['handle']
-            })
+    for user in store['users']:
+        users.append({
+            'u_id': user['auth_user_id'],
+            'email': user['email'],
+            'name_first': user['name_first'],
+            'name_last': user['name_last'],
+            'handle_str': user['handle']
+        })
+
     return users

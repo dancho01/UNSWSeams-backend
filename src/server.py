@@ -341,6 +341,7 @@ def admin_user_remove_v1_wrapper():
     result = admin_user_remove_v1(data['token'], data['u_id'])
 
     save_data()
+    print(data_store.get())
     return dumps(result)
 
 
