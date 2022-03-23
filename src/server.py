@@ -302,6 +302,7 @@ def channels_listall_v2():
 def set_name():
     data = request.get_json()
     result = set_name_v1(data['token'], data['name_first'], data['name_last'])
+    print(data_store.get())
     return dumps(result)
 
 
@@ -309,13 +310,15 @@ def set_name():
 def set_email():
     data = request.get_json()
     result = set_email_v1(data['token'], data['email'])
+    print(data_store.get())
     return dumps(result)
 
 
 @ APP.route("/user/profile/sethandle/v1", methods=['PUT'])
 def set_handle():
     data = request.get_json()
-    result = set_handle_v1(data['token'], data['handle'])
+    result = set_handle_v1(data['token'], data['handle_str'])
+    print(data_store.get())
     return dumps(result)
 
 
@@ -350,7 +353,9 @@ def admin_userpermission_change_v1_wrapper():
     data = request.get_json()
     result = admin_userpermission_change_v1(
         data['token'], data['u_id'], data['permission_id'])
-
+    print(data_store.get())
+    print('===============================================================')
+    print(data['permission_id'])
     save_data()
     return dumps(result)
 
