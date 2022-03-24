@@ -1,12 +1,9 @@
 from src.error import InputError, AccessError
-from src.data_store import check_authorization, messages_returned, data_store, check_user_registered, return_member_information
-from src.channel_helper import check_message, time_now
-from src.token import check_valid_token, generate_token, hash
-from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, check_global_owner
-from src.dm import dm_leave_v1, dm_list_v1
-from src.channel import messages_edit_v1, channel_leave_v1
-from src.message_helper import generate_new_message_id, check_valid_message
-from src.auth import auth_logout
+from src.data_store import data_store
+from src.token import check_valid_token
+from src.global_helper import check_valid_user, check_global_owner
+from src.admin_helper import remove_user_name, remove_user_messages
+
 
 # use filter
 
@@ -21,64 +18,22 @@ def admin_user_remove_v1(token, u_id):
     for user in store['users']:
         if check_global_owner(user['auth_user_id']):
             global_owners += 1
+        if user['auth_user_id'] == u_id:
+            u_profile = user
 
-    if global_owners == 1:
+    if global_owners == 1 and u_profile['global_permissions'] == 1:
         raise InputError(
             "user you are trying to remove is the only global owner")
 
-    # find the token for u_id
-    u_id_token = generate_token(u_id)
-    # for session in store['session_list']:
-    #         session_id = hash(session)
+    remove_user_name(u_id)
 
-
-# Edit channel messages & DM messages to "Removed user"
-    # find the channels the user is in
     for channel in store['channels']:
         for message in channel['messages']:
             if message['u_id'] == u_id:
-                message_id = message['message_id']
-                messages_edit_v1(token, message_id, 'Removed user')
+                remove_user_messages(message['message_id'])
 
-        # remove from channels/DMs
-        channel_leave_v1(u_id_token, channel['channel_id'])
-
-    # find the DMs the user is in
-    for dms in store['dms']:
-        for messages in dms['messages']:
-            if messages['u_id'] == u_id:
-                message_id = message['message_id']
-                messages_edit_v1(u_id_token, message_id, 'Removed user')
-
-    dm_list = dm_list_v1(u_id_token)['dms']    # dm_list is a dictionary of lists of dictionaries
-    for i in range(len(dm_list)):
-        dm_leave_v1(u_id_token, dm_list[i]['dm_id'])      # remove from DMs
-        #for channel in store['channels']['members']:
-
-
-        # channel['messages']['message_id']
-
-# change name in data store
-    # for i in range(len(store['users'])):
-    #     for j in 
-    #     print("++++++"")
-    #     print(type(store['users']))
-    #     if store['users'][i]['user_id'] == u_id:
-    #         store['users'][i]['name_first'] = 'Removed'
-    #         store['users'][i]['name_last'] = 'user'
-
-    for i in range(len(store['users'])):
-        if store['users'][i]['auth_user_id'] == u_id:
-            store['users'][i]['name_first'] == 'Removed'
-            store['users'][i]['name_last'] == 'user'
-
-
-# Last step: invalidate their token (remove session list)
-    auth_logout(u_id_token)
-    # could just call logout for the following 2 steps:
-    # loop through session list, hash each one and use check_valid_token(token)[u_id] to check what user id they are
-    # if u_id matches, remove that session list, keep going until end of session list to log out every one
     data_store.set(store)
+
     return {}
 
 
