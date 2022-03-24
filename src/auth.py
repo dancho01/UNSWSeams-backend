@@ -34,13 +34,13 @@ def auth_login_v1(email, password):
 
     # InputError is raised if valid email is not found
     if found != True:
-        raise InputError("This email is not registered!")
+        raise InputError(description="This email is not registered!")
 
     for user in store['users']:
         if user['email'] == email:
             # InputError is raised if password does not match
             if user['password'] != hash(password):
-                raise InputError("Incorrect Password!")
+                raise InputError(description="Incorrect Password!")
             else:
                 token = generate_token(user['auth_user_id'])
                 return {'auth_user_id': user['auth_user_id'],

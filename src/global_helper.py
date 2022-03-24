@@ -61,8 +61,12 @@ def check_global_owner(auth_user_id):
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
             if user['global_permissions'] == 1:
+                print("_____________________________________________")
+                print(user['global_permissions'])
                 return True
             else:
+                print("++++++++++++++++++++++++++++++++++++++++++++")
+                print(user['global_permissions'])
                 return False
 
 

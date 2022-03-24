@@ -342,7 +342,9 @@ def get_channel_details_v2():
 def admin_user_remove_v1_wrapper():
     data = request.get_json()
     result = admin_user_remove_v1(data['token'], data['u_id'])
-
+    print(data_store.get())
+    print('===============================================================')
+    print(data['permission_id'])
     save_data()
     print(data_store.get())
     return dumps(result)
@@ -353,9 +355,6 @@ def admin_userpermission_change_v1_wrapper():
     data = request.get_json()
     result = admin_userpermission_change_v1(
         data['token'], data['u_id'], data['permission_id'])
-    print(data_store.get())
-    print('===============================================================')
-    print(data['permission_id'])
     save_data()
     return dumps(result)
 
@@ -371,4 +370,4 @@ def users_all():
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port=config.port, debug=True)  # Do not edit this port

@@ -11,7 +11,8 @@ def test_admin_user_remove_u_id_not_valid():
     """
     u_id does not refer to a valid user
     """
-    requests.delete(config.url + 'clear/v1')
+    clear_response = requests.delete(config.url + 'clear/v1')
+    assert clear_response.status_code == 200
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user1_data = user1.json()
@@ -20,38 +21,38 @@ def test_admin_user_remove_u_id_not_valid():
         'u_id': user1_data['auth_user_id'] + 1})
     assert response.status_code == 400  # inputError
 
-def test_admin_user_remove_only_global_owner_left():
-    """
-        u_id refers to a user who is the only global owner
-    """
-    requests.delete(config.url + 'clear/v1')
-    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-    user1_data = user1.json()
-
-    response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-        'u_id': user1_data['auth_user_id']})
-    assert response.status_code == 400  # inputError
-
-# def test_admin_user_remove_auth_user_not_global_owner():
-#     '''
-#         the authorised user is not a global owner
-#     '''
+# def test_admin_user_remove_only_global_owner_left():
+#     """
+#         u_id refers to a user who is the only global owner
+#     """
 #     requests.delete(config.url + 'clear/v1')
 #     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
 #                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
 #     user1_data = user1.json()
-#     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user2_data = user2.json()
-#     user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user3_data = user3.json()
-#     requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
-#         'permission_id': GLOBAL_OWNER})
-#     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user3_data['token'],
+
+#     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
 #         'u_id': user1_data['auth_user_id']})
-#     assert response.status_code == 400  # InputError
+#     assert response.status_code == 400  # inputError
+
+def test_admin_user_remove_auth_user_not_global_owner():
+    '''
+        the authorised user is not a global owner
+    '''
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user3_data = user3.json()
+    requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
+        'permission_id': GLOBAL_OWNER})
+    response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user3_data['token'],
+        'u_id': user1_data['auth_user_id']})
+    assert response.status_code == 403  # AccessError
 
 
 # """
@@ -119,22 +120,22 @@ def test_admin_user_remove_only_global_owner_left():
 #         'u_id': user2_data['auth_user_id'], 'permission_id': 2})
 #     assert response2.status_code == 400  # inputError
 
-# def test_admin_userpermission_change_auth_user_not_global_owner():
-#     """
-#     the authorised user is not a global owner
-#     """
-#     requests.delete(config.url + 'clear/v1')
-#     requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user2_data = user2.json()
-#     user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user3_data = user3.json()
-#     response = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user2_data['token'],
-#         'u_id': user3_data['auth_user_id'], 'permission_id': 1})
-#     assert response.status_code == 403  # AccessError
+def test_admin_userpermission_change_auth_user_not_global_owner():
+    """
+    the authorised user is not a global owner
+    """
+    requests.delete(config.url + 'clear/v1')
+    requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user3_data = user3.json()
+    response = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user2_data['token'],
+        'u_id': user3_data['auth_user_id'], 'permission_id': 1})
+    assert response.status_code == 403  # AccessError
 
 
 # # test a successful case
