@@ -12,7 +12,7 @@ def test_admin_user_remove_u_id_not_valid():
     """
     u_id does not refer to a valid user
     """
-    clear_response = requests.delete(config.url + 'clear/v1')
+    requests.delete(config.url + 'clear/v1')
     print(data_store.get())
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})

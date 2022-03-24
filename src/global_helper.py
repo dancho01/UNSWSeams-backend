@@ -61,7 +61,7 @@ def check_global_owner(auth_user_id):
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
             if user['global_permissions'] == 1:
-                print("_____________________________________________")
+                print("++++++++++++++++++++++++++++++++++++++++++++")
                 print(user['global_permissions'])
                 return True
             else:
@@ -105,3 +105,9 @@ def generate_channel_id():
     global CHANNEL_COUNTER
     CHANNEL_COUNTER += 1
     return CHANNEL_COUNTER
+
+def reset_globals():
+    global CHANNEL_COUNTER
+    global AUTH_COUNTER
+    CHANNEL_COUNTER = 0
+    AUTH_COUNTER = 0
