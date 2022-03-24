@@ -34,13 +34,13 @@ def auth_login_v1(email, password):
 
     # InputError is raised if valid email is not found
     if found != True:
-        raise InputError("This email is not registered!")
+        raise InputError(description="This email is not registered!")
 
     for user in store['users']:
         if user['email'] == email:
             # InputError is raised if password does not match
             if user['password'] != hash(password):
-                raise InputError("Incorrect Password!")
+                raise InputError(description="Incorrect Password!")
             else:
                 token = generate_token(user['auth_user_id'])
                 return {'auth_user_id': user['auth_user_id'],
@@ -87,7 +87,7 @@ def auth_register_v1(email, password, name_first, name_last):
     final_handle = generate_new_handle(name_first, name_last, store)
 
     # associating global permissions to user_id
-    if new_id == 1:
+    if len(store['users']) == 0:
         perms = 1
     else:
         perms = 2

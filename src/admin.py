@@ -2,7 +2,7 @@ from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.token import check_valid_token
 from src.global_helper import check_valid_user, check_global_owner
-from src.admin_helper import remove_user_name, remove_user_messages
+from src.admin_helper import remove_user_name, remove_user_messages, admin_edit_messages_helper
 
 
 # use filter
@@ -10,7 +10,8 @@ from src.admin_helper import remove_user_name, remove_user_messages
 
 def admin_user_remove_v1(token, u_id):
     auth_user_id = check_valid_token(token)['u_id']
-    check_global_owner(auth_user_id)
+    if check_global_owner(auth_user_id) == False:
+        raise AccessError("authorised user is not a global owner")
     check_valid_user(u_id)
     store = data_store.get()
     global_owners = 0
@@ -30,7 +31,12 @@ def admin_user_remove_v1(token, u_id):
     for channel in store['channels']:
         for message in channel['messages']:
             if message['u_id'] == u_id:
-                remove_user_messages(message['message_id'])
+                admin_edit_messages_helper(auth_user_id, message['message_id'], "Removed user")
+
+    for dm in store['dms']:
+        for message in dm['messages']:
+            if message['u_id'] == u_id:
+                admin_edit_messages_helper(auth_user_id, message['message_id'], "Removed user")
 
     data_store.set(store)
 
