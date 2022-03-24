@@ -87,7 +87,7 @@ def auth_register_v1(email, password, name_first, name_last):
     final_handle = generate_new_handle(name_first, name_last, store)
 
     # associating global permissions to user_id
-    if new_id == 1:
+    if len(store['users']) == 0:
         perms = 1
     else:
         perms = 2

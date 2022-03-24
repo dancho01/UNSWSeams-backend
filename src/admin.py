@@ -28,7 +28,15 @@ def admin_user_remove_v1(token, u_id):
 
     remove_user_name(u_id)
 
-    admin_edit_messages_helper(auth_user_id, message_id, "Removed user")
+    for channel in store['channels']:
+        for message in channel['messages']:
+            if message['u_id'] == u_id:
+                admin_edit_messages_helper(auth_user_id, message['message_id'], "Removed user")
+
+    for dm in store['dms']:
+        for message in dm['messages']:
+            if message['u_id'] == u_id:
+                admin_edit_messages_helper(auth_user_id, message['message_id'], "Removed user")
 
     data_store.set(store)
 

@@ -78,6 +78,7 @@ def auth_register_wrapper():
         data['email'], data['password'], data['name_first'], data['name_last'])
 
     save_data()
+    print(data_store.get())
     return dumps({
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
