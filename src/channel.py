@@ -255,7 +255,6 @@ def channel_join_v1(token, channel_id):
     return {}
 
 
-
 def channel_addowner_v1(token, channel_id, u_id):
     """
     Make user with user id u_id an owner of the channel.
@@ -265,13 +264,9 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     channel_index = check_valid_channel(channel_id)
 
-    # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
-    # for user in store['channels'][channel_index]['owner_members']:
-    #     if auth_user_id == user['u_id']:
-    #         raise AccessError('auth_user_id does not have owner permissions in the channel')
     check_owner(channel_index, auth_user_id)
 
-    check_already_owner(channel_index, auth_user_id)
+    check_already_owner(channel_index, u_id)
 
     # u_id is invalid
     if check_user_registered(u_id, store) == False:
@@ -281,11 +276,6 @@ def channel_addowner_v1(token, channel_id, u_id):
     if check_authorization(u_id, channel_index, store) == False:
         raise InputError(
             'u_id refers to a user who is not a member of the channel')
-
-    # test if u_id is already an owner of the channel
-    if u_id in store['channels'][channel_index]['owner_members']:
-        raise InputError(
-            'u_id refers to a user who is already an owner of the channel')
 
     store['channels'][channel_index]['owner_members'].append(
         return_member_information(u_id, store))

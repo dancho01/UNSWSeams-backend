@@ -23,7 +23,9 @@ def check_valid_message(message_id, u_id, store):
             if message['message_id'] == message_id:
                 if message['u_id'] == u_id:
                     return True
-                elif check_global_owner != True:
+                elif check_global_owner:
+                    return True
+                else:
                     raise AccessError(
                         description="user not global owner or this message is not written by them")
 
@@ -32,7 +34,9 @@ def check_valid_message(message_id, u_id, store):
             if message['message_id'] == message_id:
                 if message['u_id'] == u_id:
                     return True
-                elif check_global_owner != True:
+                elif check_global_owner:
+                    return True
+                else:
                     raise AccessError(
                         description="user not global owner or this message is not written by them")
 
