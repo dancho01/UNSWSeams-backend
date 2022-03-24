@@ -342,9 +342,6 @@ def get_channel_details_v2():
 def admin_user_remove_v1_wrapper():
     data = request.get_json()
     result = admin_user_remove_v1(data['token'], data['u_id'])
-    print(data_store.get())
-    print('===============================================================')
-    print(data['permission_id'])
     save_data()
     print(data_store.get())
     return dumps(result)
