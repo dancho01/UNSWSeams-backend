@@ -215,6 +215,18 @@ def channel_addowner_v1_wrapper():
         data['token'], data['channel_id'], data['u_id'])
 
     save_data()
+    print(data_store.get())
+    return dumps(result)
+
+
+@APP.route("/channel/removeowner/v1", methods=['POST'])
+def channel_removeowner_v1_wrapper():
+    data = request.get_json()
+    result = channel_removeowner_v1(
+        data['token'], data['channel_id'], data['u_id'])
+
+    save_data()
+    print(data_store.get())
     return dumps(result)
 
 
@@ -222,18 +234,9 @@ def channel_addowner_v1_wrapper():
 def channel_messages_v2():
     print(data_store.get())
     token = request.args.get('token')
-    print("==================================================================================")
-    print(token)
     channel_id = int(request.args.get('channel_id'))
-    print("==================================================================================")
-    print(channel_id)
     start = int(request.args.get('start'))
-    print("==================================================================================")
-    print(start)
     result = channel_messages_v1(token, channel_id, start)
-
-    print(result)
-
     save_data()
     return dumps(result)
 
@@ -270,16 +273,6 @@ def messages_edits_v1():
 def messages_delete_v1():
     data = request.get_json()
     result = messages_remove_v1(data['token'], data['message_id'])
-
-    save_data()
-    return dumps(result)
-
-
-@APP.route("/channel/removeowner/v1", methods=['POST'])
-def channel_removeowner_v1_wrapper():
-    data = request.get_json()
-    result = channel_removeowner_v1(
-        data['token'], data['channel_id'], data['u_id'])
 
     save_data()
     return dumps(result)
