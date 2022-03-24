@@ -1,11 +1,12 @@
+from email import message
 from src.error import InputError, AccessError
 from src.data_store import check_authorization, data_store, check_user_registered, return_member_information
 from src.channel_helper import check_message, time_now
 from src.token import check_valid_token
-from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user
+from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, check_owner, check_already_owner
 from src.message_helper import generate_new_message_id, check_valid_message
 from flask import Response
-from json import dumps
+
 
 '''
     Invites a user with ID u_id to join a channel with ID channel_id.
@@ -35,7 +36,7 @@ def channel_invite_v1(token, channel_id, u_id):
 
     channel_index = check_valid_channel(channel_id)
     check_valid_user(u_id)
-    check_already_auth(auth_user_id, channel_index)
+    check_already_auth(u_id, channel_index)
     check_authorized_user(auth_user_id, channel_index)
 
     store['channels'][channel_index]['all_members'].append(
@@ -262,20 +263,15 @@ def channel_addowner_v1(token, channel_id, u_id):
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
-    channel_status = check_valid_channel(channel_id)
-
-    if channel_status == False:
-        raise InputError('channel_id does not refer to a valid channel')
-
-    channel_index = channel_status
+    channel_index = check_valid_channel(channel_id)
 
     # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
     # for user in store['channels'][channel_index]['owner_members']:
     #     if auth_user_id == user['u_id']:
     #         raise AccessError('auth_user_id does not have owner permissions in the channel')
-    if auth_user_id not in store['channels'][channel_index]['owner_members'] or store['users'][auth_user_id]['global_permissions'] != 1:
-        raise AccessError(
-            'auth_user_id does not have owner permissions in the channel')
+    check_owner(channel_index, auth_user_id)
+
+    check_already_owner(channel_index, auth_user_id)
 
     # u_id is invalid
     if check_user_registered(u_id, store) == False:
@@ -307,27 +303,11 @@ def channel_removeowner_v1(token, channel_id, u_id):
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
+    check_valid_user(auth_user_id)
     # returns a tuple (1,index) if channel is valid, else 0
-    channel_status = check_valid_channel(channel_id)
+    channel_index = check_valid_channel(channel_id)
 
-    if channel_status == False:
-        raise InputError('channel_id does not refer to a valid channel')
-
-    channel_index = channel_status
-
-    # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
-    if auth_user_id not in store['channels'][channel_index]['owner_members'] or store['users'][auth_user_id]['global_permissions'] != 1:
-        raise AccessError(
-            'auth_user_id does not have owner permissions in the channel')
-
-    # u_id is invalid
-    if check_user_registered(u_id, store) == False:
-        raise InputError('u_id does not refer to a valid user')
-
-    # test if u_id is an owner of the channel
-    if u_id not in store['channels'][channel_index]['owner_members']:
-        raise InputError(
-            'u_id refers to a user who is not an owner of the channel')
+    check_owner(channel_index, auth_user_id)
 
     # test if u_id is currently the only owner of the channel
     if len(store['channels'][channel_index]['owner_members']) == 1:
