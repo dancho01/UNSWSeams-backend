@@ -132,14 +132,18 @@ need to put in working channels/list function
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
         'u_id': user2_data['auth_user_id']})                                                                                    
 
-    response = requests.get(config.url + 'channels/list/v2',
-                            params={'token': user2_data['token']})
-    
+    response = requests.get(config.url + 'channel/details/v2', params = {'token' : user1_data['token'], 
+        'channel_id' : channel_1_data['channel_id']})
     response_data = response.json()
-    #assert response_data['channels'][0] == {}
-    #assert response_data['channels'][1] == {}
-    #assert response_data['channels'][2] == {}
-    #assert response_data['channels'][3] == {}
+
+    assert len(response_data['all_members']) == 1
+
+    response = requests.get(config.url + 'channel/details/v2', params = {'token' : user1_data['token'], 
+        'channel_id' : channel_2_data['channel_id']})
+    response_data = response.json()
+
+    assert len(response_data['all_members']) == 1
+
 
 def test_check_not_in_users_all():
     """
@@ -157,7 +161,7 @@ def test_check_not_in_users_all():
         'u_id': user2_data['auth_user_id']})   
     response = requests.get(config.url + 'users/all/v1', params = {'token' : user1_data['token']})
     response_data = response.json()
-    #assert len(response_data['users']) == 1
+    assert len(response_data['users']) == 1
 
     
 def test_removing_Seams_OG_owner_while_multiple_global_owners():
@@ -205,7 +209,6 @@ def test_remove_other_Seams_owner():
 
 def test_check_message_contents_is_Removed_user():
     """
-add new channel/messages function
     """
 # check message contents is "Removed user"
     requests.delete(config.url + 'clear/v1')
@@ -228,7 +231,7 @@ add new channel/messages function
     message_response = requests.get(config.url + 'channel/messages/v2', params={
         'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'], 'start': 0})
     message_response_data = message_response.json()
-    #assert message_response_data['messages'][0]['message'] == "Removed user"
+    assert message_response_data['messages'][0]['message'] == "Removed user"
 
 # check first name and last name is "Removed" "user"
 
