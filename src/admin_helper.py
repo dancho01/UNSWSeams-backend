@@ -21,7 +21,6 @@ def remove_user_messages(u_id):
     store = data_store.get()
 
     for channel in store['channels']:
-        print("=======================================================================")
         for message in channel['messages']:
             if message['u_id'] == u_id:
                 message['message'] = "Removed user"

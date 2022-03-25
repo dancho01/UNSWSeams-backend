@@ -13,15 +13,12 @@ def test_admin_user_remove_u_id_not_valid():
     u_id does not refer to a valid user
     """
     requests.delete(config.url + 'clear/v1')
-    print(data_store.get())
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user1_data = user1.json()
-    print(data_store.get())
-    print(user1_data)
+
     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
         'u_id': user1_data['auth_user_id'] + 1})
-    print(data_store.get())
     assert response.status_code == 400  # inputError
 
 def test_admin_user_remove_only_global_owner_left():
@@ -51,7 +48,6 @@ def test_admin_user_remove_auth_user_not_global_owner():
     user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user3_data = user3.json()
-    print(data_store.get())
     requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
         'permission_id': GLOBAL_OWNER})
     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user3_data['token'],
