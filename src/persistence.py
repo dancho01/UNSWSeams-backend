@@ -1,4 +1,5 @@
 import pickle
+import src.global_helper
 from src.data_store import data_store
 
 
@@ -12,7 +13,7 @@ def save_data():
 def load_data():
     try:
         # opens locally stored pickle file
-        data = pickle.load(open("local_data", "rb"))
+        data = pickle.load(open("data_store.p", "rb"))
         # inserts it into the data_store datastruct
         data_store.set(data)
     except Exception:

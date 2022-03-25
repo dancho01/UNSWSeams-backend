@@ -1,7 +1,7 @@
 from email import message
 from src.error import InputError, AccessError
 from src.data_store import check_authorization, data_store, check_user_registered, return_member_information
-from src.channel_helper import check_message, time_now
+from src.channel_helper import check_message, time_now, remove_message, member_leave
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, check_owner, check_already_owner
 from src.message_helper import generate_new_message_id, check_valid_message
@@ -48,24 +48,6 @@ def channel_invite_v1(token, channel_id, u_id):
 
 
 def channel_details_v1(token, channel_id):
-    '''
-    channel_details_v1 takes the output of check_valid_channel and stores it in channel_status,
-    it then ensures that the user is apart of the 'all_users' list within that channel and returns
-    all the information for that specified channel at [channel_index].
-
-    Arguments:
-        auth_user_id    int         - id of the user that is requesting details
-        channel_id      int         - Index of the channel that is to be searched
-
-    Exceptions:
-        AccessError     - Occurs when auth_user_id passed in is invalid
-        AccessError     - Occurs when channel_id is valid and the authorized user is not a member of the channel
-        InputError      - Occurs when channel_id does not refer to a valid channel
-
-    Return Value:
-        Returns store['channels'][channel_index] if all conditions are satisfied, which contains all the
-                information of the channel that is located at channel_index.
-    '''
 
     store = data_store.get()
 
@@ -84,30 +66,6 @@ def channel_details_v1(token, channel_id):
 
 
 def channel_messages_v1(token, channel_id, start):
-    '''
-    channel_messages_v1 returns a list of dictionaries which contain the keys message_id, u_id, message
-    and time_sent, start and end once all error checks are satisfied. End can either be start + 50 if
-    there are more messages that can be outputted or -1 if that is the end of all messages within that
-    server.
-
-    Iteration 1 note for the tutor:
-        Please check assumptions.md
-
-    Arguments:
-        auth_user_id    int         - id of the user that is requesting the messages
-        channel_id      int         - id of the channel the messages are from
-        start           int         - starting index of messages that are to be returned
-
-    Exceptions:
-        AccessError     - Occurs when auth_user_id passed in is invalid
-        AccessError     - Occurs when channel_id is valid and the authorized user is not a member of the channel
-        InputError      - Occurs when channel_id does not refer to a valid channel
-        InputError      - Occurs when start is greater than the total number of messages in the channel
-
-    Return Value:
-        Returns a dictionary with the keys 'messages' which is a list of dictionaries, 'start' which is a integer
-                and 'end' which is a int.
-    '''
     user_info = check_valid_token(token)
     auth_list_index = check_valid_channel(channel_id)
     check_authorized_user(user_info['u_id'], auth_list_index)
@@ -156,7 +114,6 @@ def message_send_v1(token, channel_id, message):
         if channel['channel_id'] == channel_id:
             channel['messages'].append(new_message)
 
-    data_store.set(store)
     return {
         'message_id': new_message_id
     }
@@ -192,19 +149,7 @@ def messages_remove_v1(token, message_id):
     store = data_store.get()
     check_valid_message(message_id, user_id, store)
 
-    for i in range(len(store['channels'])):
-        for j in range(len(store['channels'][i]['messages'])):
-            if store['channels'][i]['messages'][j]['message_id'] == message_id:
-                del store['channels'][i]['messages'][j]
-                return
-
-    for i in range(len(store['dms'])):
-        for j in range(len(store['dms'][i]['messages'])):
-            if store['dms'][i]['messages'][j]['message_id'] == message_id:
-                del store['dms'][i]['messages'][j]
-                return
-
-    data_store.set(store)
+    remove_message(message_id)
 
     return {}
 
@@ -216,15 +161,8 @@ def channel_leave_v1(token, channel_id):
     # AccessError
     check_authorized_user(user_info['u_id'], channel_index)
 
-    store = data_store.get()
-
-    store['channels'][channel_index]['all_members'] = list(filter(
-        lambda x: x['u_id'] != user_info['u_id'], store['channels'][channel_index]['all_members']))
-
-    store['channels'][channel_index]['owner_members'] = list(filter(
-        lambda x: x['u_id'] != user_info['u_id'], store['channels'][channel_index]['owner_members']))
-
-    data_store.set(store)
+    # Filters that user out of the list of all_members and owner_members
+    member_leave(user_info['u_id'], channel_index)
 
     return {}
 
@@ -255,7 +193,6 @@ def channel_join_v1(token, channel_id):
     return {}
 
 
-
 def channel_addowner_v1(token, channel_id, u_id):
     """
     Make user with user id u_id an owner of the channel.
@@ -265,13 +202,9 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     channel_index = check_valid_channel(channel_id)
 
-    # check if token refers to channel owner or has channel owner permissions i.e. is a global owner
-    # for user in store['channels'][channel_index]['owner_members']:
-    #     if auth_user_id == user['u_id']:
-    #         raise AccessError('auth_user_id does not have owner permissions in the channel')
     check_owner(channel_index, auth_user_id)
 
-    check_already_owner(channel_index, auth_user_id)
+    check_already_owner(channel_index, u_id)
 
     # u_id is invalid
     if check_user_registered(u_id, store) == False:
@@ -281,11 +214,6 @@ def channel_addowner_v1(token, channel_id, u_id):
     if check_authorization(u_id, channel_index, store) == False:
         raise InputError(
             'u_id refers to a user who is not a member of the channel')
-
-    # test if u_id is already an owner of the channel
-    if u_id in store['channels'][channel_index]['owner_members']:
-        raise InputError(
-            'u_id refers to a user who is already an owner of the channel')
 
     store['channels'][channel_index]['owner_members'].append(
         return_member_information(u_id, store))

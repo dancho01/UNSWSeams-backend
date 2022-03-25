@@ -326,7 +326,7 @@ def test_channel_addowner_user_not_member(create_first_user):
     assert response.status_code == 400  # InputError
 
 
-def test_channel_addowner_user_already_owner(create_first_user):
+def test_channel_addowner_user_already_owner():
     """
         u_id refers to a user who is already an owner of the channel
     """
