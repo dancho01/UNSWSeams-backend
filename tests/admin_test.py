@@ -203,8 +203,32 @@ def test_remove_other_Seams_owner():
     assert profile_response_data['user']['name_first'] == 'Removed'
     assert profile_response_data['user']['name_last'] == 'user'
 
-
+def test_check_message_contents_is_Removed_user():
+    """
+add new channel/messages function
+    """
 # check message contents is "Removed user"
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'], 'name': 'First Channel',
+                                                                       'is_public': True})
+    channel_1_data = channel_1.json()
+    requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                                     'u_id': user2_data['auth_user_id']})
+    message = "hello"
+    send_response = requests.post(config.url + 'message/send/v1', json={
+        'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'], 'message': message})
+    requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
+        'u_id': user2_data['auth_user_id']})   
+    message_response = requests.get(config.url + 'channel/messages/v2', params={
+        'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'], 'start': 0})
+    message_response_data = message_response.json()
+    #assert message_response_data['messages'][0]['message'] == "Removed user"
 
 # check first name and last name is "Removed" "user"
 
