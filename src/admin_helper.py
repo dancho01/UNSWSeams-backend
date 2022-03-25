@@ -9,7 +9,7 @@ def remove_user_name(u_id):
     for user in store['users']:
         if user['auth_user_id'] == u_id:
             user['name_first'] = "Removed"
-            user['name_last'] = "User"
+            user['name_last'] = "user"
 
     data_store.set(store)
 
