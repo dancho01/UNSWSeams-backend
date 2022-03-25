@@ -78,7 +78,6 @@ def auth_register_wrapper():
         data['email'], data['password'], data['name_first'], data['name_last'])
 
     save_data()
-    print(data_store.get())
     return dumps({
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
@@ -212,7 +211,6 @@ def channel_addowner_v1_wrapper():
         data['token'], data['channel_id'], data['u_id'])
 
     save_data()
-    print(data_store.get())
     return dumps(result)
 
 
@@ -223,7 +221,6 @@ def channel_removeowner_v1_wrapper():
         data['token'], data['channel_id'], data['u_id'])
 
     save_data()
-    print(data_store.get())
     return dumps(result)
 
 
@@ -233,7 +230,6 @@ def channel_messages_v2():
     channel_id = int(request.args.get('channel_id'))
     start = int(request.args.get('start'))
     result = channel_messages_v1(token, channel_id, start)
-    print(result)
     return dumps(result)
 
 
@@ -242,7 +238,6 @@ def messages_send_v1():
     data = request.get_json()
     result = message_send_v1(
         data['token'], data['channel_id'], data['message'])
-    print(data_store.get())
     save_data()
     return dumps(result)
 
@@ -292,7 +287,6 @@ def channels_listall_v2():
 def set_name():
     data = request.get_json()
     result = set_name_v1(data['token'], data['name_first'], data['name_last'])
-    print(data_store.get())
     save_data()
     return dumps(result)
 
@@ -301,7 +295,6 @@ def set_name():
 def set_email():
     data = request.get_json()
     result = set_email_v1(data['token'], data['email'])
-    print(data_store.get())
     save_data()
     return dumps(result)
 
@@ -310,7 +303,6 @@ def set_email():
 def set_handle():
     data = request.get_json()
     result = set_handle_v1(data['token'], data['handle_str'])
-    print(data_store.get())
     save_data()
     return dumps(result)
 
@@ -336,7 +328,6 @@ def admin_user_remove_v1_wrapper():
     data = request.get_json()
     result = admin_user_remove_v1(data['token'], data['u_id'])
     save_data()
-    print(data_store.get())
     return dumps(result)
 
 
@@ -361,4 +352,4 @@ def users_all():
 if __name__ == "__main__":
     load_data()
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port, debug=True)  # Do not edit this port
+    APP.run(port=config.port)  # Do not edit this port
