@@ -224,7 +224,7 @@ def test_check_message_contents_is_Removed_user():
     requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
                                                                      'u_id': user2_data['auth_user_id']})
     message = "hello"
-    send_response = requests.post(config.url + 'message/send/v1', json={
+    requests.post(config.url + 'message/send/v1', json={
         'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'], 'message': message})
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
         'u_id': user2_data['auth_user_id']})   
