@@ -101,7 +101,6 @@ def dm_list():
     token = request.args.get('token')
     result = dm_list_v1(token)
 
-    save_data()
     return dumps({
         'dms': result['dms']
     })
@@ -123,7 +122,6 @@ def get_dm_details():
 
     result = dm_details_v1(token, int(dm_id))
 
-    save_data()
     return dumps({
         'name': result['name'],
         'members': result['members']
@@ -147,7 +145,6 @@ def return_dm_messages():
 
     result = dm_messages_v1(token, int(dm_id), int(start))
 
-    save_data()
     return dumps({
         'messages': result['messages'],
         'start': result['start'],
@@ -232,12 +229,11 @@ def channel_removeowner_v1_wrapper():
 
 @APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
-    print(data_store.get())
     token = request.args.get('token')
     channel_id = int(request.args.get('channel_id'))
     start = int(request.args.get('start'))
     result = channel_messages_v1(token, channel_id, start)
-    save_data()
+    print(result)
     return dumps(result)
 
 
@@ -297,6 +293,7 @@ def set_name():
     data = request.get_json()
     result = set_name_v1(data['token'], data['name_first'], data['name_last'])
     print(data_store.get())
+    save_data()
     return dumps(result)
 
 
@@ -305,6 +302,7 @@ def set_email():
     data = request.get_json()
     result = set_email_v1(data['token'], data['email'])
     print(data_store.get())
+    save_data()
     return dumps(result)
 
 
@@ -313,6 +311,7 @@ def set_handle():
     data = request.get_json()
     result = set_handle_v1(data['token'], data['handle_str'])
     print(data_store.get())
+    save_data()
     return dumps(result)
 
 
@@ -360,5 +359,6 @@ def users_all():
 
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
+    load_data()
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
     APP.run(port=config.port, debug=True)  # Do not edit this port

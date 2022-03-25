@@ -22,7 +22,6 @@ def check_valid_message(message_id, u_id, store):
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 if message['u_id'] == u_id or check_global_owner(u_id):
-                    print(u_id)
                     return True
                 else:
                     raise AccessError(
@@ -32,7 +31,6 @@ def check_valid_message(message_id, u_id, store):
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 if message['u_id'] == u_id or check_global_owner(u_id):
-                    print(u_id)
                     return True
                 else:
                     raise AccessError(
@@ -40,23 +38,3 @@ def check_valid_message(message_id, u_id, store):
 
     raise InputError(
         description="message_id does not refer to a valid message within a channel/DM that the authorised user has joined")
-
-
-# def check_valid_message(message_id, u_id, store):
-#     for i, dm in enumerate(store['dms']):
-#         for j, message in enumerate(dm[i]['messages']):
-#             if message['message_id'] == message_id:
-#                 if message['u_id'] == u_id or check_global_owner(u_id):
-#                     return True
-#                 else:
-#                     raise AccessError(
-#                         description="user not global owner or this message is not written by them")
-
-#     for i, channel in enumerate(store['channels']):
-#         for j, message in enumerate(channel[i]['messages']):
-#             if message['message_id'] == message_id:
-#                 if message['u_id'] == u_id or check_global_owner(u_id):
-#                     return True
-#                 else:
-#                     raise AccessError(
-#                         description="user not global owner or this message is not written by them")

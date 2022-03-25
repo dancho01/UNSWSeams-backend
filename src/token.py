@@ -57,7 +57,7 @@ def validate_token_u_id(u_id):
     store = data_store.get()
 
     for user in store['users']:
-        if user['auth_user_id'] == u_id:
+        if user['auth_user_id'] == u_id and user['active']:
             return
 
     raise AccessError(
