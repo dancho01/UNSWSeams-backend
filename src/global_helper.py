@@ -3,6 +3,7 @@ from src.error import InputError, AccessError
 
 AUTH_COUNTER = 0
 CHANNEL_COUNTER = 0
+MESSAGE_ID_COUNTER = 0
 
 
 def check_valid_user(u_id):
@@ -91,6 +92,19 @@ def check_already_owner(channel_index, auth_user_id):
                 description="u_id refers to a user who is already an owner of the channel")
 
 
+def generate_new_message_id():
+    '''
+    Generates a new message_id that is unique and sequentially increases by 1
+    Args:
+        None
+    Return:
+        Returns the next message_id
+    '''
+    global MESSAGE_ID_COUNTER
+    MESSAGE_ID_COUNTER += 1
+    return MESSAGE_ID_COUNTER
+
+
 def generate_user_id():
     global AUTH_COUNTER
     AUTH_COUNTER += 1
@@ -104,19 +118,18 @@ def generate_channel_id():
 
 
 def reset_globals():
-    global CHANNEL_COUNTER
-    global AUTH_COUNTER
-    CHANNEL_COUNTER = 0
-    AUTH_COUNTER = 0
+    global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER
+    CHANNEL_COUNTER = AUTH_COUNTER = MESSAGE_ID_COUNTER = 0
 
 
-def load_globals(auth, channel):
-    global AUTH_COUNTER, CHANNEL_COUNTER
+def load_globals(auth, channel, message):
+    global AUTH_COUNTER, CHANNEL_COUNTER, MESSAGE_ID_COUNTER
     AUTH_COUNTER = auth
     CHANNEL_COUNTER = channel
+    MESSAGE_ID_COUNTER = message
 
 
 def get_globals():
-    global AUTH_COUNTER, CHANNEL_COUNTER
+    global AUTH_COUNTER, CHANNEL_COUNTER, MESSAGE_ID_COUNTER
 
-    return AUTH_COUNTER, CHANNEL_COUNTER
+    return AUTH_COUNTER, CHANNEL_COUNTER, MESSAGE_ID_COUNTER

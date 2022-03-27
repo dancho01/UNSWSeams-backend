@@ -1,8 +1,9 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store, return_member_information, check_user_registered
 from src.token import check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, return_handle, check_valid_dm, check_user_member_dm, generate_new_dm_id, generate_DM_name
-from src.message_helper import generate_new_message_id
+from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, generate_new_dm_id, generate_DM_name
+from src.global_helper import generate_new_message_id
+
 from datetime import timezone
 import datetime
 

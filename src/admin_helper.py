@@ -81,6 +81,7 @@ def remove_from_session_list(u_id):
 
     return
 
+
 def check_and_set_new_permissions(u_id, permission_id):
     store = data_store.get()
 
