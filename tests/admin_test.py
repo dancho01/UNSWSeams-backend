@@ -318,33 +318,9 @@ def test_check_dm_message_contents_is_Removed_user():
                                                                  'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
     user2_data = user2.json()
 
-    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
-                                                                 'password': 'password', 'name_first': 'First3', 'name_last': 'Last'})
-    user3_data = user3.json()
-
     dm_1 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
     dm_1_data = dm_1.json()
     assert dm_1.status_code == 200
-    dm_2 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user3_data['auth_user_id']]})
-    dm_2_data = dm_2.json()
-    assert dm_2.status_code == 200
-    dm_3 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user3_data['auth_user_id']]})
-    dm_3_data = dm_3.json()
-    assert dm_3.status_code == 200
-
-    dm_4 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user1_data['auth_user_id']]})
-    dm_4_data = dm_4.json()
-    assert dm_4.status_code == 200
-
-    dm_5 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user1_data['auth_user_id'], 
-        user3_data['auth_user_id']]})
-    dm_5_data = dm_5.json()
-    assert dm_5.status_code == 200
-
-    dm_6 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id'], 
-        user3_data['auth_user_id']]})
-    dm_6_data = dm_6.json()         
-    assert dm_6.status_code == 200
 
     message = "hello"
     requests.post(config.url + 'message/senddm/v1', json={
@@ -494,5 +470,4 @@ def test_user_permission_change_owner_to_member():
     response3 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user2_data['token'], 'u_id': user3_data['auth_user_id'],
         'permission_id': 2})
     assert response3.status_code == 200
-    response3_data = response3.json()
     assert json.loads(response3.text) == {}
