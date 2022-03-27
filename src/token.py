@@ -7,12 +7,19 @@ SECRET = 'H09BELEPHANT'
 
 
 def hash(password):
+    '''
+        Hashes the input with sha256
+    '''
     hashed_pword = hashlib.sha256(str(password).encode()).hexdigest()
 
     return hashed_pword
 
 
 def generate_token(user_id, handle):
+    '''
+        Takes the session_id from generate_session_id and the user_id,
+        places it into the token and encodes it as a JWT
+    '''
     store = data_store.get()
     session_id = generate_session_id(user_id, handle)
     ENCODED_JWT = jwt.encode(
@@ -24,16 +31,23 @@ def generate_token(user_id, handle):
 
 
 def generate_session_id(user_id, handle):
+    '''
+        Hashes the concatenation of user_id and handle, uses
+        it as the session_id
+    '''
     return (hash(str(user_id) + handle))
 
 
 def check_valid_token(token):
     '''
-    Decodes the jwt string back into the user's data that was stored
-    Args:
-        hashed_jwt      str         the JWT string containing the header, payload and signature
-    Return:
-        Returns an object storing the user's data that was used to generate the JWT
+        Tries to check if it is a valid token that can be decoded, if 
+        not then error is raised. 
+
+        Then calls validate_token_u_id which matches the users id with
+        an id in the database
+
+        Finally, it checks to see if this user is currently in the 
+        session_list.
     '''
 
     try:
@@ -51,6 +65,9 @@ def check_valid_token(token):
 
 
 def validate_token_u_id(u_id):
+    '''
+        Checks if u_id exists in the database
+    '''
     store = data_store.get()
 
     for user in store['users']:
