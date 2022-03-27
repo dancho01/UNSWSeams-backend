@@ -8,10 +8,6 @@ from src.channels_helper import search_user_channel, return_all_channels, create
 def channels_list_v1(token):
     '''
     Provide a list of all channels (and their associated details) that the authorised user is part of.
-    Args:
-        token           str         user's token         
-    Return Value:
-        Returns {channels} dictionary containing a list of dictionaries that contain { channel_id, name }.
     '''
 
     user_data = check_valid_token(token)
@@ -26,10 +22,6 @@ def channels_list_v1(token):
 def channels_listall_v1(token):
     '''
     Provide a list of all channels (and their associated details) in Seams.
-    Args:
-        token           str         user's token         
-    Return Value:
-        Returns {channels} dictionary containing a list of dictionaries that contain { channel_id, name }.
     '''
 
     user_data = check_valid_token(token)
@@ -44,12 +36,6 @@ def channels_listall_v1(token):
 def channels_create_v1(token, name, is_public):
     '''
     Creates a new channel with the given name that is either a public or private channel.
-    Args:
-        token           str         user's token 
-        name            str         channel's name
-        is_public       bool        channel's public status         
-    Return Value:
-        Returns dictionary containing {channel_id}
     '''
     store = data_store.get()
 
