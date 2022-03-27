@@ -75,7 +75,7 @@ def remove_from_session_list(u_id):
     store = data_store.get()
 
     for user in store['users']:
-        if user['auth_user_id'] == u_id:
+        if user['auth_user_id'] == u_id and hash(str(u_id) + user['handle']) in store['session_list']:
             store['session_list'].remove(
                 hash(str(u_id) + user['handle']))
 
