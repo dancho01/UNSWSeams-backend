@@ -1,7 +1,7 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store, return_member_information, check_user_registered
 from src.token import check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, return_handle, check_valid_dm, check_user_member_dm, return_dm_messages, generate_new_dm_id, generate_DM_name
+from src.dm_helpers import check_for_duplicates_uids, return_handle, check_valid_dm, check_user_member_dm, generate_new_dm_id, generate_DM_name
 from src.message_helper import generate_new_message_id
 from datetime import timezone
 import datetime
@@ -97,10 +97,7 @@ def dm_remove_v1(token, dm_id):
     user_info = check_valid_token(token)
     auth_user_id = user_info['u_id']
 
-    if check_valid_dm(dm_id, store) == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = check_valid_dm(dm_id, store)[1]
+    dm_index = check_valid_dm(dm_id, store)
 
     auth_user_member = return_member_information(auth_user_id, store)
 
@@ -117,7 +114,6 @@ def dm_remove_v1(token, dm_id):
     return {}
 
 
-# always raises input error, need to fix
 def dm_details_v1(token, dm_id):
     store = data_store.get()
 
@@ -125,11 +121,7 @@ def dm_details_v1(token, dm_id):
     user_info = check_valid_token(token)
     auth_user_id = user_info['u_id']
 
-    is_dm_valid = check_valid_dm(dm_id, store)
-    if is_dm_valid == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = is_dm_valid[1]
+    dm_index = check_valid_dm(dm_id, store)
 
     if check_user_member_dm(auth_user_id, store, dm_index) == False:
         raise AccessError(description='authorised user is not member of DM')
@@ -147,11 +139,8 @@ def dm_leave_v1(token, dm_id):
 
     user_info = check_valid_token(token)
     auth_user_id = user_info['u_id']
-
-    if check_valid_dm(dm_id, store) == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = check_valid_dm(dm_id, store)[1]
+    
+    dm_index = check_valid_dm(dm_id, store)
 
     if check_user_member_dm(auth_user_id, store, dm_index) == False:
         raise AccessError(description='authorised user is not member of DM')
@@ -169,12 +158,9 @@ def dm_messages_v1(token, dm_id, start):
 
     user_info = check_valid_token(token)
     auth_user_id = user_info['u_id']
-
-    is_dm_valid = check_valid_dm(dm_id, store)
-    if is_dm_valid == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = is_dm_valid[1]
+ 
+    dm_index = check_valid_dm(dm_id, store)
+    
     if check_user_member_dm(auth_user_id, store, dm_index) == False:
         raise AccessError(description='authorised user is not member of DM')
 
@@ -209,11 +195,8 @@ def message_senddm_v1(token, dm_id, message):
     user_info = check_valid_token(token)
     auth_user_id = user_info['u_id']
 
-    is_dm_valid = check_valid_dm(dm_id, store)
-    if is_dm_valid == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = is_dm_valid[1]
+    dm_index = check_valid_dm(dm_id, store)
+    
     if check_user_member_dm(auth_user_id, store, dm_index) == False:
         raise AccessError(description='authorised user is not member of DM')
 
