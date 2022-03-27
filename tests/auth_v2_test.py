@@ -43,6 +43,20 @@ def test_duplicate_emails():
     assert user2.status_code == 400
 
 
+def test_long_name():
+    requests.delete(config.url + 'clear/v1')
+    response = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                    'password': 'password', 'name_first': 'uvuvwevwevwe', 'name_last': 'onyetenyevwe'})
+    assert response.status_code == 200
+
+
+def test_not_alnum_name():
+    requests.delete(config.url + 'clear/v1')
+    response = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                    'password': 'password', 'name_first': 'uvuvwevwevwe!!!', 'name_last': 'onyetenyevwe'})
+    assert response.status_code == 200
+
+
 def test_register_success():
     requests.delete(config.url + 'clear/v1')
     response = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
