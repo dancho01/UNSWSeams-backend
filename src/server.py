@@ -100,7 +100,6 @@ def dm_list():
     token = request.args.get('token')
     result = dm_list_v1(token)
 
-    save_data()
     return dumps({
         'dms': result['dms']
     })
@@ -122,7 +121,6 @@ def get_dm_details():
 
     result = dm_details_v1(token, int(dm_id))
 
-    save_data()
     return dumps({
         'name': result['name'],
         'members': result['members']
@@ -146,7 +144,6 @@ def return_dm_messages():
 
     result = dm_messages_v1(token, int(dm_id), int(start))
 
-    save_data()
     return dumps({
         'messages': result['messages'],
         'start': result['start'],
@@ -217,23 +214,22 @@ def channel_addowner_v1_wrapper():
     return dumps(result)
 
 
-@APP.route("/channel/messages/v2", methods=['GET'])
-def channel_messages_v2():
-    print(data_store.get())
-    token = request.args.get('token')
-    print("==================================================================================")
-    print(token)
-    channel_id = int(request.args.get('channel_id'))
-    print("==================================================================================")
-    print(channel_id)
-    start = int(request.args.get('start'))
-    print("==================================================================================")
-    print(start)
-    result = channel_messages_v1(token, channel_id, start)
-
-    print(result)
+@APP.route("/channel/removeowner/v1", methods=['POST'])
+def channel_removeowner_v1_wrapper():
+    data = request.get_json()
+    result = channel_removeowner_v1(
+        data['token'], data['channel_id'], data['u_id'])
 
     save_data()
+    return dumps(result)
+
+
+@APP.route("/channel/messages/v2", methods=['GET'])
+def channel_messages_v2():
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    start = int(request.args.get('start'))
+    result = channel_messages_v1(token, channel_id, start)
     return dumps(result)
 
 
@@ -242,7 +238,6 @@ def messages_send_v1():
     data = request.get_json()
     result = message_send_v1(
         data['token'], data['channel_id'], data['message'])
-    print(data_store.get())
     save_data()
     return dumps(result)
 
@@ -274,16 +269,6 @@ def messages_delete_v1():
     return dumps(result)
 
 
-@APP.route("/channel/removeowner/v1", methods=['POST'])
-def channel_removeowner_v1_wrapper():
-    data = request.get_json()
-    result = channel_removeowner_v1(
-        data['token'], data['channel_id'], data['u_id'])
-
-    save_data()
-    return dumps(result)
-
-
 @APP.route("/channels/list/v2", methods=['GET'])
 def channels_list_v2():
     token = request.args.get('token')
@@ -302,7 +287,7 @@ def channels_listall_v2():
 def set_name():
     data = request.get_json()
     result = set_name_v1(data['token'], data['name_first'], data['name_last'])
-    print(data_store.get())
+    save_data()
     return dumps(result)
 
 
@@ -310,7 +295,7 @@ def set_name():
 def set_email():
     data = request.get_json()
     result = set_email_v1(data['token'], data['email'])
-    print(data_store.get())
+    save_data()
     return dumps(result)
 
 
@@ -318,7 +303,7 @@ def set_email():
 def set_handle():
     data = request.get_json()
     result = set_handle_v1(data['token'], data['handle_str'])
-    print(data_store.get())
+    save_data()
     return dumps(result)
 
 
@@ -342,9 +327,7 @@ def get_channel_details_v2():
 def admin_user_remove_v1_wrapper():
     data = request.get_json()
     result = admin_user_remove_v1(data['token'], data['u_id'])
-
     save_data()
-    print(data_store.get())
     return dumps(result)
 
 
@@ -353,9 +336,6 @@ def admin_userpermission_change_v1_wrapper():
     data = request.get_json()
     result = admin_userpermission_change_v1(
         data['token'], data['u_id'], data['permission_id'])
-    print(data_store.get())
-    print('===============================================================')
-    print(data['permission_id'])
     save_data()
     return dumps(result)
 
@@ -370,5 +350,6 @@ def users_all():
 
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":
+    load_data()
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
     APP.run(port=config.port)  # Do not edit this port

@@ -27,11 +27,18 @@ def generate_new_handle(name_first, name_last, store):
     final_handle = handle
     # iterates through list of users to check if handle is already taken
     for user in store['users']:
-        if user['handle'] == final_handle:
+        if user['handle'] == final_handle and not is_user_removed(user):
             final_handle = handle + str(count)
             count += 1
 
     return final_handle
+
+
+def is_user_removed(user):
+    if user['name_first'] == "Removed" and user['name_last'] == "user":
+        return True
+    else:
+        return False
 
 
 def check_info(name_first, name_last, password, email):
@@ -53,7 +60,9 @@ def check_info(name_first, name_last, password, email):
     store = data_store.get()
 
     for user in store['users']:
-        if user['email'] == email:
+        if user['email'] == email and is_user_removed(user) == False:
+            print("------------------------------------------------------------")
+            print(is_user_removed(user))
             raise InputError(
                 description="This email is already in use by another user!")
 

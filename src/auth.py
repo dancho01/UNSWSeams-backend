@@ -34,13 +34,13 @@ def auth_login_v1(email, password):
 
     # InputError is raised if valid email is not found
     if found != True:
-        raise InputError("This email is not registered!")
+        raise InputError(description="This email is not registered!")
 
     for user in store['users']:
         if user['email'] == email:
             # InputError is raised if password does not match
             if user['password'] != hash(password):
-                raise InputError("Incorrect Password!")
+                raise InputError(description="Incorrect Password!")
             else:
                 token = generate_token(user['auth_user_id'])
                 return {'auth_user_id': user['auth_user_id'],
@@ -79,30 +79,26 @@ def auth_register_v1(email, password, name_first, name_last):
 
     check_info(name_first, name_last, password, email)
 
-    # creates a new id depending on how many users exist
-    new_id = generate_user_id()
-    token = generate_token(new_id)
-
     # creating handle from first and last name
     final_handle = generate_new_handle(name_first, name_last, store)
 
     # associating global permissions to user_id
-    if new_id == 1:
+    if len(store['users']) == 0:
         perms = 1
     else:
         perms = 2
 
+    new_id = generate_user_id()
+
     # adding all information to dictionary
     new_user = {'auth_user_id': new_id, 'name_first': name_first, 'name_last': name_last,
-                'email': email, 'password': hash(password), 'handle': final_handle, 'global_permissions': perms}
+                'email': email, 'password': hash(password), 'handle': final_handle, 'global_permissions': perms, 'active': True}
 
     store['users'].append(new_user)
 
-    data_store.set(store)
-
     return {
         'auth_user_id': new_id,
-        'token': token,
+        'token': generate_token(new_id),
     }
 
 
@@ -111,6 +107,5 @@ def auth_logout(token):
     user_info = check_valid_token(token)
 
     store['session_list'].remove(hash(user_info['session_id']))
-    data_store.set(store)
 
     return {}

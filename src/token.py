@@ -44,8 +44,21 @@ def check_valid_token(token):
     except Exception as error:
         raise AccessError(description="Invalid Token") from error
 
+    validate_token_u_id(token_decoded['u_id'])
+
     store = data_store.get()
     if hash(token_decoded['session_id']) in store['session_list']:
         return token_decoded
     else:
         raise AccessError(description="Invalid session_id")
+
+
+def validate_token_u_id(u_id):
+    store = data_store.get()
+
+    for user in store['users']:
+        if user['auth_user_id'] == u_id and user['active']:
+            return
+
+    raise AccessError(
+        description="u_id from token does not match a valid user")

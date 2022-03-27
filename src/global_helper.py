@@ -18,9 +18,9 @@ def check_valid_user(u_id):
 def check_valid_channel(c_id):
     store = data_store.get()
 
-    for i in range(len(store['channels'])):
-        if store['channels'][i]['channel_id'] == c_id:
-            return int(i)
+    for index, channel in enumerate(store['channels']):
+        if channel['channel_id'] == c_id:
+            return index
 
     raise InputError(
         description="channel_id does not refer to a valid channel")
@@ -86,7 +86,7 @@ def check_already_owner(channel_index, auth_user_id):
     owner_members = store['channels'][channel_index]['owner_members']
 
     for owner in owner_members:
-        if owner['u_id'] == auth_user_id and check_global_owner:
+        if owner['u_id'] == auth_user_id:
             raise InputError(
                 description="u_id refers to a user who is already an owner of the channel")
 
@@ -101,3 +101,10 @@ def generate_channel_id():
     global CHANNEL_COUNTER
     CHANNEL_COUNTER += 1
     return CHANNEL_COUNTER
+
+
+def reset_globals():
+    global CHANNEL_COUNTER
+    global AUTH_COUNTER
+    CHANNEL_COUNTER = 0
+    AUTH_COUNTER = 0

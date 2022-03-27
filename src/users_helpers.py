@@ -7,12 +7,13 @@ def return_users_information():
     users = []
 
     for user in store['users']:
-        users.append({
-            'u_id': user['auth_user_id'],
-            'email': user['email'],
-            'name_first': user['name_first'],
-            'name_last': user['name_last'],
-            'handle_str': user['handle']
-        })
+        if user['active']:
+            users.append({
+                'u_id': user['auth_user_id'],
+                'email': user['email'],
+                'name_first': user['name_first'],
+                'name_last': user['name_last'],
+                'handle_str': user['handle']
+            })
 
     return users
