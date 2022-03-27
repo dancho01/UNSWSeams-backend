@@ -2,6 +2,10 @@ from src.data_store import data_store
 
 
 def return_users_information():
+    '''
+        Return active users' information from data_store
+    '''
+
     store = data_store.get()
 
     users = []
@@ -20,6 +24,10 @@ def return_users_information():
 
 
 def return_profile(u_id):
+    '''
+        Return user's information
+    '''
+    
     store = data_store.get()
 
     for user in store['users']:

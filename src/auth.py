@@ -9,18 +9,11 @@ from src.global_helper import generate_user_id
 
 def auth_login_v1(email, password):
     '''
-    This function logs in a registered user, given their email and password
-    Arguments:
-        email         string         - the registered user's email
-        password      string         - the registered user's password
+        Checks login information to first see if the email exists
+        and if the password matches.
 
-    Exceptions:
-        InputError      - Occurs when email entered does not belong to a user
-        InputError      - Occurs when password is not correct
-
-    Return Value:
-        Returns a dictionary with the key 'auth_user_id', an integer value, if
-        login is successful
+        If first layer of authentication is passed, a token is generated
+        for the user.
     '''
 
     user_info = check_login(email, password)
@@ -32,30 +25,11 @@ def auth_login_v1(email, password):
 
 def auth_register_v1(email, password, name_first, name_last):
     '''
-    This function registers a user, given the input of their first name, last name,
-    email address and password, creating a new account for them. It is also responsible
-    for generating the handle for the user. The handle must be unique for each user,
-    so if a handle generated already exists, then a number is appended to it until
-    it is unique.
-
-    Arguments:
-        email           string         - the user's email they want to register with
-        password        string         - the user's intended password to use
-        name_first      string         - the user's first name
-        name_last       string         - the user's last name
-
-    Exceptions:
-        InputError      - Occurs when email entered is not a valid channel
-        InputError      - Occurs when email address is already being used by another user
-        InputError      - Occurs when length of password is less than 6 characters
-        InputError      - Occurs when length of name_first is not between 1 and 50
-                        characters inclusive
-        InputError      - Occurs when length of name_last is not between 1 and 50 
-                        characters inclusive
-
-    Return Value:
-        Returns a dictionary with the key 'auth_user_id', which is an integer value, if
-        account is successfully created
+        Checks input errors with check_info_syntax, a new
+        handle is generated along with a new_id. After
+        those are created, the information will be appended
+        to store['users'] and the token and id will then be
+        returned
     '''
 
     store = data_store.get()
@@ -85,6 +59,10 @@ def auth_register_v1(email, password, name_first, name_last):
 
 
 def auth_logout(token):
+    '''
+        Checks the user for valid token, then removes them
+        from the session_id list
+    '''
     store = data_store.get()
     user_info = check_valid_token(token)
 

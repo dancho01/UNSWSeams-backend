@@ -6,6 +6,12 @@ from src import config
 '''tests for users all'''
 
 def test_one_user():
+    '''
+    Error raised:
+        None
+    Explanation:
+        List the only one existing user
+    '''
     requests.delete(config.url + 'clear/v1')   
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -18,6 +24,12 @@ def test_one_user():
     assert response.status_code == 200
 
 def test_multiple_users():
+    '''
+    Error raised:
+        None
+    Explanation:
+        List the two existing users
+    '''
     requests.delete(config.url + 'clear/v1')   
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 

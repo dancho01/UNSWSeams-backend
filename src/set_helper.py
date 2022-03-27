@@ -5,7 +5,9 @@ from src.data_store import data_store
 
 
 def check_name(name_first, name_last):
-
+    '''
+        Checks first name and last name for input errors
+    '''
     if len(name_first) < 1 or len(name_first) > 50:
         raise InputError(
             description="First name must be between 1 and 50 characters inclusive")
@@ -18,7 +20,10 @@ def check_name(name_first, name_last):
 
 
 def insert_name(u_id, name_first, name_last):
-
+    '''
+        Finds the u_id in channels, dms and users and
+        replaces the old name with the new ones
+    '''
     store = data_store.get()
 
     # Updates users information
@@ -49,6 +54,9 @@ def insert_name(u_id, name_first, name_last):
 
 
 def check_email(email):
+    '''
+        Utilises re formatting to check for valid email
+    '''
     if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
         raise InputError(description="Invalid email!")
 
@@ -61,7 +69,10 @@ def check_email(email):
 
 
 def insert_email(u_id, email):
-
+    '''
+        Finds the u_id that this new email belongs to,
+        replaces it in users, dms and channels
+    '''
     store = data_store.get()
 
     # Updates users information
@@ -74,8 +85,7 @@ def insert_email(u_id, email):
         for owner_member in channels['owner_members']:
             if owner_member['u_id'] == u_id:
                 owner_member['email'] = email
-    # Updates owner members
-    for channels in store['channels']:
+
         for all_member in channels['all_members']:
             if all_member['u_id'] == u_id:
                 owner_member['email'] = email
@@ -89,7 +99,10 @@ def insert_email(u_id, email):
 
 
 def check_handle(handle):
-
+    '''
+        Checks the handle for letters that are not alnum, 
+        length errors or if it already exists
+    '''
     if len(handle) < 3 or len(handle) > 20:
         raise InputError(
             description="length of handle_str is not between 3 and 20 characters inclusive")
@@ -107,7 +120,10 @@ def check_handle(handle):
 
 
 def insert_handle(u_id, handle):
-
+    '''
+        Finds the u_id that this new handle belongs to,
+        replaces it in users, dms and channels
+    '''
     store = data_store.get()
 
     # Updates users information

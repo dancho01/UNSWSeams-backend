@@ -4,6 +4,11 @@ from src.set_helper import check_name, check_email, check_handle, insert_name, i
 
 
 def set_name_v1(token, name_first, name_last):
+    '''
+        checks if token is valid using check_valid_token,
+        uses check_name to check for input errors and uses
+        insert_name to insert the new name into the datastruct
+    '''
     user_info = check_valid_token(token)
 
     check_name(name_first, name_last)
@@ -15,6 +20,12 @@ def set_name_v1(token, name_first, name_last):
 
 
 def set_email_v1(token, email):
+    '''
+        checks if token is valid using check_valid_token,
+        check_email checks if the email is in the right format
+        and insert_email inserts the users new email into the 
+        datastruct
+    '''
     user_info = check_valid_token(token)
 
     check_email(email)
@@ -26,6 +37,12 @@ def set_email_v1(token, email):
 
 
 def set_handle_v1(token, handle):
+    '''
+        checks if token is valid using check_valid_token,
+        check_handle is used to check syntax of the new handle,
+        insert_handle is used to insert the new handle into the
+        datastruct
+    '''
     user_info = check_valid_token(token)
 
     check_handle(handle)

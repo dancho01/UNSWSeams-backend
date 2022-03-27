@@ -6,13 +6,9 @@ import re
 
 def generate_new_handle(name_first, name_last, store):
     '''
-    Generates a unique handle for the recently registered user based on user's first and last name
-    Args:
-        name_first      str         user's first name
-        name_last       str         user's last name
-        store           dict        copy of the data structure in data_store
-    Return:
-        Returns the final handle that is concatenated such that it is unique
+    Generates a unique handle for the recently registered user based 
+    on user's first and last name, if a users active key is false, then 
+    it will be able to reuse that specific handle.
     '''
     name = name_first + name_last
     handle = ""
@@ -36,6 +32,11 @@ def generate_new_handle(name_first, name_last, store):
 
 
 def is_user_removed(user):
+    '''
+        Every user is checked for whether their user['active'] key
+        is True, true means user has not being removed whereas
+        false means they have been removed
+    '''
     if user['name_first'] == "Removed" and user['name_last'] == "user":
         return True
     else:
@@ -43,7 +44,10 @@ def is_user_removed(user):
 
 
 def check_info_syntax(name_first, name_last, password, email):
-
+    '''
+        Checks the syntax of first name, lastname, password and checks
+        whether email exists and if the format of the email is legit
+    '''
     if len(name_first) < 1 or len(name_first) > 50:
         raise InputError(
             description="First name must be between 1 and 50 characters inclusive")
@@ -69,6 +73,10 @@ def check_info_syntax(name_first, name_last, password, email):
 
 
 def check_login(email, password):
+    '''
+        Checks if the email is in the database, then checks if the
+        hashed password that is inputted matches
+    '''
     store = data_store.get()
 
     for user in store['users']:
@@ -82,6 +90,11 @@ def check_login(email, password):
 
 
 def assign_permissions():
+    '''
+        Sees how many users there are by looking at length of store['users],
+        if the length is 0 then this means the user being registered is
+        the first user on the server, giving them global permissions
+    '''
     store = data_store.get()
 
     if len(store['users']) == 0:
