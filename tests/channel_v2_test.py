@@ -210,6 +210,14 @@ def test_edit_invalid_message_id(send_first_message):
 
 #     assert edit_response.status_code == 403
 
+"""
+test message changed to empty message is deleted
+"""
+
+"""
+test message is edited and outputs correctly
+
+"""
 
 '''
 messages remove v1
