@@ -333,6 +333,16 @@ def test_edit_message_dm_success():
 
 #     assert edit_response.status_code == 403
 
+"""
+test when message changed to empty string deletes the message
+"""
+
+"""
+test message is edited and outputs correctly
+
+"""
+
+
 
 '''
 messages remove v1
@@ -446,61 +456,68 @@ def test_message_remove_dm_success():
 
 '''test for channel_details_v2'''
 
-def test_channel_detail_one_channel_success():
-    requests.delete(config.url + 'clear/v1' )
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+def test_channel_detail_one_channel_success():
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
 
     channel_1_data = channel_1.json()
 
-    response = requests.get(config.url + 'channel/details/v2', params = {'token' : user1_data['token'], 'channel_id' : channel_1_data['channel_id']})
+    response = requests.get(config.url + 'channel/details/v2', params={
+                            'token': user1_data['token'], 'channel_id': channel_1_data['channel_id']})
 
     assert response.status_code == 200
 
-def test_channel_detail_invalid_channel():
-    requests.delete(config.url + 'clear/v1' )
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+def test_channel_detail_invalid_channel():
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
 
     channel_1_data = channel_1.json()
 
-    response = requests.get(config.url + 'channel/details/v2', params = {'token' : user1_data['token'], 'channel_id' : channel_1_data['channel_id'] + 1})
+    response = requests.get(config.url + 'channel/details/v2', params={
+                            'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'] + 1})
 
     assert response.status_code == 400
 
-def test_channel_detail_invalid_user():
-    requests.delete(config.url + 'clear/v1' )
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
+def test_channel_detail_invalid_user():
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
 
     user1_data = user1.json()
 
-    user2 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'EMAIL@gmail.com', 
-    'password' : 'password1', 'name_first' : 'FIRST', 'name_last' : 'LAST'})
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
 
     user2_data = user2.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
 
     channel_1_data = channel_1.json()
 
-    response = requests.get(config.url + 'channel/details/v2', params = {'token' : user2_data['token'], 'channel_id' : channel_1_data['channel_id']})
+    response = requests.get(config.url + 'channel/details/v2', params={
+                            'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
 
     assert response.status_code == 403
+<<<<<<< HEAD
     
     
 ''' tests for channel/leave/v1 '''
@@ -566,3 +583,5 @@ def test_channel_leave_success():
     
 
 
+=======
+>>>>>>> f973d98bf9e02b3bcef3039fbfa878bd1cb90d49

@@ -33,9 +33,7 @@ def insert_name(u_id, name_first, name_last):
             if owner_member['u_id'] == u_id:
                 owner_member['name_first'] = name_first
                 owner_member['name_last'] = name_last
-
-    # Updates owner members
-    for channels in store['channels']:
+        # Updates owner members
         for all_member in channels['all_members']:
             if all_member['u_id'] == u_id:
                 all_member['name_first'] = name_first

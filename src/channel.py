@@ -8,18 +8,18 @@ from src.message_helper import generate_new_message_id, check_valid_message
 from flask import Response
 
 
-'''
+def channel_invite_v1(token, channel_id, u_id):
+    '''
     Invites a user with ID u_id to join a channel with ID channel_id.
     Once invited, the user is added to the channel immediately.
     In both public and private channels, all members are able to invite users.
 
     Arguments:
-        auth_user_id    int         - id of the user that is inviting
+        token           string      - token of the user that is inviting
         channel_id      int         - id of the channel that the user is inviting u_id to
         u_id            int         - id of the user that is being invited
 
     Exceptions:
-        AccessError     - Occurs when auth_user_id passed in is invalid
         AccessError     - Occurs when channel_id is valid and the authorized user is not a member of the channel
         InputError      - Occurs when channel_id does not refer to a valid channel
         InputError      - Occurs when u_id does not refer to a valid user
@@ -28,9 +28,6 @@ from flask import Response
     Return Value:
         Returns empty dict as required by spec
     '''
-
-
-def channel_invite_v1(token, channel_id, u_id):
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
@@ -48,6 +45,14 @@ def channel_invite_v1(token, channel_id, u_id):
 
 
 def channel_details_v1(token, channel_id):
+    '''
+    Returns the details of a given channel 
+    Args: 
+        token           str         user's token
+        channel_id      int         channel's id
+    Returns 
+        Returns a dictionary containing { name, is_public, owner_members, all_members } of the channel
+    '''
 
     store = data_store.get()
 
@@ -174,6 +179,24 @@ def channel_leave_v1(token, channel_id):
 
 
 def channel_join_v1(token, channel_id):
+    '''
+    This function allows the authorized user to join a channel, given the 
+    channel_id.
+
+    Arguments:
+        token           string         - token of the user requesting to join the channel
+        channel_id      int         - id of the channel that user wishes to join
+
+    Exceptions:
+        AccessError     - Occurs when channel_id refers to a channel that is private 
+                          and the authorized user is not already a channel member and 
+                          is not a global owner 
+        InputError      - Occurs when channel_id does not refer to a valid channel
+        InputError      - Occurs when u_id refers to a user who is already an owner of the channel
+
+    Return Value:
+        Return an empty dictionary in all cases
+    '''
 
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
@@ -187,7 +210,6 @@ def channel_join_v1(token, channel_id):
     check_already_auth(auth_user_id, channel_index)
 
     if store['channels'][channel_index]['is_public'] == False and permission_id != 1:
-        # if channel_id is valid and the authorised user is not a member of the channel, AccessError is raised
         raise AccessError(
             'Cannot join a private channel as you are not a global owner')
 
@@ -200,9 +222,26 @@ def channel_join_v1(token, channel_id):
 
 
 def channel_addowner_v1(token, channel_id, u_id):
-    """
-    Make user with user id u_id an owner of the channel.
-    """
+    '''
+    This function makes the user with user id u_id an owner of the channel.
+
+    Arguments:
+        token           string      - token of the user requesting to join the channel
+        channel_id      int         - id of the channel that user wishes to join
+        u_id            int         - id of the user that is being made an owner of the channel
+
+    Exceptions:
+        AccessError     - Occurs when channel_id is valid and the authorised user does not have owner permissions
+                          in the channel 
+        InputError      - Occurs when channel_id does not refer to a valid channel
+        InputError      - Occurs when u_id does not refer to a valid user
+        InputError      - Occurs when u_id refers to a user who is not a member of the channel
+        InputError      - Occurs when the authorized user is already an owner of the channel
+
+    Return Value:
+        Return an empty dictionary in all cases
+    '''
+
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
@@ -212,11 +251,9 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     check_already_owner(channel_index, u_id)
 
-    # u_id is invalid
     if check_user_registered(u_id, store) == False:
         raise InputError('u_id does not refer to a valid user')
 
-    # test if u_id is a member of the channel
     if check_authorization(u_id, channel_index, store) == False:
         raise InputError(
             'u_id refers to a user who is not a member of the channel')
@@ -231,20 +268,34 @@ def channel_addowner_v1(token, channel_id, u_id):
 
 
 def channel_removeowner_v1(token, channel_id, u_id):
-    """
-    Remove user with user id u_id as an owner of the channel.
-    """
+    '''
+    This function removes the user with user id u_id as an owner of the channel.
+
+    Arguments:
+        token           string      - token of the user requesting to join the channel
+        channel_id      int         - id of the channel that user wishes to join
+        u_id            int         - id of the user that is being made an owner of the channel
+
+    Exceptions:
+        AccessError     - Occurs when channel_id is valid and the authorised user does not have owner permissions
+                          in the channel 
+        InputError      - Occurs when channel_id does not refer to a valid channel
+        InputError      - Occurs when u_id does not refer to a valid user
+        InputError      - Occurs when u_id refers to a user who is not an owner of the channel
+        InputError      - Occurs when the u_id refers to a user who is currently the only owner of the channel
+
+    Return Value:
+        Return an empty dictionary in all cases
+    '''
+
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
     check_valid_user(auth_user_id)
-    # returns a tuple (1,index) if channel is valid, else 0
     channel_index = check_valid_channel(channel_id)
-
     check_owner(channel_index, auth_user_id)
 
-    # test if u_id is currently the only owner of the channel
-    if len(store['channels'][channel_index]['owner_members']) == 1:
+    if len(store['channels'][channel_index]['owner_members']) == 1: # test if u_id is currently the only owner of the channel
         raise InputError(
             'u_id refers to a user who is currently the only owner of the channel')
 

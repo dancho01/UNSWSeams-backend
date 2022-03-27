@@ -59,7 +59,7 @@ def dm_create_v1(token, u_ids):
         new_dm['all_members'].append(return_member_information(u_id, store))
 
     # only original creator of DM is added to owner
-    new_dm['owner'] = return_member_information(auth_user_id, store)
+    new_dm['owner_members'] = return_member_information(auth_user_id, store)
 
     store['dms'].append(new_dm)
     data_store.set(store)
