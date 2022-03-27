@@ -24,8 +24,6 @@ def generate_token(user_id, handle):
 
 
 def generate_session_id(user_id, handle):
-    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-    print(hash(str(user_id) + handle))
     return (hash(str(user_id) + handle))
 
 
@@ -37,8 +35,7 @@ def check_valid_token(token):
     Return:
         Returns an object storing the user's data that was used to generate the JWT
     '''
-    print("---------------------------------------------")
-    print(token)
+
     try:
         token_decoded = jwt.decode(token, SECRET, algorithms=['HS256'])
     except Exception as error:

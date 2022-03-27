@@ -320,28 +320,18 @@ def test_edit_message_dm_success():
 
     assert edit_response.status_code == 200  
 
-# def test_edit_invalid_channel(send_first_message, create_second_user):
-#     '''
-#     Error Raised:
-#         Access Error: channel_id is valid and the authorised user is not a member of the channel
-#     Explanation:
-#         Second user tries to edit, has no owner and is not the original sender of message
-#     '''
-#     new_message = "hello"
-#     edit_response = requests.put(config.url + 'message/edit/v1', json={
-#         'token': create_second_user['token'], 'message_id': send_first_message[0]['message_id'], 'message': new_message})
+def test_edit_invalid_channel(send_first_message, create_second_user):
+    '''
+    Error Raised:
+        Access Error: channel_id is valid and the authorised user is not a member of the channel
+    Explanation:
+        Second user tries to edit, has no owner and is not the original sender of message
+    '''
+    new_message = "hello"
+    edit_response = requests.put(config.url + 'message/edit/v1', json={
+        'token': create_second_user['token'], 'message_id': send_first_message[0]['message_id'], 'message': new_message})
 
-#     assert edit_response.status_code == 403
-
-"""
-test when message changed to empty string deletes the message
-"""
-
-"""
-test message is edited and outputs correctly
-
-"""
-
+    assert edit_response.status_code == 403
 
 
 '''
@@ -442,17 +432,7 @@ def test_message_remove_dm_success():
     assert removal_response.status_code == 200 
 
 
-# def test_remove_invalid_channel(send_first_message):
-#     '''
-#     Error Raised:
-#         Input Error: Message_id is valid, user is not authorised and does not have owner permissions
-#     Explanation:
-#         Second user tries to edit, has no owner and is not the original sender of message
-#     '''
-#     edit_response = requests.delete(config.url + 'message/remove/v1', json={
-#         'token': send_first_message[1]['token'], 'message_id': send_first_message[0]['message_id']})
 
-#     assert edit_response.status_code == 403
 
 '''test for channel_details_v2'''
 
