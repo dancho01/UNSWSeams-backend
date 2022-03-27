@@ -44,7 +44,8 @@ def return_handle(u_id, store):
     '''
     for user_index in range(len(store['users'])):
         if store['users'][user_index]['auth_user_id'] == u_id:
-            return store['users'][user_index]['handle']
+           found_user = user_index  
+    return store['users'][found_user]['handle']
 
 
 def generate_DM_name(auth_user_id, u_ids, store):
@@ -74,11 +75,12 @@ def check_valid_dm(dm_id, store):
         - Returns True if dm_id is valid and also returns its index position
         for easier lookup in the future    
     '''
+
     for dm_index in range(len(store['dms'])):
         if store['dms'][dm_index]['dm_id'] == dm_id:
-            return dm_index
-        else:
-            raise InputError(description='dm_id does not refer to a valid DM')
+            return True, dm_index      
+    return False
+
 
 
 def check_user_member_dm(u_id, store, dm_index):
@@ -92,9 +94,12 @@ def check_user_member_dm(u_id, store, dm_index):
         - Returns False if user is not a member of the DM
         - Returns True if user is a member of the DM
     '''
+    found = False
     for member in store['dms'][dm_index]['all_members']:
         if u_id == member['u_id']:
             return True
     return False
+      
+        
 
 
