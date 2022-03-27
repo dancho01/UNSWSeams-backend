@@ -43,6 +43,20 @@ def test_duplicate_emails():
     assert user2.status_code == 400
 
 
+def test_long_name():
+    requests.delete(config.url + 'clear/v1')
+    response = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                    'password': 'password', 'name_first': 'uvuvwevwevwe', 'name_last': 'onyetenyevwe'})
+    assert response.status_code == 200
+
+
+def test_not_alnum_name():
+    requests.delete(config.url + 'clear/v1')
+    response = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                    'password': 'password', 'name_first': 'uvuvwevwevwe!!!', 'name_last': 'onyetenyevwe'})
+    assert response.status_code == 200
+
+
 def test_register_success():
     requests.delete(config.url + 'clear/v1')
     response = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -109,3 +123,17 @@ def test_logout_return():
     logout_return = logout_response.json()
 
     assert logout_return == {}
+
+def test_invalid_session_id():
+    '''
+        check user's handle is reusable - i.e. register someone else with the exact same name and that handle should be the same as
+        previous user's handle
+    '''
+    requests.delete(config.url + 'clear/v1')
+    user = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
+    user_data = user.json()
+    login_response = requests.post(config.url + 'auth/login/v2', json={'email': 'email@gmail.com',
+                                                                       'password': 'password'})
+    response = requests.post(config.url + 'auth/logout/v1', json={'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1X2lkIjoxLCJzZXNzaW9uX2lkIjoiZGQ1NWFkMzcxZjRjNmQyNTExYWFlYjNkMzkwMmNiZGJhZWFmZGFiNDdiMWQzOTI2NDUzYTFhNTg5MjQzZTZjMCJ9.dwiWCf54xraWhX4wuPogufTYEKgraxuRR392DNXPvmk'})
+    assert response.status_code == 403 # AccessError

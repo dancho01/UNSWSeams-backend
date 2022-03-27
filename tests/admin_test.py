@@ -393,6 +393,12 @@ def test_handle_is_reusable_after_user_removal():
         'u_id': user2_data['auth_user_id']})
     assert remove_response.status_code == 200
 
+    profile_response = requests.get(config.url + 'user/profile/v1', params={
+        'token': user1_data['token'], 'u_id': user2_data['auth_user_id']})
+    assert profile_response.status_code == 200
+    profile_response_data = profile_response.json()
+    assert profile_response_data['user']['handle_str'] == original_handle   # check removed user's handle does not get deleted from OG user profile
+
     user2_again = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
                                                                  'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
     user2_again_data = user2_again.json()
@@ -402,7 +408,6 @@ def test_handle_is_reusable_after_user_removal():
     profile_response_2_data = profile_response_2.json()
     assert profile_response_2_data['user']['handle_str'] == original_handle
     
-
 
 
 """

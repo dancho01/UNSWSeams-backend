@@ -49,8 +49,8 @@ def create_public_channel_and_dm(create_first_user, create_second_user):
     requests.post(config.url + 'channel/addowner/v1', json={'token': user2['token'], 'channel_id': channel1_data['channel_id'],
                                                             'u_id': user2['auth_user_id']})
 
-    response = requests.post(config.url + 'channel/join/v2', json={
-                             'token': user1['token'], 'channel_id': channel1_data['channel_id']})
+    requests.post(config.url + 'channel/join/v2', json={
+        'token': user1['token'], 'channel_id': channel1_data['channel_id']})
 
     requests.post(config.url + 'dm/create/v1',
                   json={'token': user1['token'], 'u_ids': [user2['auth_user_id']]})
