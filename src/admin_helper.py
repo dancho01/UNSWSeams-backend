@@ -66,7 +66,7 @@ def only_global_owner_check(u_id):
 
     if global_owners == 1 and u_profile['global_permissions'] == 1:
         raise InputError(
-            "user you are trying to remove is the only global owner")
+            'user you are trying to remove is the only global owner')
 
     return
 
@@ -80,3 +80,16 @@ def remove_from_session_list(u_id):
                 hash(str(u_id) + user['handle']))
 
     return
+
+def check_and_set_new_permissions(u_id, permission_id):
+    store = data_store.get()
+
+    for i in range(len(store['users'])):
+        if store['users'][i]['auth_user_id'] == u_id:
+            if store['users'][i]['global_permissions'] == permission_id:
+                raise InputError(
+                    'the user already has the permissions level of permission_id')
+            else:
+                store['users'][i]['global_permissions'] = permission_id
+                data_store.set(store)
+                return {}
