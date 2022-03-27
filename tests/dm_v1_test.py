@@ -45,7 +45,6 @@ def test_dm_create_duplicate_u_ids(create_first_user, create_second_user):
     Explanation:
         the u_id of user2 is being passed in twice, throwing an Input error
     '''
-
     user1 = create_first_user
     user2 = create_second_user   
     
@@ -61,7 +60,6 @@ def test_dm_create_success(create_first_user, create_second_user):
     Explanation:
         There are no errors thrown and the dm is succesfully created
     '''
-
     user1 = create_first_user
     user2 = create_second_user
     
@@ -78,8 +76,7 @@ def test_dm_list_success(create_first_user, create_second_user):
         None
     Explanation:
         Succesfully returns a list of all the DMs that the user is member of 
-    '''
-    
+    '''    
     user1 = create_first_user
     user2 = create_second_user
     
@@ -98,8 +95,7 @@ def test_dm_list_success_no_dms(create_first_user):
         None
     Explanation:
         When a user is not a member of any DM, it just returns an empty list   
-    '''
-    
+    '''    
     user1 = create_first_user  
     
     dm_list = requests.get(config.url + 'dm/list/v1', params = {'token': user1['token']})
@@ -115,8 +111,7 @@ def test_dm_remove_invalid_dm(create_first_user, create_second_user):
         InputError: dm_id does not refer to a valid DM
     Explanation: 
         The dm_id passed in is invalid as 1 is added to the only dm_id that exists       
-    '''
-    
+    '''    
     user1 = create_first_user
     user2 = create_second_user
 
@@ -135,8 +130,7 @@ def test_dm_remove_not_owner(create_first_user, create_second_user):
     Explanation: 
         An error is thrown as user 2 is not an owner and only the original creators 
         of the DM can remove DMs
-    '''
-    
+    '''   
     user1 = create_first_user
     user2 = create_second_user    
 
@@ -155,8 +149,7 @@ def test_dm_remove_owner_already_left(create_first_user, create_second_user):
     Explanation:
         User 1, who is the original creator of the DM, leaves the channel, and is
         no longer able to remove the DM              
-    '''
-        
+    '''       
     user1 = create_first_user
     user2 = create_second_user
     
@@ -169,6 +162,7 @@ def test_dm_remove_owner_already_left(create_first_user, create_second_user):
     
     assert dm_remove.status_code == 403  
     
+ 
     
 def test_dm_remove_success_case(create_first_user):  
     '''
@@ -176,8 +170,7 @@ def test_dm_remove_success_case(create_first_user):
         None
     Explanation:
         User 1 is able to succesfully remove the DM as he is the original creator
-    '''
-    
+    '''   
     user1 = create_first_user
 
     dm = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
@@ -206,6 +199,7 @@ def test_dm_details_invalid_dm(create_first_user, create_second_user):
     dm_details = requests.get(config.url + 'dm/details/v1', params = {'token': user1['token'] , 'dm_id': dm_data['dm_id'] + 1})
     
     assert dm_details.status_code == 400
+   
     
     
 def test_dm_details_user_not_member(create_first_user, create_second_user):
@@ -225,6 +219,7 @@ def test_dm_details_user_not_member(create_first_user, create_second_user):
     
     assert dm_details.status_code == 403
     
+  
     
 def test_dm_details_success(create_first_user):
     '''
@@ -232,8 +227,7 @@ def test_dm_details_success(create_first_user):
         None
     Explanation:
         Dm details are succesfully provided to user 1, as he is a member of the DM
-    '''
-    
+    '''   
     user1 = create_first_user   
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
@@ -243,6 +237,7 @@ def test_dm_details_success(create_first_user):
    
     assert dm_details.status_code == 200
    
+ 
        
 ''' tests for dm/leave/v1 '''
 def test_dm_leave_invalid_dm(create_first_user):
@@ -251,8 +246,7 @@ def test_dm_leave_invalid_dm(create_first_user):
         InputError: dm_id does not refer to a valid DM
     Explanation:
         The dm_id passed in is invalid as 1 is added to the only dm_id that exists  
-    '''
-    
+    '''   
     user1 = create_first_user  
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
@@ -262,6 +256,7 @@ def test_dm_leave_invalid_dm(create_first_user):
     
     assert dm_leave.status_code == 400
     
+ 
     
 def test_dm_leave_user_not_member(create_first_user, create_second_user):
     '''
@@ -269,8 +264,7 @@ def test_dm_leave_user_not_member(create_first_user, create_second_user):
         AccessError: dm_id is valid and the authorised user is not a member of the DM
     Explanation:
         User 2 is not a member of the DM with the given dm_id and so throws an AccessError         
-    '''
-    
+    '''   
     user1 = create_first_user
     user2 = create_second_user
     
@@ -281,6 +275,7 @@ def test_dm_leave_user_not_member(create_first_user, create_second_user):
     
     assert dm_leave.status_code == 403
     
+
     
 def test_dm_leave_success(create_first_user):
     '''
@@ -289,7 +284,6 @@ def test_dm_leave_success(create_first_user):
     Explanation:
         User 1 is able to succesfully leave the DM and is removed as a member of the DM   
     '''
-
     user1 = create_first_user
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
@@ -298,6 +292,7 @@ def test_dm_leave_success(create_first_user):
     dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id']})
     
     assert dm_leave.status_code == 200
+ 
     
     
 ''' tests for dm/messages/v1 '''
@@ -307,8 +302,7 @@ def test_dm_messages_invalid_dm(create_first_user):
         InputError: dm_id does not refer to a valid DM
     Explanation:
         The dm_id passed in is invalid as 1 is added to the only dm_id that exists      
-    '''
-    
+    '''   
     user1 = create_first_user
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
@@ -318,6 +312,7 @@ def test_dm_messages_invalid_dm(create_first_user):
     
     assert dm_messages.status_code == 400
     
+  
     
 def test_dm_messages_invalid_start(create_first_user):
     '''
@@ -336,6 +331,7 @@ def test_dm_messages_invalid_start(create_first_user):
     
     assert dm_messages.status_code == 400
     
+  
     
 def test_dm_messages_user_not_member(create_first_user, create_second_user):
     '''
@@ -343,8 +339,7 @@ def test_dm_messages_user_not_member(create_first_user, create_second_user):
         AccessError: dm_id is valid and the authorised user is not a member of the DM
     Explanation:
         User 2 is not a member of the DM with the given dm_id and so throws an AccessError                
-    '''
-    
+    '''  
     user1 = create_first_user
     user2 = create_second_user  
     
@@ -355,6 +350,7 @@ def test_dm_messages_user_not_member(create_first_user, create_second_user):
     
     assert dm_messages.status_code == 403
     
+
     
 def test_dm_return_messages_success(create_first_user):
     '''
@@ -363,8 +359,7 @@ def test_dm_return_messages_success(create_first_user):
     Explanation:
         Succesfully returns up to 50 messages between the "start" index and "start + 50"
         In this case, returns the messages with index 1 and 2
-    '''
-    
+    '''  
     user1 = create_first_user
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
@@ -378,14 +373,16 @@ def test_dm_return_messages_success(create_first_user):
     
     assert dm_messages.status_code == 200    
     
+  
     
 ''' tests for message/senddm/v1 '''
 def test_dm_send_message_invalid_dm(create_first_user):
     '''
-    
-    
-    '''
-    
+    Error raised:
+        InputError: dm_id does not refer to a valid DM
+    Explanation:
+        The dm_id passed in is invalid as 1 is added to the only dm_id that exists      
+    '''   
     user1 = create_first_user
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
@@ -395,9 +392,15 @@ def test_dm_send_message_invalid_dm(create_first_user):
     
     assert dm_sent.status_code == 400
     
+   
     
 def test_dm_send_message_invalid_length(create_first_user):
-    
+    '''
+    Error raised:
+        InputError: length of message is less than 1 or over 1000 characters
+    Explanation:
+        An error is raised as the message inputed has 0 characters    
+    '''   
     user1 = create_first_user
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
@@ -408,8 +411,14 @@ def test_dm_send_message_invalid_length(create_first_user):
     assert dm_sent.status_code == 400   
     
     
-def test_dm_send_message_user_not_member(create_first_user, create_second_user):
     
+def test_dm_send_message_user_not_member(create_first_user, create_second_user):
+    '''
+    Error raised:
+        AccessError: dm_id is valid and the authorised user is not a member of the DM
+    Explanation:
+        User 2 is not a member of the DM with the given dm_id and so throws an AccessError                     
+    '''   
     user1 = create_first_user
     user2 = create_second_user
     
@@ -421,8 +430,15 @@ def test_dm_send_message_user_not_member(create_first_user, create_second_user):
     assert dm_sent.status_code == 403     
     
 
+
 def test_dm_send_message_success(create_first_user):
-    
+    '''
+    Error raised:
+        None
+    Explanation:
+        A message is succesfully sent to the dm by the user and no errors are
+        thrown
+    ''' 
     user1 = create_first_user
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 

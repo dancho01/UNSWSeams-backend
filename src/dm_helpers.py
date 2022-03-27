@@ -1,4 +1,6 @@
 from src.error import InputError, AccessError
+from datetime import timezone
+import datetime
 
 DM_ID_COUNTER = 0
 
@@ -50,6 +52,14 @@ def return_handle(u_id, store):
 
 def generate_DM_name(auth_user_id, u_ids, store):
     '''
+    Given the u_ids of all the members in the DM, generates a name for the DM 
+    based on their handles 
+    Args:
+        auth_user_id    int         the id of authorised user
+        u_ids           list        a list of ids of the other members 
+        store           dict        the copy of the data structure 
+    Return:
+        Returns the name of the DM
 
     '''
     list_handles = []
@@ -98,3 +108,14 @@ def check_user_member_dm(u_id, store, dm_index):
         if u_id == member['u_id']:
             return True
     return False
+    
+def calculate_time_stamp():
+
+    current_dt = datetime.datetime.now(timezone.utc)
+    utc_time = current_dt.replace(tzinfo=timezone.utc)
+    utc_timestamp = utc_time.timestamp()
+    
+    return utc_timestamp
+    
+
+
