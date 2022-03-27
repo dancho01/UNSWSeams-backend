@@ -196,7 +196,6 @@ def channel_join_v1(token, channel_id):
     check_already_auth(auth_user_id, channel_index)
 
     if store['channels'][channel_index]['is_public'] == False and permission_id != 1:
-        # if channel_id is valid and the authorised user is not a member of the channel, AccessError is raised
         raise AccessError(
             'Cannot join a private channel as you are not a global owner')
 
@@ -238,11 +237,9 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     check_already_owner(channel_index, u_id)
 
-    # u_id is invalid
     if check_user_registered(u_id, store) == False:
         raise InputError('u_id does not refer to a valid user')
 
-    # test if u_id is a member of the channel
     if check_authorization(u_id, channel_index, store) == False:
         raise InputError(
             'u_id refers to a user who is not a member of the channel')
@@ -281,13 +278,10 @@ def channel_removeowner_v1(token, channel_id, u_id):
     store = data_store.get()
 
     check_valid_user(auth_user_id)
-    # returns a tuple (1,index) if channel is valid, else 0
     channel_index = check_valid_channel(channel_id)
-
     check_owner(channel_index, auth_user_id)
 
-    # test if u_id is currently the only owner of the channel
-    if len(store['channels'][channel_index]['owner_members']) == 1:
+    if len(store['channels'][channel_index]['owner_members']) == 1: # test if u_id is currently the only owner of the channel
         raise InputError(
             'u_id refers to a user who is currently the only owner of the channel')
 
