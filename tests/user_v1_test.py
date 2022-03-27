@@ -7,6 +7,12 @@ from src.data_store import data_store, return_member_information, check_user_reg
 '''test for user_profile_v1'''
 
 def test_valid_user():
+    '''
+    Error raised:
+        None
+    Explanation:
+        User 1's u_id is valid 
+    '''
     requests.delete(config.url + 'clear/v1')   
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -19,6 +25,12 @@ def test_valid_user():
     assert response.status_code == 200
 
 def test_invalid_user():
+    '''
+    Error raised:
+        InputError: u_id does not refer to a valid user
+    Explanation:
+        User 1's u_id is invalid 
+    '''
     requests.delete(config.url + 'clear/v1')   
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
