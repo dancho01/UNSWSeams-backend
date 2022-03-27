@@ -58,6 +58,17 @@ def create_public_channel_and_dm(create_first_user, create_second_user):
     return user1
 
 
+@pytest.fixture
+def create_public_channel(create_first_user):
+
+    user1 = create_first_user
+
+    requests.post(config.url + 'channels/create/v2',
+                  json={'token': user1['token'], 'name': 'ch1', 'is_public': True})
+
+    return user1
+
+
 '''
 set_name
 '''
@@ -93,7 +104,18 @@ def test_valid_names(create_first_user):
     assert response.status_code == 200
 
 
-def test_valid_names_in_channel_and_dm(create_public_channel_and_dm):
+def test_valid_names_in_channel_and_dm(create_public_channel):
+    user1 = create_public_channel
+
+    name_first, name_last = "jack", "bobs"
+
+    response = requests.put(config.url + 'user/profile/setname/v1',
+                            json={'token': user1['token'], 'name_first': name_first, 'name_last': name_last})
+
+    assert response.status_code == 200
+
+
+def test_valid_names_as_channel_owner(create_public_channel_and_dm):
     user1 = create_public_channel_and_dm
 
     name_first, name_last = "jack", "bobs"
@@ -142,6 +164,17 @@ def test_valid_email(create_first_user):
 
 def test_valid_email_in_channel_and_dm(create_public_channel_and_dm):
     user1 = create_public_channel_and_dm
+
+    email = "awdasadad@gmail.com"
+
+    response = requests.put(config.url + 'user/profile/setemail/v1',
+                            json={'token': user1['token'], 'email': email})
+
+    assert response.status_code == 200
+
+
+def test_valid_email_as_channel_owner(create_public_channel):
+    user1 = create_public_channel
 
     email = "awdasadad@gmail.com"
 
@@ -211,6 +244,17 @@ def test_valid_handle(create_first_user):
 
 def test_valid_handle_in_channel_and_dm(create_public_channel_and_dm):
     user1 = create_public_channel_and_dm
+
+    handle = "validHandle"
+
+    response = requests.put(config.url + 'user/profile/sethandle/v1',
+                            json={'token': user1['token'], 'handle_str': handle})
+
+    assert response.status_code == 200
+
+
+def test_valid_handle_as_channel_owner(create_public_channel):
+    user1 = create_public_channel
 
     handle = "validHandle"
 
