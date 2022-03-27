@@ -517,7 +517,7 @@ def test_channel_detail_invalid_user():
                             'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
 
     assert response.status_code == 403
-<<<<<<< HEAD
+
     
     
 ''' tests for channel/leave/v1 '''
@@ -580,8 +580,4 @@ def test_channel_leave_success():
     assert response.status_code == 200    
     
     
-    
-
-
-=======
->>>>>>> f973d98bf9e02b3bcef3039fbfa878bd1cb90d49
+   

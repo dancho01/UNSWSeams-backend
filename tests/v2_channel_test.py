@@ -549,3 +549,22 @@ def test_channel_removeowner_return_type():
                                                                           'u_id': user3_data['auth_user_id']})
     assert response4.status_code == 200
     assert json.loads(response4.text) == {}
+    
+def test_dm_remove_not_owner(create_first_user, create_second_user):
+    '''
+    Error raised:
+        AccessError: dm_id is valid and the authorised user is not the original DM creator
+    Explanation: 
+        An error is thrown as user 2 is not an owner and only the original creators 
+        of the DM can remove DMs
+    '''
+    
+    user1 = create_first_user
+    user2 = create_second_user    
+
+    dm = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': [user2['auth_user_id']]}) 
+    dm_data = dm.json()
+       
+    dm_remove = requests.delete(config.url + 'dm/remove/v1', json = {'token': user2['token'] , 'dm_id': dm_data['dm_id']})    
+    
+    assert dm_remove.status_code == 403
