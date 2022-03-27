@@ -24,8 +24,6 @@ def create_second_user():
     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'testemail@gmail.com',
                                                                  'password': 'elephant130', 'name_first': 'Daniel', 'name_last': 'Cho'})
     user2_data = user2.json()
-    print("create second user")
-    print(user2_data)
     return user2_data
 
 
@@ -39,11 +37,9 @@ def create_public_channel():
         "name_last": "last"
     })
     user1_data = user1.json()
-    print(user1_data)
     c1 = requests.post(config.url + 'channels/create/v2',
                        json={'token': user1_data['token'], 'name': 'ch1', 'is_public': True})
     channel1 = c1.json()
-    print(channel1)
 
     return channel1, user1_data
 

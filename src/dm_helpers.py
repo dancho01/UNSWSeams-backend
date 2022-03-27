@@ -1,4 +1,3 @@
-from src.error import InputError, AccessError
 from datetime import timezone
 import datetime
 
@@ -108,14 +107,12 @@ def check_user_member_dm(u_id, store, dm_index):
         if u_id == member['u_id']:
             return True
     return False
-    
+
+
 def calculate_time_stamp():
 
     current_dt = datetime.datetime.now(timezone.utc)
     utc_time = current_dt.replace(tzinfo=timezone.utc)
     utc_timestamp = utc_time.timestamp()
-    
+
     return utc_timestamp
-    
-
-

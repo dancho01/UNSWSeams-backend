@@ -1,5 +1,4 @@
 from src.error import AccessError, InputError
-from src.global_helper import check_global_owner
 
 
 def check_valid_message(message_id, u_id, store):

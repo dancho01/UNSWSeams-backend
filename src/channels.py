@@ -1,7 +1,6 @@
-from src.data_store import data_store, check_user_registered, return_member_information
-from src.error import InputError, AccessError
+from src.data_store import data_store
 from src.token import check_valid_token
-from src.global_helper import generate_channel_id, check_valid_user
+from src.global_helper import generate_channel_id, check_valid_user, return_member_information
 from src.channels_helper import search_user_channel, return_all_channels, create_new_channel, check_channel_len
 
 
@@ -50,7 +49,7 @@ def channels_create_v1(token, name, is_public):
     new_channel_id = generate_channel_id()
 
     # new dictionary is created to store channel details
-    new_channel = create_new_channel(new_channel_id, name, is_public) 
+    new_channel = create_new_channel(new_channel_id, name, is_public)
 
     new_channel['owner_members'].append(
         return_member_information(auth_user_id, store))

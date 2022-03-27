@@ -1,11 +1,10 @@
-from email import message
 from src.error import InputError, AccessError
-from src.data_store import check_authorization, data_store, check_user_registered, return_member_information
+from src.data_store import data_store
 from src.channel_helper import check_message, time_now, remove_message, member_leave
 from src.token import check_valid_token
-from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, check_owner, check_already_owner, generate_new_message_id
+from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
+    check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member
 from src.message_helper import check_valid_message
-from flask import Response
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -167,7 +166,7 @@ def messages_edit_v1(token, message_id, message):
     if len(message) == 0:
         remove_message(message_id)
         return {}
-    
+
     store = data_store.get()
     user_id = check_valid_token(token)['u_id']
     check_message(message)
@@ -182,7 +181,6 @@ def messages_edit_v1(token, message_id, message):
     if found == True:
         return {}
 
-    
     for dms in store['dms']:
         for messages in dms['messages']:
             if messages['message_id'] == message_id:
@@ -215,7 +213,7 @@ def channel_leave_v1(token, channel_id):
     """
     Given a channel with ID channel_id that the authorised user is a member of, remove them as a member of the channel. 
     Their messages should remain in the channel. If the only channel owner leaves, the channel will remain.
-    
+
     Args: 
         token           str         user's token
         channel_id      int         channel's id
@@ -302,18 +300,15 @@ def channel_addowner_v1(token, channel_id, u_id):
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
+    check_valid_user(u_id)
+
     channel_index = check_valid_channel(channel_id)
 
     check_owner(channel_index, auth_user_id)
 
+    is_user_member(u_id, channel_index)
+
     check_already_owner(channel_index, u_id)
-
-    if check_user_registered(u_id, store) == False:
-        raise InputError('u_id does not refer to a valid user')
-
-    if check_authorization(u_id, channel_index, store) == False:
-        raise InputError(
-            'u_id refers to a user who is not a member of the channel')
 
     store['channels'][channel_index]['owner_members'].append(
         return_member_information(u_id, store))
