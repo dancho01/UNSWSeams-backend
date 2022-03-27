@@ -2,7 +2,7 @@ import re
 from src.data_store import data_store
 from src.error import InputError
 from src.token import hash, generate_token
-from src.auth_helper import generate_new_handle, check_info
+from src.auth_helper import generate_new_handle, check_info_syntax, check_login, assign_permissions
 from src.token import hash, generate_token, check_valid_token
 from src.global_helper import generate_user_id
 
@@ -22,27 +22,12 @@ def auth_login_v1(email, password):
         Returns a dictionary with the key 'auth_user_id', an integer value, if
         login is successful
     '''
-    store = data_store.get()
 
-    # iterates through users to check if email belongs to a user
-    found = False
-    for user in store['users']:
-        if user['email'] == email:
-            found = True
+    user_info = check_login(email, password)
 
-    # InputError is raised if valid email is not found
-    if found != True:
-        raise InputError(description="This email is not registered!")
-
-    for user in store['users']:
-        if user['email'] == email:
-            # InputError is raised if password does not match
-            if user['password'] != hash(password):
-                raise InputError(description="Incorrect Password!")
-            else:
-                token = generate_token(user['auth_user_id'])
-                return {'auth_user_id': user['auth_user_id'],
-                        'token': token}
+    token = generate_token(user_info['u_id'], user_info['handle'])
+    return {'auth_user_id': user_info['u_id'],
+            'token': token}
 
 
 def auth_register_v1(email, password, name_first, name_last):
@@ -75,28 +60,27 @@ def auth_register_v1(email, password, name_first, name_last):
 
     store = data_store.get()
 
-    check_info(name_first, name_last, password, email)
+    check_info_syntax(name_first, name_last, password, email)
 
     # creating handle from first and last name
     final_handle = generate_new_handle(name_first, name_last, store)
 
-    # associating global permissions to user_id
-    if len(store['users']) == 0:
-        perms = 1
-    else:
-        perms = 2
-
     new_id = generate_user_id()
 
     # adding all information to dictionary
-    new_user = {'auth_user_id': new_id, 'name_first': name_first, 'name_last': name_last,
-                'email': email, 'password': hash(password), 'handle': final_handle, 'global_permissions': perms, 'active': True}
 
-    store['users'].append(new_user)
+    store['users'].append({'auth_user_id': new_id,
+                           'name_first': name_first,
+                           'name_last': name_last,
+                           'email': email,
+                           'password': hash(password),
+                           'handle': final_handle,
+                           'global_permissions': assign_permissions(),
+                           'active': True})
 
     return {
         'auth_user_id': new_id,
-        'token': generate_token(new_id),
+        'token': generate_token(new_id, final_handle),
     }
 
 
@@ -104,6 +88,6 @@ def auth_logout(token):
     store = data_store.get()
     user_info = check_valid_token(token)
 
-    store['session_list'].remove(hash(user_info['session_id']))
+    store['session_list'].remove(user_info['session_id'])
 
     return {}

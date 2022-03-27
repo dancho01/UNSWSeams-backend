@@ -1,17 +1,18 @@
-from src.error import InputError, AccessError
+from src.error import InputError
 from src.data_store import data_store
+from src.token import hash
 import re
 
 
 def generate_new_handle(name_first, name_last, store):
     '''
-    Generates a unique handle for the recently registered user based on user's first and last name 
+    Generates a unique handle for the recently registered user based on user's first and last name
     Args:
         name_first      str         user's first name
         name_last       str         user's last name
         store           dict        copy of the data structure in data_store
     Return:
-        Returns the final handle that is concatenated such that it is unique    
+        Returns the final handle that is concatenated such that it is unique
     '''
     name = name_first + name_last
     handle = ""
@@ -41,7 +42,7 @@ def is_user_removed(user):
         return False
 
 
-def check_info(name_first, name_last, password, email):
+def check_info_syntax(name_first, name_last, password, email):
 
     if len(name_first) < 1 or len(name_first) > 50:
         raise InputError(
@@ -67,3 +68,25 @@ def check_info(name_first, name_last, password, email):
                 description="This email is already in use by another user!")
 
     return
+
+
+def check_login(email, password):
+    store = data_store.get()
+
+    for user in store['users']:
+        if user['email'] == email and user['password'] == hash(password):
+            return {'u_id': user['auth_user_id'],
+                    'handle': user['handle']}
+        else:
+            raise InputError(description="Incorrect Password!")
+
+    raise InputError(description="This email is not registered!")
+
+
+def assign_permissions():
+    store = data_store.get()
+
+    if len(store['users']) == 0:
+        return 1
+    else:
+        return 2
