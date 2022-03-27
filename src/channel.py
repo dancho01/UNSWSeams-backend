@@ -3,8 +3,8 @@ from src.error import InputError, AccessError
 from src.data_store import check_authorization, data_store, check_user_registered, return_member_information
 from src.channel_helper import check_message, time_now, remove_message, member_leave
 from src.token import check_valid_token
-from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, check_owner, check_already_owner
-from src.message_helper import generate_new_message_id, check_valid_message
+from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, check_owner, check_already_owner, generate_new_message_id
+from src.message_helper import check_valid_message
 from flask import Response
 
 
@@ -289,7 +289,8 @@ def channel_removeowner_v1(token, channel_id, u_id):
     channel_index = check_valid_channel(channel_id)
     check_owner(channel_index, auth_user_id)
 
-    if len(store['channels'][channel_index]['owner_members']) == 1: # test if u_id is currently the only owner of the channel
+    # test if u_id is currently the only owner of the channel
+    if len(store['channels'][channel_index]['owner_members']) == 1:
         raise InputError(
             'u_id refers to a user who is currently the only owner of the channel')
 
