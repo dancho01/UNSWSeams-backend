@@ -21,7 +21,7 @@ def check_valid_message(message_id, u_id, store):
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
-                if message['u_id'] == u_id or check_channel_owner(dm, u_id):
+                if message['u_id'] == u_id or dm['owner']['u_id'] == u_id:
                     return True
                 else:
                     raise AccessError(
