@@ -94,7 +94,7 @@ def check_user_member_dm(u_id, store, dm_index):
         - Returns False if user is not a member of the DM
         - Returns True if user is a member of the DM
     '''
-    found = False
+
     for member in store['dms'][dm_index]['all_members']:
         if u_id == member['u_id']:
             return True
