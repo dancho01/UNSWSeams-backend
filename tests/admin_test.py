@@ -279,7 +279,6 @@ def test_remove_other_Seams_owner():
                                                                        'permission_id': 1})
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
                                                                'u_id': user2_data['auth_user_id']})
-    #response = requests.get(config.url + 'users/all/v1', params = {'token' : user1_data['token']})
     profile_response = requests.get(config.url + 'user/profile/v1', params={
         'token': user1_data['token'], 'u_id': user2_data['auth_user_id']})
     # check first name and last name is "Removed" "user"
@@ -465,7 +464,6 @@ def test_admin_userpermission_change_u_id_permissions_already_given():
     """
     the user already has the permissions level of permission_id
     """
-    #global GLOBAL_OWNER
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -473,9 +471,6 @@ def test_admin_userpermission_change_u_id_permissions_already_given():
     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user2_data = user2.json()
-    # response1 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'],
-    #     'u_id': user2_data['auth_user_id'], 'permission_id': 1})
-    # assert response1.status_code == 200     # success
     response2 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'],
                                                                                    'u_id': user2_data['auth_user_id'], 'permission_id': 2})
     assert response2.status_code == 400  # inputError

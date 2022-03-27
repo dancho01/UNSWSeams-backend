@@ -130,10 +130,9 @@ def test_invalid_session_id():
         previous user's handle
     '''
     requests.delete(config.url + 'clear/v1')
-    user = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
-    user_data = user.json()
-    login_response = requests.post(config.url + 'auth/login/v2', json={'email': 'email@gmail.com',
+    requests.post(config.url + 'auth/login/v2', json={'email': 'email@gmail.com',
                                                                        'password': 'password'})
     response = requests.post(config.url + 'auth/logout/v1', json={'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1X2lkIjoxLCJzZXNzaW9uX2lkIjoiZGQ1NWFkMzcxZjRjNmQyNTExYWFlYjNkMzkwMmNiZGJhZWFmZGFiNDdiMWQzOTI2NDUzYTFhNTg5MjQzZTZjMCJ9.dwiWCf54xraWhX4wuPogufTYEKgraxuRR392DNXPvmk'})
     assert response.status_code == 403 # AccessError
