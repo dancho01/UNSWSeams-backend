@@ -4,7 +4,6 @@ import hashlib
 import jwt
 
 SECRET = 'H09BELEPHANT'
-SESSION_TRACKER = 0
 
 
 def hash(password):
@@ -13,22 +12,19 @@ def hash(password):
     return hashed_pword
 
 
-def generate_token(user_id):
+def generate_token(user_id, handle):
     store = data_store.get()
-    session_id = generate_session_id()
+    session_id = generate_session_id(user_id, handle)
     ENCODED_JWT = jwt.encode(
         {'u_id': user_id, 'session_id': session_id}, SECRET, algorithm='HS256')
 
-    store['session_list'].append(hash(session_id))
-    data_store.set(store)
+    store['session_list'].append(session_id)
 
     return ENCODED_JWT
 
 
-def generate_session_id():
-    global SESSION_TRACKER
-    SESSION_TRACKER += 1
-    return SESSION_TRACKER
+def generate_session_id(user_id, handle):
+    return (hash(str(user_id) + handle))
 
 
 def check_valid_token(token):
@@ -39,6 +35,8 @@ def check_valid_token(token):
     Return:
         Returns an object storing the user's data that was used to generate the JWT
     '''
+    print("---------------------------------------------")
+    print(token)
     try:
         token_decoded = jwt.decode(token, SECRET, algorithms=['HS256'])
     except Exception as error:
@@ -47,7 +45,7 @@ def check_valid_token(token):
     validate_token_u_id(token_decoded['u_id'])
 
     store = data_store.get()
-    if hash(token_decoded['session_id']) in store['session_list']:
+    if token_decoded['session_id'] in store['session_list']:
         return token_decoded
     else:
         raise AccessError(description="Invalid session_id")
