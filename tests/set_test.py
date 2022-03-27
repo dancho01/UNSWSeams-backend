@@ -7,6 +7,9 @@ from src import config
 
 @pytest.fixture
 def create_first_user():
+    '''
+        Fixture for creating first user
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -16,6 +19,9 @@ def create_first_user():
 
 @pytest.fixture
 def create_second_user():
+    '''
+        Fixture for creating second user
+    '''
     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'testemail@gmail.com',
                                                                  'password': 'elephant130', 'name_first': 'Daniel', 'name_last': 'Cho'})
     user2 = user2.json()
@@ -24,6 +30,9 @@ def create_second_user():
 
 @pytest.fixture
 def generate_invalid_name():
+    '''
+        Fixture for generating a random string of length 60 and consisting of letters and digits
+    '''
     invalid_message = ''.join(random.choice(
         string.ascii_uppercase + string.digits) for _ in range(60))
     return invalid_message
@@ -31,6 +40,9 @@ def generate_invalid_name():
 
 @pytest.fixture
 def generate_invalid_handle():
+    '''
+        Generates a string of length 30 consisting of random letters and digits   
+    '''
     invalid_message = ''.join(random.choice(
         string.ascii_uppercase + string.digits) for _ in range(30))
     return invalid_message
@@ -38,7 +50,9 @@ def generate_invalid_handle():
 
 @pytest.fixture
 def create_public_channel_and_dm(create_first_user, create_second_user):
-
+    '''
+        Creates a public channel and a dm between two users
+    '''
     user1, user2 = create_first_user, create_second_user
 
     ch1 = requests.post(config.url + 'channels/create/v2',
@@ -60,7 +74,9 @@ def create_public_channel_and_dm(create_first_user, create_second_user):
 
 @pytest.fixture
 def create_public_channel(create_first_user):
-
+    '''
+        Creates a single, public channel which user1 is owner
+    '''
     user1 = create_first_user
 
     requests.post(config.url + 'channels/create/v2',
@@ -75,7 +91,12 @@ set_name
 
 
 def test_name_first_too_long(create_first_user, generate_invalid_name):
-
+    '''
+    Error raised:
+        length of name_last is not between 1 and 50 characters inclusive
+    Explanation
+        Creates a user and generates a invalid last name
+    '''
     user = create_first_user
 
     response = requests.put(config.url + 'user/profile/setname/v1',
@@ -85,6 +106,12 @@ def test_name_first_too_long(create_first_user, generate_invalid_name):
 
 
 def test_name_last_too_long(create_first_user, generate_invalid_name):
+    '''
+    Error raised:
+        length of name_first is not between 1 and 50 characters inclusive
+    Explanation
+        Creates a user and generates a invalid first name
+    '''
     user = create_first_user
 
     response = requests.put(config.url + 'user/profile/setname/v1',
@@ -94,6 +121,12 @@ def test_name_last_too_long(create_first_user, generate_invalid_name):
 
 
 def test_valid_names(create_first_user):
+    '''
+    Error raised:
+        None
+    Explanation
+        Creates a use using a valid first name and last name
+    '''
     user = create_first_user
 
     name_first, name_last = "jack", "bobs"
@@ -105,6 +138,14 @@ def test_valid_names(create_first_user):
 
 
 def test_valid_names_in_channel_and_dm(create_public_channel):
+    '''
+    Error raised:
+        None
+    Explanation
+        Creates a use using a valid first name and last name,
+        code 200 means it has altered all the cases where this
+        users profile appears in
+    '''
     user1 = create_public_channel
 
     name_first, name_last = "jack", "bobs"
@@ -116,6 +157,13 @@ def test_valid_names_in_channel_and_dm(create_public_channel):
 
 
 def test_valid_names_as_channel_owner(create_public_channel_and_dm):
+    '''
+    Error raised:
+        None
+    Explanation
+        Creates a use using a valid first name and last name,
+        user is the owner of the channel
+    '''
     user1 = create_public_channel_and_dm
 
     name_first, name_last = "jack", "bobs"
@@ -132,6 +180,12 @@ set_email
 
 
 def test_invalid_email(create_first_user):
+    '''
+    Error raised:
+        email entered is not a valid email (more in section 6.4)
+    Explanation
+        Email used does not adhere to specs, expects an input error
+    '''
     user = create_first_user
 
     response = requests.put(config.url + 'user/profile/setemail/v1',
@@ -141,6 +195,13 @@ def test_invalid_email(create_first_user):
 
 
 def test_email_already_registered(create_first_user, create_second_user):
+    '''
+    Error raised:
+        email address is already being used by another user
+    Explanation
+        All inputs are valid, except second user has already used this
+        specific email, expects input error
+    '''
     user = create_first_user
 
     email = "testemail@gmail.com"
@@ -152,6 +213,12 @@ def test_email_already_registered(create_first_user, create_second_user):
 
 
 def test_valid_email(create_first_user):
+    '''
+    Error raised:
+        None
+    Explanation
+        Expects success as all inputs are valid
+    '''
     user = create_first_user
 
     email = "awdasadad@gmail.com"
@@ -163,6 +230,14 @@ def test_valid_email(create_first_user):
 
 
 def test_valid_email_in_channel_and_dm(create_public_channel_and_dm):
+    '''
+    Error raised:
+        None
+    Explanation
+        Expects success as all inputs are valid, alters all
+        information regarding this user whether its in channels, dms
+        or users
+    '''
     user1 = create_public_channel_and_dm
 
     email = "awdasadad@gmail.com"
@@ -174,6 +249,13 @@ def test_valid_email_in_channel_and_dm(create_public_channel_and_dm):
 
 
 def test_valid_email_as_channel_owner(create_public_channel):
+    '''
+    Error raised:
+        None
+    Explanation
+        Expects success as all inputs are valid, 200 code if data
+        is altered when user is owner of a channel
+    '''
     user1 = create_public_channel
 
     email = "awdasadad@gmail.com"
@@ -190,6 +272,13 @@ set_handle
 
 
 def test_handle_too_long(create_first_user, generate_invalid_handle):
+    '''
+    Error raised:
+        None
+    Explanation
+        Expects success as all inputs are valid, 200 code if data
+        is altered when user is owner of a channel
+    '''
     user = create_first_user
 
     response = requests.put(config.url + 'user/profile/sethandle/v1',
@@ -199,6 +288,12 @@ def test_handle_too_long(create_first_user, generate_invalid_handle):
 
 
 def test_handle_too_short(create_first_user):
+    '''
+    Error raised:
+        length of handle_str is not between 3 and 20 characters inclusive
+    Explanation
+        Handle length is 2 characters long, should expect input error
+    '''
     user = create_first_user
 
     handle = 'ab'
@@ -210,6 +305,12 @@ def test_handle_too_short(create_first_user):
 
 
 def test_handle_not_alnum(create_first_user):
+    '''
+    Error raised:
+        handle_str contains characters that are not alphanumeric
+    Explanation
+        The handle does not consist of only letters and numbers
+    '''
     user = create_first_user
 
     handle = 'ab!--_'
@@ -221,6 +322,12 @@ def test_handle_not_alnum(create_first_user):
 
 
 def test_handle_exists(create_first_user, create_second_user):
+    '''
+    Error raised:
+        the handle is already used by another use
+    Explanation
+        Handle is taken by second user
+    '''
     user1 = create_first_user
 
     user2_handle = "danielcho"
@@ -232,6 +339,12 @@ def test_handle_exists(create_first_user, create_second_user):
 
 
 def test_valid_handle(create_first_user):
+    '''
+    Error raised:
+        None
+    Explanation
+        Successfully inserts a handle
+    '''
     user1 = create_first_user
 
     user2_handle = "validHandle"
@@ -243,6 +356,13 @@ def test_valid_handle(create_first_user):
 
 
 def test_valid_handle_in_channel_and_dm(create_public_channel_and_dm):
+    '''
+    Error raised:
+        None
+    Explanation
+        Inserts handle successfully into all instances where user_id
+        matches
+    '''
     user1 = create_public_channel_and_dm
 
     handle = "validHandle"
@@ -254,6 +374,12 @@ def test_valid_handle_in_channel_and_dm(create_public_channel_and_dm):
 
 
 def test_valid_handle_as_channel_owner(create_public_channel):
+    '''
+    Error raised:
+        None
+    Explanation
+        Inserts handle successfully if user is owner of a server
+    '''
     user1 = create_public_channel
 
     handle = "validHandle"

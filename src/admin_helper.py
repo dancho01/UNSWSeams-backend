@@ -5,7 +5,10 @@ from src.token import hash
 
 
 def remove_user_name(u_id):
-
+    '''
+    Changes the name for a removed user to first name 'Removed' and last name 'user'. 
+    Also sets the user's status to inactive.
+    '''
     store = data_store.get()
 
     for user in store['users']:
@@ -19,6 +22,10 @@ def remove_user_name(u_id):
 
 
 def remove_user_messages(u_id):
+    '''
+    Changes all of the message contents for a removed user u_id to 'Removed user' in all channels and dms 
+    they sent a message to. 
+    '''
     store = data_store.get()
 
     for channel in store['channels']:
@@ -36,7 +43,9 @@ def remove_user_messages(u_id):
 
 
 def remove_user_from_channels(u_id):
-
+    '''
+    removes a user u_id from all channels & dms they were a member of
+    '''
     store = data_store.get()
 
     for channel in store['channels']:
@@ -55,6 +64,10 @@ def remove_user_from_channels(u_id):
 
 
 def only_global_owner_check(u_id):
+    ''' 
+    checks whether a user u_id is the only global owner in Seams. 
+    If user is the only global owner, will throw an InputError. Otherwise return. 
+    '''
     store = data_store.get()
     global_owners = 0
 
@@ -72,6 +85,9 @@ def only_global_owner_check(u_id):
 
 
 def remove_from_session_list(u_id):
+    ''' 
+    removes a user u_id from session list
+    '''
     store = data_store.get()
 
     for user in store['users']:
@@ -83,6 +99,11 @@ def remove_from_session_list(u_id):
 
 
 def check_and_set_new_permissions(u_id, permission_id):
+    ''' 
+    checks whether the user u_id already has the permission_id. 
+    If not, the function will set their permission id to the perission id permission_id
+    Returns: an empty dictionary {}
+    '''
     store = data_store.get()
 
     for i in range(len(store['users'])):
