@@ -3,7 +3,7 @@ from src.error import InputError, AccessError
 from src.data_store import data_store, return_member_information, check_user_registered
 from src.token import check_valid_token
 from src.global_helper import check_valid_user
-from src.user_helper import return_profile
+from src.users_helpers import return_profile
 
 
 def user_profile_v1(token, u_id):
