@@ -67,24 +67,24 @@ def test_invite_invalid_u_id(create_first_user):
                                                                      'u_id': user1_data['auth_user_id'] + 1})
     assert response.status_code == 400  # inputError
 
-# def test_invite_already_channel_member(create_first_user):
-#     '''
-#     A simple test to check already channel member
-#     '''
-#     requests.delete(config.url + 'clear/v1')
-#     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user1_data = user1.json()
-#     user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
-#         'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
-#     user2_data = user2.json()
-#     channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
-#         'is_public': True})
-#     channel_1_data = channel_1.json()
-#     requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
-#     response = requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
-#         'u_id': user2_data['auth_user_id']})
-#     assert response.status_code == 400  # inputError
+def test_invite_already_channel_member(create_first_user):
+    '''
+    A simple test to check already channel member
+    '''
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
+        'is_public': True})
+    channel_1_data = channel_1.json()
+    requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+    response = requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+        'u_id': user2_data['auth_user_id']})
+    assert response.status_code == 400  # inputError
 
 
 def test_invite_auth_user_not_in_channel(create_first_user):
@@ -108,7 +108,6 @@ def test_invite_auth_user_not_in_channel(create_first_user):
                                                                      'u_id': user2_data['auth_user_id']})
     assert response.status_code == 403  # AccessError
 
-
 def test_invite_invalid_auth_user_id(create_first_user):
     '''
     A simple test to check valid token
@@ -127,6 +126,23 @@ def test_invite_invalid_auth_user_id(create_first_user):
                                                                      'u_id': user2_data['auth_user_id']})
     assert response.status_code == 403  # AccessError
 
+def test_invite_return_type():
+    """
+    check return type is empty dictionary
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'randomPassword', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'], 'name': 'First Channel',
+                                                                       'is_public': True})
+    channel_1_data = channel_1.json()
+    response = requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                                     'u_id': user2_data['auth_user_id']})
+    assert json.loads(response.text) == {}
 
 """
 Tests for channel/join/v2
@@ -218,45 +234,42 @@ def test_invalid_channel_id_and_user_id(create_first_user):
                              'token': 'nonexistent_token', 'channel_id': channel_1_data['channel_id'] + 1})
     assert response.status_code == 403  # AccessError
 
-# def test_correct_return_type(create_first_user):
-#     """
-#     Test that the function returns an empty dictionary
-#     """
-#     requests.delete(config.url + 'clear/v1')
-#     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user1_data = user1.json()
-#     user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
-#         'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
-#     user2_data = user2.json()
-#     channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
-#         'is_public': True})
-#     channel_1_data = channel_1.json()
-#     requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
-#         'u_id': user2_data['auth_user_id']})
-#     response = requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
-#     assert json.loads(response.text) == {}
-#     # not sure if this is how it works?
+def test_correct_return_type(create_first_user):
+    """
+    Test that the function returns an empty dictionary
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user2_data['token'], 'name': 'First Channel',
+        'is_public': True})
+    channel_1_data = channel_1.json()
+    response = requests.post(config.url + 'channel/join/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id']})
+    assert json.loads(response.text) == {}
 
-# def test_user_added(create_first_user):
-#     """
-#     Test that user is successfully added to channel, by testing that they cannot be invited again
-#     """
-#     requests.delete(config.url + 'clear/v1')
-#     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user1_data = user1.json()
-#     user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
-#         'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
-#     user2_data = user2.json()
-#     channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
-#         'is_public': True})
-#     channel_1_data = channel_1.json()
-#     response1 = requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
-#     assert response1.status_code == 200
-#     response2 = requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
-#         'u_id': user2_data['token']})
-#     assert response2.status_code == 400 # InputError
+def test_user_added(create_first_user):
+    """
+    Test that user is successfully added to channel, by testing that they cannot be invited again
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
+        'is_public': True})
+    channel_1_data = channel_1.json()
+    response1 = requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+    assert response1.status_code == 200
+    response2 = requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+        'u_id': user2_data['token']})
+    assert response2.status_code == 400 # InputError
 
 
 """
@@ -287,7 +300,7 @@ def test_channel_addowner_invalid_channel(create_first_user):
     channel_1_data = channel_1.json()
 
     response = requests.post(config.url + 'channel/addowner/v1', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'] + 1,
-                                                                       'u_id': user2_data['auth_user_id']})    # don't know how to name a non existent channel id
+                                                                       'u_id': user2_data['auth_user_id']})
     assert response.status_code == 400  # inputError
 
 
@@ -303,7 +316,7 @@ def test_channel_addowner_u_id_invalid(create_first_user):
                                                                        'is_public': True})
     channel_1_data = channel_1.json()
     response = requests.post(config.url + 'channel/addowner/v1', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
-                                                                       'u_id': user1_data['auth_user_id']})
+                                                                       'u_id': user1_data['auth_user_id'] + 1})
     assert response.status_code == 400  # inputError
 
 
@@ -348,28 +361,44 @@ def test_channel_addowner_user_already_owner():
                                                                        'u_id': user2_data['auth_user_id']})
     assert response.status_code == 400  # inputError
 
-# def test_channel_addowner_user_no_owner_permission(create_first_user):
-#     """
-#         channel_id is valid and the authorised user does not have owner permissions in the channel
-#     """
-#     requests.delete(config.url + 'clear/v1')
-#     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user1_data = user1.json()
-#     user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
-#         'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
-#     user2_data = user2.json()
-#     user3 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email3@gmail.com',
-#         'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
-#     user3_data = user3.json()
-#     channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
-#         'is_public': True})        # created a private channel so only invitational.
-#     channel_1_data = channel_1.json()
-#     requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
-#     response = requests.post(config.url + 'channel/addowner/v1', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'],
-#         'u_id': user3_data['auth_user_id']})
-#     assert response.status_code == 403  # AccessError
+def test_channel_addowner_user_no_owner_permission(create_first_user):
+    """
+        channel_id is valid and the authorised user does not have owner permissions in the channel
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email3@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user3_data = user3.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
+        'is_public': True})        # created a private channel so only invitational.
+    channel_1_data = channel_1.json()
+    requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+    response = requests.post(config.url + 'channel/addowner/v1', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'],
+        'u_id': user3_data['auth_user_id']})
+    assert response.status_code == 403  # AccessError
 
+def test_channel_addowner_return_type():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
+        'is_public': True})        # created a private channel so only invitational.
+    channel_1_data = channel_1.json()
+    requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+    response = requests.post(config.url + 'channel/addowner/v1', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+        'u_id': user2_data['auth_user_id']})
+    assert response.status_code == 200  
+    assert json.loads(response.text) == {}
 
 """
     Test channel/removeowner/v1
@@ -464,27 +493,53 @@ def test_channel_removeowner_user_only_owner(create_first_user):
                                                                           'u_id': user2_data['auth_user_id']})
     assert response.status_code == 400  # InputError
 
-# def test_channel_removeowner_user_no_owner_permissions(create_first_user):
-#     """
-#         channel_id is valid and the authorised user does not have owner permissions in the channel
-#     """
-#     requests.delete(config.url + 'clear/v1')
-#     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-#     user1_data = user1.json()
-#     user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
-#         'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
-#     user2_data = user2.json()
-#     user3 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email3@gmail.com',
-#         'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
-#     user3_data = user3.json()
-#     channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
-#         'is_public': True})        # created a private channel so only invitational.
-#     channel_1_data = channel_1.json()
-#     requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
-#     requests.post(config.url + 'channel/join/v2', json={'token': user3_data['token'], 'channel_id': channel_1_data['channel_id']})
-#     requests.post(config.url + 'channel/addowner/v1', json={'token': user2['token'], 'channel_id': channel_1_data['channel_id'],
-#         'u_id': user3_data['auth_user_id']})
-#     response = requests.post(config.url + 'channel/removeowner/v1', json={'token': user3_data['token'], 'channel_id': channel_1_data['channel_id'],
-#         'u_id': user2_data['auth_user_id']})
-#     assert response.status_code == 403  # AccessError
+def test_channel_removeowner_user_no_owner_permissions():
+    """
+        channel_id is valid and the authorised user does not have owner permissions in the channel
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email3@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user3_data = user3.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
+        'is_public': True})
+    channel_1_data = channel_1.json()
+    requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+    requests.post(config.url + 'channel/join/v2', json={'token': user3_data['token'], 'channel_id': channel_1_data['channel_id']})
+    requests.post(config.url + 'channel/addowner/v1', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'],
+        'u_id': user3_data['auth_user_id']})
+    response = requests.post(config.url + 'channel/removeowner/v1', json={'token': user3_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                                          'u_id': user2_data['auth_user_id']})
+    assert response.status_code == 403  # AccessError
+
+def test_channel_removeowner_return_type():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email2@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email' : 'email3@gmail.com',
+        'password': 'randomPassword', 'name_first' : 'First', 'name_last' : 'Last'})
+    user3_data = user3.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token': user1_data['token'], 'name': 'First Channel',
+        'is_public': True})
+    channel_1_data = channel_1.json()
+    response1 = requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+    assert response1.status_code == 200  
+    response2 = requests.post(config.url + 'channel/join/v2', json={'token': user3_data['token'], 'channel_id': channel_1_data['channel_id']})
+    assert response2.status_code == 200
+    response3 = requests.post(config.url + 'channel/addowner/v1', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+        'u_id': user3_data['auth_user_id']})
+    assert response3.status_code == 200
+    response4 = requests.post(config.url + 'channel/removeowner/v1', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                                          'u_id': user3_data['auth_user_id']})
+    assert response4.status_code == 200
+    assert json.loads(response4.text) == {}

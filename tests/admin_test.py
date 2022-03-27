@@ -81,11 +81,10 @@ def test_call_user_profile_after_removing_user():
     assert profile_response_2_data['user']['name_first'] == 'Removed'
     assert profile_response_2_data['user']['name_last'] == 'user'
 
-def test_check_removed_from_all_channels_dms():
+def test_check_removed_from_all_channels():
     """
-need to put in working channels/list function
+    check user is removed from all channels
     """
-# check removed from all channels/dms
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -139,6 +138,79 @@ need to put in working channels/list function
     response_data = response.json()
 
     assert len(response_data['all_members']) == 1
+
+def test_check_removed_from_all_dms():
+    """
+    check user is removed from all dms
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email1@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First1', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First3', 'name_last': 'Last'})
+    user3_data = user3.json()
+
+    dm_1 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
+    dm_1_data = dm_1.json()
+    assert dm_1.status_code == 200
+    dm_2 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user3_data['auth_user_id']]})
+    dm_2_data = dm_2.json()
+    assert dm_2.status_code == 200
+    dm_3 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user3_data['auth_user_id']]})
+    dm_3_data = dm_3.json()
+    assert dm_3.status_code == 200
+
+    dm_4 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user1_data['auth_user_id']]})
+    dm_4_data = dm_4.json()
+    assert dm_4.status_code == 200
+
+    dm_5 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user1_data['auth_user_id'], 
+        user3_data['auth_user_id']]})
+    dm_5_data = dm_5.json()
+    assert dm_5.status_code == 200
+
+    dm_6 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id'], 
+        user3_data['auth_user_id']]})
+    dm_6_data = dm_6.json()         
+    assert dm_6.status_code == 200
+
+    requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
+        'u_id': user2_data['auth_user_id']})   
+    
+    dm_details_1 = requests.get(config.url + 'dm/details/v1', params = {'token': user1_data['token'] , 'dm_id': dm_1_data['dm_id']})
+    assert dm_details_1.status_code == 200
+    dm_details_1_data = dm_details_1.json()
+    assert len(dm_details_1_data['members']) == 1
+
+    response2 = requests.get(config.url + 'dm/details/v1', params = {'token' : user1_data['token'], 
+        'dm_id' : dm_2_data['dm_id']})
+    response2_data = response2.json()
+
+    assert len(response2_data['members']) == 2
+
+    dm_details_3 = requests.get(config.url + 'dm/details/v1', params = {'token': user3_data['token'] , 'dm_id': dm_3_data['dm_id']})
+    assert dm_details_3.status_code == 200
+    dm_details_3_data = dm_details_3.json()
+    assert len(dm_details_3_data['members']) == 1
+
+    dm_details_4 = requests.get(config.url + 'dm/details/v1', params = {'token': user1_data['token'] , 'dm_id': dm_4_data['dm_id']})
+    assert dm_details_4.status_code == 200
+    dm_details_4_data = dm_details_4.json()
+    assert len(dm_details_4_data['members']) == 1
+
+    dm_details_5 = requests.get(config.url + 'dm/details/v1', params = {'token': user1_data['token'] , 'dm_id': dm_5_data['dm_id']})
+    assert dm_details_5.status_code == 200
+    dm_details_5_data = dm_details_5.json()
+    assert len(dm_details_5_data['members']) == 2
+
+    dm_details_6 = requests.get(config.url + 'dm/details/v1', params = {'token': user1_data['token'] , 'dm_id': dm_6_data['dm_id']})
+    assert dm_details_6.status_code == 200
+    dm_details_6_data = dm_details_6.json()
+    assert len(dm_details_6_data['members']) == 2
 
 
 def test_check_not_in_users_all():
@@ -203,8 +275,9 @@ def test_remove_other_Seams_owner():
     assert profile_response_data['user']['name_first'] == 'Removed'
     assert profile_response_data['user']['name_last'] == 'user'
 
-def test_check_message_contents_is_Removed_user():
+def test_check_channel_message_contents_is_Removed_user():
     """
+    check that the removed user's messages in all channels are changed to "Removed user"
     """
 # check message contents is "Removed user"
     requests.delete(config.url + 'clear/v1')
@@ -222,10 +295,69 @@ def test_check_message_contents_is_Removed_user():
     message = "hello"
     requests.post(config.url + 'message/send/v1', json={
         'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'], 'message': message})
+    requests.post(config.url + 'message/send/v1', json={
+        'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'], 'message': message})
+    requests.post(config.url + 'message/senddm/v1', json={
+        'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'], 'message': "message 2"})
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
         'u_id': user2_data['auth_user_id']})   
     message_response = requests.get(config.url + 'channel/messages/v2', params={
         'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'], 'start': 0})
+    message_response_data = message_response.json()
+    assert message_response_data['messages'][0]['message'] == "Removed user"
+
+def test_check_dm_message_contents_is_Removed_user():
+    """
+    check that the removed user's messages in all dms are changed to "Removed user"
+    """
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email1@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First1', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
+    user2_data = user2.json()
+
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First3', 'name_last': 'Last'})
+    user3_data = user3.json()
+
+    dm_1 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
+    dm_1_data = dm_1.json()
+    assert dm_1.status_code == 200
+    dm_2 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user3_data['auth_user_id']]})
+    dm_2_data = dm_2.json()
+    assert dm_2.status_code == 200
+    dm_3 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user3_data['auth_user_id']]})
+    dm_3_data = dm_3.json()
+    assert dm_3.status_code == 200
+
+    dm_4 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user1_data['auth_user_id']]})
+    dm_4_data = dm_4.json()
+    assert dm_4.status_code == 200
+
+    dm_5 = requests.post(config.url + 'dm/create/v1', json={'token': user2_data['token'], 'u_ids': [user1_data['auth_user_id'], 
+        user3_data['auth_user_id']]})
+    dm_5_data = dm_5.json()
+    assert dm_5.status_code == 200
+
+    dm_6 = requests.post(config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id'], 
+        user3_data['auth_user_id']]})
+    dm_6_data = dm_6.json()         
+    assert dm_6.status_code == 200
+
+    message = "hello"
+    requests.post(config.url + 'message/senddm/v1', json={
+        'token': user2_data['token'], 'dm_id': dm_1_data['dm_id'], 'message': message})
+    requests.post(config.url + 'message/senddm/v1', json={
+        'token': user1_data['token'], 'dm_id': dm_1_data['dm_id'], 'message': message})
+    requests.post(config.url + 'message/senddm/v1', json={
+        'token': user2_data['token'], 'dm_id': dm_1_data['dm_id'], 'message': "message 2"})
+
+    requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
+        'u_id': user2_data['auth_user_id']})   
+    message_response = requests.get(config.url + 'dm/messages/v1', params={
+        'token': user1_data['token'], 'dm_id': dm_1_data['dm_id'], 'start': 0})
     message_response_data = message_response.json()
     assert message_response_data['messages'][0]['message'] == "Removed user"
 
@@ -324,3 +456,43 @@ def test_admin_userpermission_change_auth_user_not_global_owner():
 
 
 # # test a successful case
+def test_change_user_permission_test_owner_permissions():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    response1 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
+        'permission_id': 1})
+    assert response1.status_code == 200
+    
+    response2 = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user2_data['token'],
+        'u_id': user1_data['auth_user_id']})
+    assert response2.status_code == 200
+
+def test_user_permission_change_owner_to_member():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user3_data = user3.json()
+    response1 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
+        'permission_id': 1})
+    assert response1.status_code == 200
+
+    response2 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user2_data['token'], 'u_id': user3_data['auth_user_id'],
+        'permission_id': 1})
+    assert response2.status_code == 200
+    
+    response3 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user2_data['token'], 'u_id': user3_data['auth_user_id'],
+        'permission_id': 2})
+    assert response3.status_code == 200
+    response3_data = response3.json()
+    assert json.loads(response3.text) == {}
