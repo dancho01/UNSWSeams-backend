@@ -6,7 +6,10 @@ CHANNEL_COUNTER = 0
 MESSAGE_ID_COUNTER = 0
 
 
-def check_valid_user(u_id):
+def check_valid_user(u_id)
+    '''
+        Checks if user's id is valid 
+    '''
     store = data_store.get()
 
     for user in store['users']:
@@ -17,6 +20,9 @@ def check_valid_user(u_id):
 
 
 def check_valid_channel(c_id):
+    '''
+        Checks if channel id is valid 
+    '''
     store = data_store.get()
 
     for index, channel in enumerate(store['channels']):
@@ -28,6 +34,9 @@ def check_valid_channel(c_id):
 
 
 def check_authorized_user(u_id, channel_index):
+    '''
+        Checks if user is a member of the channel 
+    '''
     store = data_store.get()
 
     found = False
@@ -44,6 +53,9 @@ def check_authorized_user(u_id, channel_index):
 
 
 def check_already_auth(u_id, channel_index):
+    '''
+        Checks if user is already a member of the channel 
+    '''
     store = data_store.get()
 
     for users in store['channels'][channel_index]['all_members']:
@@ -68,7 +80,9 @@ def check_global_owner(auth_user_id):
 
 
 def check_owner(channel_index, auth_user_id):
-
+    '''
+        Checks if the user is an owner of the channel
+    '''
     store = data_store.get()
 
     owner_members = store['channels'][channel_index]['owner_members']
@@ -82,6 +96,9 @@ def check_owner(channel_index, auth_user_id):
 
 
 def check_already_owner(channel_index, auth_user_id):
+    '''
+        Checks if the user is already the owner of a channel
+    '''
     store = data_store.get()
 
     owner_members = store['channels'][channel_index]['owner_members']
