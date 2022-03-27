@@ -71,6 +71,21 @@ def channel_details_v1(token, channel_id):
 
 
 def channel_messages_v1(token, channel_id, start):
+    '''
+    Given a channel with ID channel_id that the authorised user is a member of, return up to 50 messages between 
+    index "start" and "start + 50". Message with index 0 is the most recent message in the channel. 
+    This function returns a new index "end" which is the value of "start + 50", or, if this function has returned 
+    the least recent messages in the channel, returns -1 in "end" to indicate there are no more messages to load 
+    after this return.
+
+    Args: 
+        token           str         user's token
+        channel_id      int         channel's id
+        start           int         starting message index
+    Returns 
+        Returns a dictionary containing { messages, start, end } of the channel. 
+
+    '''
     user_info = check_valid_token(token)
     auth_list_index = check_valid_channel(channel_id)
     check_authorized_user(user_info['u_id'], auth_list_index)
@@ -101,6 +116,19 @@ def channel_messages_v1(token, channel_id, start):
 
 
 def message_send_v1(token, channel_id, message):
+    '''
+    Send a message from the authorised user to the channel specified by channel_id. 
+    Note: Each message should have its own unique ID, i.e. no messages should share an ID with another message, 
+    even if that other message is in a different channel.
+
+    Args: 
+        token           str         user's token
+        channel_id      int         channel's id
+        message         str         message to be sent
+    Returns 
+        Returns a dictionary containing { message_id } of the message. 
+
+    '''
     user_id = check_valid_token(token)['u_id']
     check_message(message)
     channel_index = check_valid_channel(channel_id)
@@ -126,7 +154,15 @@ def message_send_v1(token, channel_id, message):
 
 def messages_edit_v1(token, message_id, message):
     """
-    as long as you have a message_id, can find the message in either channels or dms and edit it
+    Given a message, update its text with new text. If the new message is an empty string, the message is deleted.
+    As long as you have a message_id, can find the message in either channels or dms and edit it. 
+    Args: 
+        token           str         user's token
+        channel_id      int         channel's id
+        message         str         message to be sent
+    Returns 
+        Returns an empty dictionary {}. 
+
     """
     if len(message) == 0:
         remove_message(message_id)
@@ -156,6 +192,16 @@ def messages_edit_v1(token, message_id, message):
 
 
 def messages_remove_v1(token, message_id):
+    """
+    Given a message_id for a message, this message is removed from the channel/DM
+
+    Args: 
+        token           str         user's token
+        message_id      int         message's id
+    Returns 
+        Returns an empty dictionary {}. 
+
+    """
     user_id = check_valid_token(token)['u_id']
     store = data_store.get()
     check_valid_message(message_id, user_id, store)
@@ -166,6 +212,17 @@ def messages_remove_v1(token, message_id):
 
 
 def channel_leave_v1(token, channel_id):
+    """
+    Given a channel with ID channel_id that the authorised user is a member of, remove them as a member of the channel. 
+    Their messages should remain in the channel. If the only channel owner leaves, the channel will remain.
+    
+    Args: 
+        token           str         user's token
+        channel_id      int         channel's id
+    Returns 
+        Returns an empty dictionary {}. 
+
+    """
     user_info = check_valid_token(token)
     # InputError
     channel_index = check_valid_channel(channel_id)

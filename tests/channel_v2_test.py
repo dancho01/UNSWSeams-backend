@@ -165,6 +165,12 @@ def test_send_unauthorised_user(create_public_channel, create_second_user):
     
     
 def test_send_message_success():
+    '''
+    Error Raised:
+        No error raised, this is a successful case
+    Explanation:
+        Testing the status code of sending the message
+    '''
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -220,7 +226,17 @@ def test_edit_invalid_message_id(send_first_message):
     
     
 def test_edit_message_unauthorised():
+    '''
+    Tests Access error for dms.
 
+    Error Raised:
+        AccessError: when message_id refers to a valid message in a joined channel/DM and none of the following are true:
+            - the message was sent by the authorised user making this request
+            - the authorised user has owner permissions in the channel/DM
+    Explanation:
+        Accessing a message which was not sent by user2 and user2 does is not a global owner nor owner of the dm,
+        so has no owner permission in the dm. 
+    '''
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -248,6 +264,12 @@ def test_edit_message_unauthorised():
 
 
 def test_edit_empty_string():
+    '''
+    Error Raised:
+        Success case
+    Explanation:
+        test status code for modifying a message to empty string is 200
+    '''
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -270,6 +292,12 @@ def test_edit_empty_string():
 
 
 def test_edit_message_channel_success():
+    '''
+    Error Raised:
+        Success case
+    Explanation:
+        test status code for updating a channel message is 200
+    '''
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -297,6 +325,12 @@ def test_edit_message_channel_success():
     
     
 def test_edit_message_dm_success():
+    '''
+    Error Raised:
+        Success case
+    Explanation:
+        test status code for editing a dm message is 200
+    '''
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -353,6 +387,17 @@ def test_remove_invalid_message_id(send_first_message):
     assert edit_response.status_code == 400
     
 def test_message_remove_unauthorised():
+    '''
+    Tests access error for channel.
+
+    Error Raised:
+        AccessError: when message_id refers to a valid message in a joined channel/DM and none of the following are true:
+            - the message was sent by the authorised user making this request
+            - the authorised user has owner permissions in the channel/DM
+    Explanation:
+        Accessing a message which was not sent by user2 and user2 does is not a global owner nor owner of the channel,
+        so has no owner permission in the channel. 
+    '''
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -383,6 +428,12 @@ def test_message_remove_unauthorised():
     
     
 def test_message_remove_channel_success():   
+    '''
+    Error Raised:
+        Success case
+    Explanation:
+        test status code for removing a channel message is 200
+    '''
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -409,6 +460,12 @@ def test_message_remove_channel_success():
     
     
 def test_message_remove_dm_success():
+    '''
+    Error Raised:
+        Success case
+    Explanation:
+        test status code for removing a dm message is 200
+    '''
     requests.delete(config.url + 'clear/v1' )
 
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -438,6 +495,12 @@ def test_message_remove_dm_success():
 
 
 def test_channel_detail_one_channel_success():
+    '''
+    Error Raised:
+        Success case
+    Explanation:
+        test status code for requesting channel details is 200
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -457,6 +520,12 @@ def test_channel_detail_one_channel_success():
 
 
 def test_channel_detail_invalid_channel():
+    '''
+    Error Raised:
+        Input Error: channel_id does not refer to a valid channel
+    Explanation:
+        Passing in channel_1 _data['channel_id'] + 1, which is invalid
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -476,6 +545,12 @@ def test_channel_detail_invalid_channel():
 
 
 def test_channel_detail_invalid_user():
+    '''
+    Error Raised:
+        Access Error: channel_id is valid and the authorised user is not a member of the channel
+    Explanation:
+        user2 is not a member of the channel so cannot call channel details for it. 
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -502,6 +577,12 @@ def test_channel_detail_invalid_user():
     
 ''' tests for channel/leave/v1 '''
 def test_channel_leave_invalid_channel():
+    '''
+    Error Raised:
+        Input Error: channel_id does not refer to a valid channel
+    Explanation:
+        Passing in channel_1 _data['channel_id'] + 1, which is invalid
+    '''
     requests.delete(config.url + 'clear/v1' ) 
     
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -520,6 +601,12 @@ def test_channel_leave_invalid_channel():
     
     
 def test_channel_leave_not_member():
+    '''
+    Error Raised:
+        Access Error: channel_id is valid and the authorised user is not a member of the channel
+    Explanation:
+        user2 is not a member of the channel so cannot leave the channel. 
+    '''
     requests.delete(config.url + 'clear/v1' ) 
     
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
@@ -543,6 +630,12 @@ def test_channel_leave_not_member():
         
     
 def test_channel_leave_success():
+    '''
+    Error Raised:
+        Success case
+    Explanation:
+        test status code for leaving channel is 200
+    '''
     requests.delete(config.url + 'clear/v1' ) 
     
     user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
