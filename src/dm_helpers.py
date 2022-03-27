@@ -50,6 +50,14 @@ def return_handle(u_id, store):
 
 def generate_DM_name(auth_user_id, u_ids, store):
     '''
+    Given the u_ids of all the members in the DM, generates a name for the DM 
+    based on their handles 
+    Args:
+        auth_user_id    int         the id of authorised user
+        u_ids           list        a list of ids of the other members 
+        store           dict        the copy of the data structure 
+    Return:
+        Returns the name of the DM
 
     '''
     list_handles = []
