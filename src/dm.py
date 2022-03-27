@@ -159,8 +159,6 @@ def dm_leave_v1(token, dm_id):
     store['dms'][dm_index]['all_members'] = list(filter(
         lambda i: i['u_id'] != auth_user_id, store['dms'][dm_index]['all_members']))
 
-    data_store.set(store)
-
     return {}
 
 
@@ -179,11 +177,11 @@ def dm_messages_v1(token, dm_id, start):
         raise AccessError(description='authorised user is not member of DM')
 
     message_length = len(store['dms'][dm_index]['messages'])
-    
+
     if start > message_length:
         raise InputError(
             description='start is greater than total number of messages in the DM')
-    
+
     elif start + 49 <= message_length:
         end_return = end = start + 50
     else:
@@ -191,11 +189,11 @@ def dm_messages_v1(token, dm_id, start):
         end = -1
 
     return_messages = []
-    
+
     for i in range(start, end_return):
         return_messages.append(
             store['dms'][dm_index]['messages'][i])
-    
+
     return {
         'messages': return_messages,
         'start': start,

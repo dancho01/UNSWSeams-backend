@@ -6,8 +6,6 @@ from src.auth_helper import generate_new_handle, check_info
 from src.token import hash, generate_token, check_valid_token
 from src.global_helper import generate_user_id
 
-AUTH_COUNTER = 0
-
 
 def auth_login_v1(email, password):
     '''
