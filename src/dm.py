@@ -1,10 +1,8 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store, return_member_information, check_user_registered
 from src.token import check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, generate_new_dm_id, generate_DM_name
+from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, generate_new_dm_id, generate_DM_name, calculate_time_stamp
 from src.global_helper import generate_new_message_id
-from datetime import timezone
-import datetime
 
 
 def dm_create_v1(token, u_ids):
@@ -41,22 +39,18 @@ def dm_create_v1(token, u_ids):
 
     new_dm_id = generate_new_dm_id()
 
-    name = generate_DM_name(auth_user_id, u_ids, store)
-
     new_dm = {'dm_id': new_dm_id,
-              'name': name,
+              'name': generate_DM_name(auth_user_id, u_ids, store),
               'all_members': [],
               'messages': [],
               }
 
-    # adding owner to all_members list
+    # adding owner and users to all_members list
     new_dm['all_members'].append(
         return_member_information(auth_user_id, store))
-
-    # adding the rest of users to all_members list
     for u_id in u_ids:
         new_dm['all_members'].append(return_member_information(u_id, store))
-
+    
     # only original creator of DM is added to owner
     new_dm['owner'] = return_member_information(auth_user_id, store)
 
@@ -291,15 +285,11 @@ def message_senddm_v1(token, dm_id, message):
 
     new_message_id = generate_new_message_id()
 
-    current_dt = datetime.datetime.now(timezone.utc)
-    utc_time = current_dt.replace(tzinfo=timezone.utc)
-    utc_timestamp = utc_time.timestamp()
-
     new_message = {
         'message_id': new_message_id,
         'u_id': auth_user_id,
         'message': message,
-        'time_sent': utc_timestamp
+        'time_sent': calculate_time_stamp()
     }
 
     store['dms'][dm_index]['messages'].append(new_message)
