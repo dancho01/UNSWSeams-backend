@@ -188,7 +188,7 @@ def test_dm_leave_invalid_dm(create_first_user):
 def test_dm_leave_user_not_member(create_first_user, create_second_user):
     
     user1 = create_first_user
-    user2 = create_second_user    
+    user2 = create_second_user
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
     dm_data = dm_response.json()
@@ -259,7 +259,7 @@ def test_dm_return_messages_success(create_first_user):
     requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is message 2'})        
     requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is message 3'})
         
-    dm_messages = requests.get(config.url + 'dm/messages/v1', params = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'start': 0})
+    dm_messages = requests.get(config.url + 'dm/messages/v1', params = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'start': 1})
     
     assert dm_messages.status_code == 200    
     
