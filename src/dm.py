@@ -72,6 +72,19 @@ def dm_create_v1(token, u_ids):
 def dm_list_v1(token):
     store = data_store.get()
     '''
+    Returns the list of DMs that the user is a member of
+    
+    
+    
+    Args:
+        token       str             the encoded JWT string to verify user
+        u_ids       list            a list of users the DM is directed to  
+    Exceptions:
+        InputError      occurs when any u_id in the list does not refer to valid user
+        InputError      occurs when there are any duplicate u_ids in the list
+
+    Return:
+        Returns a dictionary with the key 'dm_id', the DM's new id   
     
     
     '''

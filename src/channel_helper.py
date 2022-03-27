@@ -7,19 +7,22 @@ def remove_message(message_id):
 
     store = data_store.get()
 
+    found = False
     for channel in store['channels']:
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 channel['messages'].remove(message)
+                found = True
                 data_store.set(store)
-                return
+    if found == True:
+        return
 
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 dm['messages'].remove(message)
                 data_store.set(store)
-                return
+    return
 
 
 def member_leave(u_id, channel_index):
