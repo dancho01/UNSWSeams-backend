@@ -314,9 +314,9 @@ def test_check_channel_message_contents_is_Removed_user():
     assert message_response_data['messages'][0]['message'] == "Removed user"
 
 def test_check_dm_message_contents_is_Removed_user():
-    """
+    '''
         check that the removed user's messages in all dms are changed to "Removed user"
-    """
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email1@gmail.com',
                                                                  'password': 'password', 'name_first': 'First1', 'name_last': 'Last'})
@@ -344,15 +344,57 @@ def test_check_dm_message_contents_is_Removed_user():
     message_response_data = message_response.json()
     assert message_response_data['messages'][0]['message'] == "Removed user"
 
-# check first name and last name is "Removed" "user"
 
-# check user's email is registerable 
+def test_email_is_reregisterable_after_user_remove():
+    '''
+        check user's email is re-registerable after the user is removed
+    '''
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email1@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First1', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
+    user2_data = user2.json()
+    remove_response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
+        'u_id': user2_data['auth_user_id']})
+    assert remove_response.status_code == 200
+    rego_response = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
+    assert rego_response.status_code == 200
 
 
-# check user's handle is reusable - i.e. register someone else with the exact same name and that handle should be the same as
-# previous user's handle
+def test_handle_is_reusable_after_user_removal():
+    '''
+        check user's handle is reusable - i.e. register someone else with the exact same name and that handle should be the same as
+        previous user's handle
+    '''
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email1@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First1', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
+    user2_data = user2.json()
+    profile_response_1 = requests.get(config.url + 'user/profile/v1', params={
+        'token': user1_data['token'], 'u_id': user2_data['auth_user_id']})
+    assert profile_response_1.status_code == 200
+    profile_response_1_data = profile_response_1.json()
+    original_handle = profile_response_1_data['user']['handle_str']
 
+    remove_response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
+        'u_id': user2_data['auth_user_id']})
+    assert remove_response.status_code == 200
 
+    user2_again = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
+    user2_again_data = user2_again.json()
+    profile_response_2 = requests.get(config.url + 'user/profile/v1', params={
+        'token': user1_data['token'], 'u_id': user2_again_data['auth_user_id']})
+    assert profile_response_2.status_code == 200
+    profile_response_2_data = profile_response_2.json()
+    assert profile_response_2_data['user']['handle_str'] == original_handle
+    
 
 
 """
@@ -438,7 +480,6 @@ def test_admin_userpermission_change_auth_user_not_global_owner():
     assert response.status_code == 403  # AccessError
 
 
-# # test a successful case
 def test_change_user_permission_test_owner_permissions():
     """
         test that the user permissions are able to be changed to global owner, by a global owner
