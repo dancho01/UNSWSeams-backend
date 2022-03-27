@@ -8,6 +8,7 @@ from src.data_store import data_store
 GLOBAL_OWNER = 1
 MEMBER_ONLY_GLOBAL_PERMISSIONS = 2
 
+
 def test_admin_user_remove_u_id_not_valid():
     """
     u_id does not refer to a valid user
@@ -18,8 +19,9 @@ def test_admin_user_remove_u_id_not_valid():
     user1_data = user1.json()
 
     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-        'u_id': user1_data['auth_user_id'] + 1})
+                                                                          'u_id': user1_data['auth_user_id'] + 1})
     assert response.status_code == 400  # inputError
+
 
 def test_admin_user_remove_only_global_owner_left():
     """
@@ -31,8 +33,9 @@ def test_admin_user_remove_only_global_owner_left():
     user1_data = user1.json()
 
     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-        'u_id': user1_data['auth_user_id']})
+                                                                          'u_id': user1_data['auth_user_id']})
     assert response.status_code == 400  # inputError
+
 
 def test_admin_user_remove_auth_user_not_global_owner():
     '''
@@ -49,13 +52,15 @@ def test_admin_user_remove_auth_user_not_global_owner():
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user3_data = user3.json()
     requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
-        'permission_id': GLOBAL_OWNER})
+                                                                       'permission_id': GLOBAL_OWNER})
     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user3_data['token'],
-        'u_id': user1_data['auth_user_id']})
+                                                                          'u_id': user1_data['auth_user_id']})
     assert response.status_code == 403  # AccessError
 
 # can you call user/profile after removing user
 # ensure profile is still retrievable
+
+
 def test_call_user_profile_after_removing_user():
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
@@ -68,9 +73,8 @@ def test_call_user_profile_after_removing_user():
         'token': user1_data['token'], 'u_id': user2_data['auth_user_id']})
     assert profile_response.status_code == 200
 
-
     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-        'u_id': user2_data['auth_user_id']})
+                                                                          'u_id': user2_data['auth_user_id']})
     assert response.status_code == 200
     profile_response_2 = requests.get(config.url + 'user/profile/v1', params={
         'token': user1_data['token'], 'u_id': user2_data['auth_user_id']})
@@ -80,6 +84,7 @@ def test_call_user_profile_after_removing_user():
     profile_response_2_data = profile_response_2.json()
     assert profile_response_2_data['user']['name_first'] == 'Removed'
     assert profile_response_2_data['user']['name_last'] == 'user'
+
 
 def test_check_removed_from_all_channels_dms():
     """
@@ -114,28 +119,28 @@ need to put in working channels/list function
     channel_4_data = channel_4.json()
 
     requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
-                                                                     'u_id': user2_data['auth_user_id']})
+                                                          'u_id': user2_data['auth_user_id']})
 
     requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_2_data['channel_id'],
-                                                                     'u_id': user2_data['auth_user_id']})
-                                                                
+                                                          'u_id': user2_data['auth_user_id']})
+
     requests.post(config.url + 'channel/invite/v2', json={'token': user2_data['token'], 'channel_id': channel_3_data['channel_id'],
-                                                                     'u_id': user3_data['auth_user_id']})
+                                                          'u_id': user3_data['auth_user_id']})
 
     requests.post(config.url + 'channel/invite/v2', json={'token': user2_data['token'], 'channel_id': channel_4_data['channel_id'],
-                                                                     'u_id': user3_data['auth_user_id']})            
+                                                          'u_id': user3_data['auth_user_id']})
 
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-        'u_id': user2_data['auth_user_id']})                                                                                    
+                                                               'u_id': user2_data['auth_user_id']})
 
-    response = requests.get(config.url + 'channel/details/v2', params = {'token' : user1_data['token'], 
-        'channel_id' : channel_1_data['channel_id']})
+    response = requests.get(config.url + 'channel/details/v2', params={'token': user1_data['token'],
+                                                                       'channel_id': channel_1_data['channel_id']})
     response_data = response.json()
 
     assert len(response_data['all_members']) == 1
 
-    response = requests.get(config.url + 'channel/details/v2', params = {'token' : user1_data['token'], 
-        'channel_id' : channel_2_data['channel_id']})
+    response = requests.get(config.url + 'channel/details/v2', params={'token': user1_data['token'],
+                                                                       'channel_id': channel_2_data['channel_id']})
     response_data = response.json()
 
     assert len(response_data['all_members']) == 1
@@ -154,14 +159,15 @@ def test_check_not_in_users_all():
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user2_data = user2.json()
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-        'u_id': user2_data['auth_user_id']})   
-    response = requests.get(config.url + 'users/all/v1', params = {'token' : user1_data['token']})
+                                                               'u_id': user2_data['auth_user_id']})
+    response = requests.get(config.url + 'users/all/v1',
+                            params={'token': user1_data['token']})
     response_data = response.json()
     assert len(response_data['users']) == 1
 
-    
+
 def test_removing_Seams_OG_owner_while_multiple_global_owners():
-# Seams owner removing another Seams owner(including original owner)
+    # Seams owner removing another Seams owner(including original owner)
     # test remove OG owner
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
@@ -171,9 +177,9 @@ def test_removing_Seams_OG_owner_while_multiple_global_owners():
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user2_data = user2.json()
     requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
-        'permission_id': 1})
+                                                                       'permission_id': 1})
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user2_data['token'],
-        'u_id': user1_data['auth_user_id']})   
+                                                               'u_id': user1_data['auth_user_id']})
     #response = requests.get(config.url + 'users/all/v1', params = {'token' : user1_data['token']})
     profile_response = requests.get(config.url + 'user/profile/v1', params={
         'token': user2_data['token'], 'u_id': user1_data['auth_user_id']})
@@ -181,6 +187,7 @@ def test_removing_Seams_OG_owner_while_multiple_global_owners():
     profile_response_data = profile_response.json()
     assert profile_response_data['user']['name_first'] == 'Removed'
     assert profile_response_data['user']['name_last'] == 'user'
+
 
 def test_remove_other_Seams_owner():
     # test remove other Seams owner
@@ -192,9 +199,9 @@ def test_remove_other_Seams_owner():
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user2_data = user2.json()
     requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
-        'permission_id': 1})
+                                                                       'permission_id': 1})
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-        'u_id': user2_data['auth_user_id']})   
+                                                               'u_id': user2_data['auth_user_id']})
     #response = requests.get(config.url + 'users/all/v1', params = {'token' : user1_data['token']})
     profile_response = requests.get(config.url + 'user/profile/v1', params={
         'token': user1_data['token'], 'u_id': user2_data['auth_user_id']})
@@ -202,6 +209,7 @@ def test_remove_other_Seams_owner():
     profile_response_data = profile_response.json()
     assert profile_response_data['user']['name_first'] == 'Removed'
     assert profile_response_data['user']['name_last'] == 'user'
+
 
 def test_check_message_contents_is_Removed_user():
     """
@@ -218,12 +226,12 @@ def test_check_message_contents_is_Removed_user():
                                                                        'is_public': True})
     channel_1_data = channel_1.json()
     requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
-                                                                     'u_id': user2_data['auth_user_id']})
+                                                          'u_id': user2_data['auth_user_id']})
     message = "hello"
     requests.post(config.url + 'message/send/v1', json={
         'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'], 'message': message})
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
-        'u_id': user2_data['auth_user_id']})   
+                                                               'u_id': user2_data['auth_user_id']})
     message_response = requests.get(config.url + 'channel/messages/v2', params={
         'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'], 'start': 0})
     message_response_data = message_response.json()
@@ -231,19 +239,19 @@ def test_check_message_contents_is_Removed_user():
 
 # check first name and last name is "Removed" "user"
 
-# check user's email is registerable 
+# check user's email is registerable
 
 
 # check user's handle is reusable - i.e. register someone else with the exact same name and that handle should be the same as
 # previous user's handle
 
 
-
-
 """
     admin/userpermission/change/v1 tests
 
 """
+
+
 def test_admin_userpermission_change_u_id_invalid():
     """
     u_id does not refer to a valid user
@@ -254,8 +262,9 @@ def test_admin_userpermission_change_u_id_invalid():
     user1_data = user1.json()
 
     response = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user1_data['auth_user_id'] + 1,
-        'permission_id': GLOBAL_OWNER})
+                                                                                  'permission_id': GLOBAL_OWNER})
     assert response.status_code == 400  # inputError
+
 
 def test_admin_userpermission_change_u_id_is_sole_global_owner():
     """
@@ -268,8 +277,9 @@ def test_admin_userpermission_change_u_id_is_sole_global_owner():
     user1_data = user1.json()
 
     response = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user1_data['auth_user_id'],
-        'permission_id': MEMBER_ONLY_GLOBAL_PERMISSIONS})
+                                                                                  'permission_id': MEMBER_ONLY_GLOBAL_PERMISSIONS})
     assert response.status_code == 400  # inputError
+
 
 def test_admin_userpermission_change_u_id_permission_id_invalid():
     """
@@ -283,8 +293,9 @@ def test_admin_userpermission_change_u_id_permission_id_invalid():
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user2_data = user2.json()
     response = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'], 'u_id': user2_data['auth_user_id'],
-        'permission_id': 3})
+                                                                                  'permission_id': 3})
     assert response.status_code == 400  # inputError
+
 
 def test_admin_userpermission_change_u_id_permissions_already_given():
     """
@@ -302,8 +313,9 @@ def test_admin_userpermission_change_u_id_permissions_already_given():
     #     'u_id': user2_data['auth_user_id'], 'permission_id': 1})
     # assert response1.status_code == 200     # success
     response2 = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user1_data['token'],
-        'u_id': user2_data['auth_user_id'], 'permission_id': 2})
+                                                                                   'u_id': user2_data['auth_user_id'], 'permission_id': 2})
     assert response2.status_code == 400  # inputError
+
 
 def test_admin_userpermission_change_auth_user_not_global_owner():
     """
@@ -311,7 +323,7 @@ def test_admin_userpermission_change_auth_user_not_global_owner():
     """
     requests.delete(config.url + 'clear/v1')
     requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
-                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+                                                         'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user2_data = user2.json()
@@ -319,7 +331,7 @@ def test_admin_userpermission_change_auth_user_not_global_owner():
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
     user3_data = user3.json()
     response = requests.post(config.url + 'admin/userpermission/change/v1', json={'token': user2_data['token'],
-        'u_id': user3_data['auth_user_id'], 'permission_id': 1})
+                                                                                  'u_id': user3_data['auth_user_id'], 'permission_id': 1})
     assert response.status_code == 403  # AccessError
 
 

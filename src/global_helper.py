@@ -108,3 +108,15 @@ def reset_globals():
     global AUTH_COUNTER
     CHANNEL_COUNTER = 0
     AUTH_COUNTER = 0
+
+
+def load_globals(auth, channel):
+    global AUTH_COUNTER, CHANNEL_COUNTER
+    AUTH_COUNTER = auth
+    CHANNEL_COUNTER = channel
+
+
+def get_globals():
+    global AUTH_COUNTER, CHANNEL_COUNTER
+
+    return AUTH_COUNTER, CHANNEL_COUNTER

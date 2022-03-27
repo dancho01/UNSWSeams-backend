@@ -1,6 +1,7 @@
 from src.data_store import data_store
-from src.channel_helper import check_message, member_leave
-from src.message_helper import check_valid_message
+from src.global_helper import check_global_owner
+from src.error import InputError
+from src.token import hash
 
 
 def remove_user_name(u_id):
@@ -29,7 +30,7 @@ def remove_user_messages(u_id):
         for message in dms['messages']:
             if message['u_id'] == u_id:
                 message['message'] = "Removed user"
-    
+
     data_store.set(store)
     return {}
 
@@ -42,7 +43,6 @@ def remove_user_from_channels(u_id):
         for owner_member in channel['owner_members']:
             if owner_member['u_id'] == u_id:
                 channel['owner_members'].remove(owner_member)
-                
 
         for all_member in channel['all_members']:
             if all_member['u_id'] == u_id:
@@ -54,4 +54,29 @@ def remove_user_from_channels(u_id):
                 dm['all_members'].remove(member)
 
 
-    
+def only_global_owner_check(u_id):
+    store = data_store.get()
+    global_owners = 0
+
+    for user in store['users']:
+        if check_global_owner(user['auth_user_id']):
+            global_owners += 1
+        if user['auth_user_id'] == u_id:
+            u_profile = user
+
+    if global_owners == 1 and u_profile['global_permissions'] == 1:
+        raise InputError(
+            "user you are trying to remove is the only global owner")
+
+    return
+
+
+def remove_from_session_list(u_id):
+    store = data_store.get()
+
+    for user in store['users']:
+        if user['auth_user_id'] == u_id:
+            store['session_list'].remove(
+                hash(str(u_id) + user['handle']))
+
+    return

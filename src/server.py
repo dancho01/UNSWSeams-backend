@@ -78,6 +78,7 @@ def auth_register_wrapper():
         data['email'], data['password'], data['name_first'], data['name_last'])
 
     save_data()
+    print(data_store.get())
     return dumps({
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
@@ -245,6 +246,8 @@ def messages_send_v1():
 @APP.route("/channels/create/v2", methods=['POST'])
 def channels_create_v2():
     data = request.get_json()
+    print("000000000000000000000000000")
+    print(data['token'])
     result = channels_create_v1(data['token'], data['name'], data['is_public'])
     save_data()
     return dumps(result)
