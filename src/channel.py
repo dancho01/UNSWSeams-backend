@@ -128,25 +128,31 @@ def messages_edit_v1(token, message_id, message):
     """
     as long as you have a message_id, can find the message in either channels or dms and edit it
     """
+    if len(message) == 0:
+        remove_message(message_id)
+        return {}
+    
     store = data_store.get()
     user_id = check_valid_token(token)['u_id']
     check_message(message)
     check_valid_message(message_id, user_id, store)
 
-    if len(message) == 0:
-        messages_remove_v1(token, message_id)
-
+    found = False
     for channel in store['channels']:
         for messages in channel['messages']:
             if messages['message_id'] == message_id:
                 messages['message'] = message
-                return {}
+                found = True
+    if found == True:
+        return {}
 
+    
     for dms in store['dms']:
         for messages in dms['messages']:
             if messages['message_id'] == message_id:
                 messages['message'] = message
-                return {}
+                found = True
+    return {}
 
 
 def messages_remove_v1(token, message_id):

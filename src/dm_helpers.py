@@ -1,3 +1,5 @@
+from src.error import InputError, AccessError
+
 DM_ID_COUNTER = 0
 
 
@@ -42,7 +44,8 @@ def return_handle(u_id, store):
     '''
     for user_index in range(len(store['users'])):
         if store['users'][user_index]['auth_user_id'] == u_id:
-            return store['users'][user_index]['handle']
+           found_user = user_index  
+    return store['users'][found_user]['handle']
 
 
 def generate_DM_name(auth_user_id, u_ids, store):
@@ -72,10 +75,12 @@ def check_valid_dm(dm_id, store):
         - Returns True if dm_id is valid and also returns its index position
         for easier lookup in the future    
     '''
+
     for dm_index in range(len(store['dms'])):
         if store['dms'][dm_index]['dm_id'] == dm_id:
-            return True, dm_index
+            return True, dm_index      
     return False
+
 
 
 def check_user_member_dm(u_id, store, dm_index):
@@ -89,31 +94,12 @@ def check_user_member_dm(u_id, store, dm_index):
         - Returns False if user is not a member of the DM
         - Returns True if user is a member of the DM
     '''
+    found = False
     for member in store['dms'][dm_index]['all_members']:
         if u_id == member['u_id']:
             return True
     return False
+      
+        
 
 
-def return_dm_messages(dm_index, start, end, store):
-    '''
-    Returns a list of messages between the 'start' and 'end' indices
-    Args:
-        dm_index    int             the index position of the DM within list of DMs
-        start       int             the starting index 
-        end         int             the end index
-        store       dict            the copy of the data structure 
-    Return:
-        - Returns the list of messages that were appended between the two indices      
-    '''
-    returned_messages = []
-
-    message_store = store['dms'][dm_index]['messages']
-
-    if message_store == []:
-        return returned_messages
-
-    for message_index in range(start, end):
-        returned_messages.append(message_store[message_index])
-
-    return returned_messages
