@@ -17,3 +17,17 @@ def return_users_information():
             })
 
     return users
+
+
+def return_profile(u_id):
+    store = data_store.get()
+
+    for user in store['users']:
+        if user['auth_user_id'] == u_id:
+            return {
+                'u_id': user['auth_user_id'],
+                'email': user['email'],
+                'name_last': user['name_last'],
+                'name_first': user['name_first'],
+                'handle_str': user['handle']
+            }

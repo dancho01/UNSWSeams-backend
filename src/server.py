@@ -163,7 +163,7 @@ def send_message_to_dm():
     })
 
 
-@APP.route("/auth/logout/v1", methods=['DELETE'])
+@APP.route("/auth/logout/v1", methods=['POST'])
 def auth_logout_v1():
     data = request.get_json()
     result = auth_logout(data['token'])

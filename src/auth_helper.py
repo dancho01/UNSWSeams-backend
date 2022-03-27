@@ -54,7 +54,7 @@ def check_info(name_first, name_last, password, email):
     if len(password) < 6:
         raise InputError(description="Password must be 6 or more characters!")
 
-    if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email):
+    if not re.match(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Z|a-z]{2,}$", email):
         raise InputError(description="Invalid email!")
 
     store = data_store.get()
