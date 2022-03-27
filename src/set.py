@@ -1,6 +1,6 @@
 from src.token import check_valid_token
 from src.data_store import data_store
-from src.profile_helper import check_name, check_email, check_handle, insert_name, insert_email, insert_handle
+from src.set_helper import check_name, check_email, check_handle, insert_name, insert_email, insert_handle
 
 
 def set_name_v1(token, name_first, name_last):
@@ -16,6 +16,7 @@ def set_name_v1(token, name_first, name_last):
 
 def set_email_v1(token, email):
     user_info = check_valid_token(token)
+
     check_email(email)
 
     # Inserts the email into the database

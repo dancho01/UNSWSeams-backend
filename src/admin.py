@@ -7,7 +7,6 @@ from src.admin_helper import remove_user_name, remove_user_messages, remove_user
 
 # use filter
 
-
 def admin_user_remove_v1(token, u_id):
     auth_user_id = check_valid_token(token)['u_id']
 

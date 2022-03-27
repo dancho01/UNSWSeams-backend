@@ -62,8 +62,6 @@ def check_info_syntax(name_first, name_last, password, email):
 
     for user in store['users']:
         if user['email'] == email and is_user_removed(user) == False:
-            print("------------------------------------------------------------")
-            print(is_user_removed(user))
             raise InputError(
                 description="This email is already in use by another user!")
 
