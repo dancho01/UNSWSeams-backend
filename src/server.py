@@ -4,9 +4,7 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1
-from src.error import InputError
 from src import config
-from src.error import InputError
 from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data

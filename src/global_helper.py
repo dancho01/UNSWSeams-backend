@@ -6,9 +6,9 @@ CHANNEL_COUNTER = 0
 MESSAGE_ID_COUNTER = 0
 
 
-def check_valid_user(u_id)
+def check_valid_user(u_id):
     '''
-        Checks if user's id is valid 
+        Checks if user's id is valid
     '''
     store = data_store.get()
 
@@ -79,6 +79,17 @@ def check_global_owner(auth_user_id):
                 return False
 
 
+def is_user_member(u_id, channel_index):
+    store = data_store.get()
+
+    for member in store['channels'][channel_index]['all_members']:
+        if member['u_id'] == u_id:
+            return
+
+    raise InputError(
+        description="u_id refers to a user who is not a member of the channel")
+
+
 def check_owner(channel_index, auth_user_id):
     '''
         Checks if the user is an owner of the channel
@@ -107,6 +118,37 @@ def check_already_owner(channel_index, auth_user_id):
         if owner['u_id'] == auth_user_id:
             raise InputError(
                 description="u_id refers to a user who is already an owner of the channel")
+
+
+def return_member_information(u_id, store):
+    for user in store['users']:
+        if user['auth_user_id'] == u_id:
+            return {
+                'u_id': user['auth_user_id'],
+                'email': user['email'],
+                'name_first': user['name_first'],
+                'name_last': user['name_last'],
+                'handle_str': user['handle']
+            }
+
+
+def messages_returned(channel_index, start, end, store):
+    '''
+    messages_returned takes the index, finds it and accesses the 'messages' content. It goes through
+    the messages and attaces it to returned_messages until k == 50 which it will then return the
+    returned_messages variable.
+    '''
+    returned_messages = []
+
+    message_store = store['channels'][channel_index]['messages']
+
+    if message_store == []:
+        return returned_messages
+
+    for message_index in range(start, end):
+        returned_messages.append(message_store[message_index])
+
+    return returned_messages
 
 
 def generate_new_message_id():

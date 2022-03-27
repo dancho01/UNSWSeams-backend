@@ -1,6 +1,7 @@
 from src.error import InputError
 from src.data_store import data_store
 
+
 def search_user_channel(u_id):
     '''
         Returns channels that the user is part of 
@@ -15,18 +16,20 @@ def search_user_channel(u_id):
                     {'channel_id': channel['channel_id'], 'name': channel['name']})
     return channel_list
 
-def return_all_channels(): 
+
+def return_all_channels():
     '''
         Returns all channels in Seams
     '''
 
     store = data_store.get()
-    
+
     channel_list = []
     for channel in store['channels']:
         channel_list.append(
             {'channel_id': channel['channel_id'], 'name': channel['name']})
     return channel_list
+
 
 def create_new_channel(new_channel_id, name, is_public):
     '''
@@ -41,6 +44,7 @@ def create_new_channel(new_channel_id, name, is_public):
                    'messages': [],
                    }
     return new_channel
+
 
 def check_channel_len(name):
     '''
