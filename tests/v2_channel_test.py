@@ -384,6 +384,9 @@ def test_channel_addowner_user_no_owner_permission(create_first_user):
     assert response.status_code == 403  # AccessError
 
 def test_channel_addowner_return_type():
+    """
+        tests the function returns an empty dictionary
+    """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -519,6 +522,9 @@ def test_channel_removeowner_user_no_owner_permissions():
     assert response.status_code == 403  # AccessError
 
 def test_channel_removeowner_return_type():
+    """
+        tests the function returns an empty dictionary
+    """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})

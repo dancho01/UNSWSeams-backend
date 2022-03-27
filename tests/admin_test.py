@@ -10,7 +10,7 @@ MEMBER_ONLY_GLOBAL_PERMISSIONS = 2
 
 def test_admin_user_remove_u_id_not_valid():
     """
-    u_id does not refer to a valid user
+        tests when u_id does not refer to a valid user
     """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
@@ -23,7 +23,7 @@ def test_admin_user_remove_u_id_not_valid():
 
 def test_admin_user_remove_only_global_owner_left():
     """
-        u_id refers to a user who is the only global owner
+        tests when u_id refers to a user who is the only global owner
     """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
@@ -54,9 +54,11 @@ def test_admin_user_remove_auth_user_not_global_owner():
         'u_id': user1_data['auth_user_id']})
     assert response.status_code == 403  # AccessError
 
-# can you call user/profile after removing user
-# ensure profile is still retrievable
+
 def test_call_user_profile_after_removing_user():
+    """
+        ensure profile is still retrievable with user/profile after removing the user
+    """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -67,7 +69,6 @@ def test_call_user_profile_after_removing_user():
     profile_response = requests.get(config.url + 'user/profile/v1', params={
         'token': user1_data['token'], 'u_id': user2_data['auth_user_id']})
     assert profile_response.status_code == 200
-
 
     response = requests.delete(config.url + 'admin/user/remove/v1', json={'token': user1_data['token'],
         'u_id': user2_data['auth_user_id']})
@@ -80,6 +81,7 @@ def test_call_user_profile_after_removing_user():
     profile_response_2_data = profile_response_2.json()
     assert profile_response_2_data['user']['name_first'] == 'Removed'
     assert profile_response_2_data['user']['name_last'] == 'user'
+
 
 def test_check_removed_from_all_channels():
     """
@@ -215,9 +217,9 @@ def test_check_removed_from_all_dms():
 
 def test_check_not_in_users_all():
     """
-    need to put in working users/all function
+    ensure the removed user is not in users/all/v1 after being removed.
+    check not inlcuded in users returned by users/all. 
     """
-# chceck not inlcuded in users returned by users/all
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -233,8 +235,10 @@ def test_check_not_in_users_all():
 
     
 def test_removing_Seams_OG_owner_while_multiple_global_owners():
-# Seams owner removing another Seams owner(including original owner)
-    # test remove OG owner
+    """
+        Test that a Seams owner removing another Seams owner(including original owner) works.
+        Test removing OG owner.
+    """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -246,16 +250,18 @@ def test_removing_Seams_OG_owner_while_multiple_global_owners():
         'permission_id': 1})
     requests.delete(config.url + 'admin/user/remove/v1', json={'token': user2_data['token'],
         'u_id': user1_data['auth_user_id']})   
-    #response = requests.get(config.url + 'users/all/v1', params = {'token' : user1_data['token']})
     profile_response = requests.get(config.url + 'user/profile/v1', params={
         'token': user2_data['token'], 'u_id': user1_data['auth_user_id']})
+
     # check first name and last name is "Removed" "user"
     profile_response_data = profile_response.json()
     assert profile_response_data['user']['name_first'] == 'Removed'
     assert profile_response_data['user']['name_last'] == 'user'
 
 def test_remove_other_Seams_owner():
-    # test remove other Seams owner
+    """
+        test that removing the other Seams owner works
+    """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -277,9 +283,10 @@ def test_remove_other_Seams_owner():
 
 def test_check_channel_message_contents_is_Removed_user():
     """
-    check that the removed user's messages in all channels are changed to "Removed user"
+        Check that the removed user's messages in all channels are changed to "Removed user". 
+        Check message contents is "Removed user". 
     """
-# check message contents is "Removed user"
+
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -308,7 +315,7 @@ def test_check_channel_message_contents_is_Removed_user():
 
 def test_check_dm_message_contents_is_Removed_user():
     """
-    check that the removed user's messages in all dms are changed to "Removed user"
+        check that the removed user's messages in all dms are changed to "Removed user"
     """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email1@gmail.com',
@@ -415,7 +422,7 @@ def test_admin_userpermission_change_u_id_permissions_already_given():
 
 def test_admin_userpermission_change_auth_user_not_global_owner():
     """
-    the authorised user is not a global owner
+        the authorised user is not a global owner
     """
     requests.delete(config.url + 'clear/v1')
     requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
@@ -433,6 +440,9 @@ def test_admin_userpermission_change_auth_user_not_global_owner():
 
 # # test a successful case
 def test_change_user_permission_test_owner_permissions():
+    """
+        test that the user permissions are able to be changed to global owner, by a global owner
+    """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -449,6 +459,9 @@ def test_change_user_permission_test_owner_permissions():
     assert response2.status_code == 200
 
 def test_user_permission_change_owner_to_member():
+    """
+        test that user permissions are able to be changed back to normal member, by another global owner
+    """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
