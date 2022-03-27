@@ -1,27 +1,12 @@
 from src.error import AccessError, InputError
 from src.global_helper import check_global_owner
 
-MESSAGE_ID_COUNTER = 0
-
-
-def generate_new_message_id():
-    '''
-    Generates a new message_id that is unique and sequentially increases by 1
-    Args:
-        None
-    Return:
-        Returns the next message_id
-    '''
-    global MESSAGE_ID_COUNTER
-    MESSAGE_ID_COUNTER += 1
-    return MESSAGE_ID_COUNTER
-
 
 def check_valid_message(message_id, u_id, store):
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
-                if message['u_id'] == u_id or check_channel_owner(dm, u_id):
+                if message['u_id'] == u_id or dm['owner']['u_id'] == u_id:
                     return True
                 else:
                     raise AccessError(

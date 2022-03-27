@@ -1,8 +1,8 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store, return_member_information, check_user_registered
 from src.token import check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, return_handle, check_valid_dm, check_user_member_dm, return_dm_messages, generate_new_dm_id, generate_DM_name
-from src.message_helper import generate_new_message_id
+from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, generate_new_dm_id, generate_DM_name
+from src.global_helper import generate_new_message_id
 from datetime import timezone
 import datetime
 
@@ -59,7 +59,7 @@ def dm_create_v1(token, u_ids):
         new_dm['all_members'].append(return_member_information(u_id, store))
 
     # only original creator of DM is added to owner
-    new_dm['owner_members'] = return_member_information(auth_user_id, store)
+    new_dm['owner'] = return_member_information(auth_user_id, store)
 
     store['dms'].append(new_dm)
     data_store.set(store)

@@ -35,13 +35,17 @@ def admin_user_remove_v1(token, u_id):
 
     only_global_owner_check(u_id)
 
-    remove_user_name(u_id)              # Turns their name to 'Removed user' in user database
-    
-    remove_user_from_channels(u_id)     # Removes users from all channels and dms
+    # Turns their name to 'Removed user' in user database
+    remove_user_name(u_id)
 
-    remove_user_messages(u_id)          # Edits their messages to 'Removed user' in all dms and channels
+    # Removes users from all channels and dms
+    remove_user_from_channels(u_id)
 
-    remove_from_session_list(u_id)      # Removes the user from the session_list
+    # Edits their messages to 'Removed user' in all dms and channels
+    remove_user_messages(u_id)
+
+    # Removes the user from the session_list
+    remove_from_session_list(u_id)
     return {}
 
 
