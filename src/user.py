@@ -8,12 +8,7 @@ from src.users_helpers import return_profile
 
 def user_profile_v1(token, u_id):
     '''
-    Looks at a user's profile 
-    Args:
-        token           str         user's token 
-        u_id            int         user's id        
-    Return Value:
-        Returns dictionary containing {auth_user_id, email, first name, last name, and handle}
+        Returns a given user's profile 
     '''
 
     check_valid_token(token)
