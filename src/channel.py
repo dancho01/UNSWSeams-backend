@@ -45,6 +45,14 @@ def channel_invite_v1(token, channel_id, u_id):
 
 
 def channel_details_v1(token, channel_id):
+    '''
+    Returns the details of a given channel 
+    Args: 
+        token           str         user's token
+        channel_id      int         channel's id
+    Returns 
+        Returns a dictionary containing { name, is_public, owner_members, all_members } of the channel
+    '''
 
     store = data_store.get()
 

@@ -16,6 +16,7 @@ def set_name_v1(token, name_first, name_last):
 
 def set_email_v1(token, email):
     user_info = check_valid_token(token)
+
     check_email(email)
 
     # Inserts the email into the database
