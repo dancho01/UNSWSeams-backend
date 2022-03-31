@@ -265,7 +265,33 @@ def test_user_added():
     Returns:
     {}
 """
+def test_global_owner_member_can_addowner():
+    '''
+        Tests that a global owner can add a channel owner if they are a member of the channel and not necessarily a channel owner. 
+        Global Owners have owner permissions in all channels they have joined. 
+    '''
 
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                'password': 'randomPassword', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
+                                                'password': 'randomPassword', 'name_first': 'First', 'name_last': 'Last'})
+    user3_data = user3.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'], 'name': 'First Channel',
+                                                                       'is_public': True})
+    channel_1_data = channel_1.json()
+    requests.post(config.url + 'channel/join/v2',
+                  json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id']})
+    requests.post(config.url + 'channel/join/v2',
+                  json={'token': user3_data['token'], 'channel_id': channel_1_data['channel_id']})
+    response = requests.post(config.url + 'channel/addowner/v1', json={'token': user1_data['token'], 
+                                            'channel_id': channel_1_data['channel_id'], 'u_id': user3_data['auth_user_id']})
+    assert response.status_code == 200  #success
+    
 
 def test_channel_addowner_invalid_channel():
     """
@@ -543,3 +569,53 @@ def test_channel_removeowner_return_type():
                                                                            'u_id': user3_data['auth_user_id']})
     assert response4.status_code == 200
     assert json.loads(response4.text) == {}
+
+def test_global_owner_member_can_remove_owner():
+    '''
+        Tests a global owner can remove a channel owner if they are a member of the channel and not necessarily a channel owner. 
+        Global Owners have owner permissions in all channels they have joined. 
+    '''
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                'password': 'randomPassword', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'email3@gmail.com',
+                                                'password': 'randomPassword', 'name_first': 'First', 'name_last': 'Last'})
+    user3_data = user3.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'], 'name': 'First Channel',
+                                                                       'is_public': True})
+    channel_1_data = channel_1.json()
+    requests.post(config.url + 'channel/join/v2',
+                  json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id']})
+    requests.post(config.url + 'channel/join/v2',
+                  json={'token': user3_data['token'], 'channel_id': channel_1_data['channel_id']})
+    requests.post(config.url + 'channel/addowner/v1', json={'token': user1_data['token'], 
+                                            'channel_id': channel_1_data['channel_id'], 'u_id': user3_data['auth_user_id']})
+    response = requests.post(config.url + 'channel/removeowner/v1', json={'token': user1_data['token'], 
+                                        'channel_id': channel_1_data['channel_id'], 'u_id': user3_data['auth_user_id']})
+    assert response.status_code == 200  #success
+
+def test_global_owner_cannot_remove_only_owner():
+    '''
+        Testing that a global owner cannot remove the only channel owner, because no one can remove the only channel owner. 
+        Global owners can remove a channel owner if they are a member of the channel and not necessarily a channel owner. 
+        Global Owners have owner permissions in all channels they have joined. 
+    '''
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'randomPassword', 'name_first': 'First', 'name_last': 'Last'})
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'], 'name': 'First Channel',
+                                                                       'is_public': True})        # created a private channel so only invitational.
+    channel_1_data = channel_1.json()
+    requests.post(config.url + 'channel/invite/v2', json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                          'u_id': user1_data['auth_user_id']})
+    response = requests.post(config.url + 'channel/removeowner/v1', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                                          'u_id': user2_data['auth_user_id']})
+    assert response.status_code == 400  # InputError
