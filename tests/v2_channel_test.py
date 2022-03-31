@@ -266,6 +266,11 @@ def test_user_added():
     {}
 """
 def test_global_owner_member_can_addowner():
+    '''
+        Tests that a global owner can add a channel owner if they are a member of the channel and not necessarily a channel owner. 
+        Global Owners have owner permissions in all channels they have joined. 
+    '''
+
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -566,6 +571,10 @@ def test_channel_removeowner_return_type():
     assert json.loads(response4.text) == {}
 
 def test_global_owner_member_can_remove_owner():
+    '''
+        Tests a global owner can remove a channel owner if they are a member of the channel and not necessarily a channel owner. 
+        Global Owners have owner permissions in all channels they have joined. 
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -590,6 +599,11 @@ def test_global_owner_member_can_remove_owner():
     assert response.status_code == 200  #success
 
 def test_global_owner_cannot_remove_only_owner():
+    '''
+        Testing that a global owner cannot remove the only channel owner, because no one can remove the only channel owner. 
+        Global owners can remove a channel owner if they are a member of the channel and not necessarily a channel owner. 
+        Global Owners have owner permissions in all channels they have joined. 
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
