@@ -1,6 +1,6 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
-from src.channel_helper import check_message, time_now, remove_message, member_leave
+from src.channel_helper import check_message, time_now, remove_message, member_leave, get_messages, edit_message
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member
@@ -102,11 +102,9 @@ def channel_messages_v1(token, channel_id, start):
         end_return = message_length
         end = -1
 
-    return_messages = []
-
-    for i in range(start, end_return):
-        return_messages.append(
-            store['channels'][auth_list_index]['messages'][i])
+    return_messages = get_messages(start, end_return, auth_list_index)
+    print("RETURNMESSAGES-------------------")
+    print(return_messages)
 
     return {'messages': return_messages,
             'start': start,
@@ -172,20 +170,8 @@ def messages_edit_v1(token, message_id, message):
     check_message(message)
     check_valid_message(message_id, user_id, store)
 
-    found = False
-    for channel in store['channels']:
-        for messages in channel['messages']:
-            if messages['message_id'] == message_id:
-                messages['message'] = message
-                found = True
-    if found == True:
-        return {}
+    edit_message(message_id, message)
 
-    for dms in store['dms']:
-        for messages in dms['messages']:
-            if messages['message_id'] == message_id:
-                messages['message'] = message
-                found = True
     return {}
 
 

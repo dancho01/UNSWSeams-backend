@@ -22,6 +22,7 @@ def generate_token(user_id, handle):
     '''
     store = data_store.get()
     session_id = generate_session_id(user_id, handle)
+
     ENCODED_JWT = jwt.encode(
         {'u_id': user_id, 'session_id': session_id}, SECRET, algorithm='HS256')
 

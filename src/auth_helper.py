@@ -78,13 +78,17 @@ def check_login(email, password):
         hashed password that is inputted matches
     '''
     store = data_store.get()
+    print("HASHEDPWRODD--------------------")
 
     for user in store['users']:
-        if user['email'] == email and user['password'] == hash(password):
-            return {'u_id': user['auth_user_id'],
-                    'handle': user['handle']}
-        else:
-            raise InputError(description="Incorrect Password!")
+        if user['email'] == email:
+            if user['password'] == hash(password):
+                print(user['password'])
+                print(hash(password))
+                return {'u_id': user['auth_user_id'],
+                        'handle': user['handle']}
+            else:
+                raise InputError(description="Incorrect Password!")
 
     raise InputError(description="This email is not registered!")
 

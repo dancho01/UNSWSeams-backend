@@ -50,6 +50,7 @@ def auth_login_v2():
     result = auth_login_v1(data['email'], data['password'])
 
     save_data()
+    print(data_store.get())
     return dumps({
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
@@ -63,6 +64,7 @@ def auth_register_wrapper():
         data['email'], data['password'], data['name_first'], data['name_last'])
 
     save_data()
+    print(data_store.get())
     return dumps({
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
@@ -337,4 +339,4 @@ def users_all():
 if __name__ == "__main__":
     load_data()
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port=config.port, debug=True)  # Do not edit this port
