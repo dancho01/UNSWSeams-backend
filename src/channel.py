@@ -3,7 +3,7 @@ from src.data_store import data_store
 from src.channel_helper import check_message, time_now, remove_message, member_leave
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
-    check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member
+    check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
 from src.message_helper import check_valid_message
 
 
@@ -299,15 +299,17 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
-
+    print("after data_store.get")
     check_valid_user(u_id)
 
     channel_index = check_valid_channel(channel_id)
 
-    check_owner(channel_index, auth_user_id)
+    if check_global_owner(auth_user_id) == False:
+        check_owner(channel_index, auth_user_id)
 
     is_user_member(u_id, channel_index)
 
+    print("before checking owner")
     check_already_owner(channel_index, u_id)
 
     store['channels'][channel_index]['owner_members'].append(
@@ -345,7 +347,8 @@ def channel_removeowner_v1(token, channel_id, u_id):
 
     check_valid_user(auth_user_id)
     channel_index = check_valid_channel(channel_id)
-    check_owner(channel_index, auth_user_id)
+    if check_global_owner(auth_user_id) == False:
+        check_owner(channel_index, auth_user_id)
 
     # test if u_id is currently the only owner of the channel
     if len(store['channels'][channel_index]['owner_members']) == 1:
