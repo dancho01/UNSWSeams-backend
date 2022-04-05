@@ -241,6 +241,8 @@ def dm_messages_v1(token, dm_id, start):
     for i in range(start, end_return):
         return_messages.append(
             store['dms'][dm_index]['messages'][i])
+            
+    return_messages.reverse()
 
     return {
         'messages': return_messages,
