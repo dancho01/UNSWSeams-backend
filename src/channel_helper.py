@@ -13,7 +13,6 @@ def remove_message(message_id):
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 channel['messages'].remove(message)
-                found = True
                 data_store.set(store)
                 return
 
@@ -79,8 +78,8 @@ def edit_message(message_id, message):
                 messages['message'] = message
                 return
 
-    for dm in store['dm']:
+    for dm in store['dms']:
         for messages in dm['messages']:
-            if message['message_id'] == message_id:
+            if messages['message_id'] == message_id:
                 messages['message'] = message
                 return

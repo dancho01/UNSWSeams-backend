@@ -50,7 +50,6 @@ def auth_login_v2():
     result = auth_login_v1(data['email'], data['password'])
 
     save_data()
-    print(data_store.get())
     return dumps({
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
@@ -64,7 +63,6 @@ def auth_register_wrapper():
         data['email'], data['password'], data['name_first'], data['name_last'])
 
     save_data()
-    print(data_store.get())
     return dumps({
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
@@ -142,7 +140,8 @@ def return_dm_messages():
 def send_message_to_dm():
     info = request.get_json()
 
-    result = message_senddm_v1(info['token'], info['dm_id'], info['message'])
+    result = message_senddm_v1(
+        info['token'], info['dm_id'], info['message'])
 
     save_data()
     return dumps({
@@ -154,8 +153,6 @@ def send_message_to_dm():
 def auth_logout_v1():
     data = request.get_json()
     result = auth_logout(data['token'])
-
-    print(data_store.get())
     save_data()
     return dumps(result)
 
@@ -195,11 +192,8 @@ def channel_join_v2():
 @APP.route("/channel/addowner/v1", methods=['POST'])
 def channel_addowner_v1_wrapper():
     data = request.get_json()
-    print(data_store.get())
     result = channel_addowner_v1(
         data['token'], data['channel_id'], data['u_id'])
-
-    print("hello")
     save_data()
     return dumps(result)
 
