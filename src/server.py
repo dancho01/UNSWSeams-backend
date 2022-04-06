@@ -155,6 +155,7 @@ def auth_logout_v1():
     data = request.get_json()
     result = auth_logout(data['token'])
 
+    print(data_store.get())
     save_data()
     return dumps(result)
 
