@@ -3,7 +3,7 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
-from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1
+from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1, message_share_v1
 from src import config
 from src.other import clear_v1
 from src.data_store import data_store
@@ -146,6 +146,20 @@ def send_message_to_dm():
     save_data()
     return dumps({
         'message_id': result['message_id']
+    })
+
+
+@APP.route("/message/share/v1", methods=['POST'])
+def message_share_wrapper():
+    info = request.get_json()
+
+    result = message_share_v1(info['token'], info['og_message_id'], info['message'],
+                              info['channel_id'], info['dm_id'])
+
+    save_data()
+    print(data_store.get()['channels'])
+    return dumps({
+        'shared_message_id': result
     })
 
 
