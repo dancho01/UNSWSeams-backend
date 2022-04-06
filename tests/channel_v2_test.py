@@ -71,6 +71,64 @@ def send_first_message():
 
 
 '''
+message_share_v1
+'''
+
+
+def test_invalid_optional_message(create_public_channel, generate_invalid_message):
+    user1_data = create_public_channel[1]
+    channel1 = create_public_channel[0]
+    fm = requests.post(config.url + 'message/send/v1', json={
+        'token': user1_data['token'], 'channel_id': channel1['channel_id'], 'message': "hello"})
+    first_message = fm.json()
+    response = requests.post(config.url + 'message/share/v1', json={
+        'token': user1_data['token'], 'og_message_id': first_message['message_id'], 'message': generate_invalid_message,
+        'channel_id': channel1['channel_id'], 'dm_id': -1})
+
+    assert response.status_code == 400
+
+
+def test_invalid_message_id(create_public_channel):
+    user1_data = create_public_channel[1]
+    channel1 = create_public_channel[0]
+    fm = requests.post(config.url + 'message/send/v1', json={
+        'token': user1_data['token'], 'channel_id': channel1['channel_id'], 'message': "hello"})
+    first_message = fm.json()
+    response = requests.post(config.url + 'message/share/v1', json={
+        'token': user1_data['token'], 'og_message_id': first_message['message_id'] + 1, 'message': "hello",
+        'channel_id': channel1['channel_id'], 'dm_id': -1})
+
+    assert response.status_code == 400
+
+
+def test_user_not_in_channel(create_public_channel, create_second_user):
+    user1_data = create_public_channel[1]
+    channel1 = create_public_channel[0]
+    user2_data = create_second_user
+    fm = requests.post(config.url + 'message/send/v1', json={
+        'token': user1_data['token'], 'channel_id': channel1['channel_id'], 'message': "hello"})
+    first_message = fm.json()
+    response = requests.post(config.url + 'message/share/v1', json={
+        'token': user2_data['token'], 'og_message_id': first_message['message_id'], 'message': "hello",
+        'channel_id': channel1['channel_id'], 'dm_id': -1})
+
+    assert response.status_code == 403
+
+
+def test_valid_share_message(create_public_channel):
+    user1_data = create_public_channel[1]
+    channel1 = create_public_channel[0]
+    fm = requests.post(config.url + 'message/send/v1', json={
+        'token': user1_data['token'], 'channel_id': channel1['channel_id'], 'message': "hello"})
+    first_message = fm.json()
+    response = requests.post(config.url + 'message/share/v1', json={
+        'token': user1_data['token'], 'og_message_id': first_message['message_id'], 'message': "hello",
+        'channel_id': channel1['channel_id'], 'dm_id': -1})
+
+    assert response.status_code == 200
+
+
+'''
  messages v2
 '''
 

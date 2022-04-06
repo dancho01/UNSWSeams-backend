@@ -131,6 +131,7 @@ def return_member_information(u_id, store):
                 'handle_str': user['handle']
             }
 
+
 def generate_new_message_id():
     '''
     Generates a new message_id that is unique and sequentially increases by 1

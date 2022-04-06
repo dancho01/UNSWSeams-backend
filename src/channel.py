@@ -1,6 +1,7 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
-from src.channel_helper import check_message, time_now, remove_message, member_leave, get_messages, edit_message
+from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, \
+    check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
@@ -132,17 +133,22 @@ def message_send_v1(token, channel_id, message):
     check_authorized_user(user_id, channel_index)
 
     new_message_id = generate_new_message_id()
-    new_message = {
-        'message_id': new_message_id,
-        'u_id': user_id,
-        'message': message,
-        'time_sent': time_now()
-    }
 
-    store = data_store.get()
-    for channel in store['channels']:
-        if channel['channel_id'] == channel_id:
-            channel['messages'].append(new_message)
+    new_message = create_message(new_message_id, user_id, message)
+
+    send_message(new_message, channel_id)
+
+    # new_message = {
+    #     'message_id': new_message_id,
+    #     'u_id': user_id,
+    #     'message': message,
+    #     'time_sent': time_now()
+    # }
+
+    # store = data_store.get()
+    # for channel in store['channels']:
+    #     if channel['channel_id'] == channel_id:
+    #         channel['messages'].append(new_message)
 
     return {
         'message_id': new_message_id
@@ -193,6 +199,27 @@ def messages_remove_v1(token, message_id):
     remove_message(message_id)
 
     return {}
+
+
+def message_share_v1(token, og_message_id, message, channel_id, dm_id):
+    user_id = check_valid_token(token)['u_id']
+
+    check_message(message)
+
+    to_share = check_valid_message_or_dm(
+        og_message_id, channel_id, dm_id, user_id)
+
+    new_message_id = generate_new_message_id()
+    format_message_share = share_message_format(to_share, message)
+    message_ready = create_message(
+        new_message_id, user_id, format_message_share)
+
+    if channel_id == -1:
+        send_dm(message_ready, dm_id)
+    else:
+        send_message(message_ready, channel_id)
+
+    return new_message_id
 
 
 def channel_leave_v1(token, channel_id):
