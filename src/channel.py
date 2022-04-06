@@ -138,18 +138,6 @@ def message_send_v1(token, channel_id, message):
 
     send_message(new_message, channel_id)
 
-    # new_message = {
-    #     'message_id': new_message_id,
-    #     'u_id': user_id,
-    #     'message': message,
-    #     'time_sent': time_now()
-    # }
-
-    # store = data_store.get()
-    # for channel in store['channels']:
-    #     if channel['channel_id'] == channel_id:
-    #         channel['messages'].append(new_message)
-
     return {
         'message_id': new_message_id
     }
