@@ -158,8 +158,8 @@ def test_send_unauthorised_user(create_public_channel, create_second_user):
         'token': create_second_user['token'], 'channel_id': create_public_channel[0]['channel_id'], 'message': message})
 
     assert send_response.status_code == 403
-    
-    
+
+
 def test_send_message_success():
     '''
     Error Raised:
@@ -167,25 +167,24 @@ def test_send_message_success():
     Explanation:
         Testing the status code of sending the message
     '''
-    requests.delete(config.url + 'clear/v1' )
+    requests.delete(config.url + 'clear/v1')
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
 
-    requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
-    channel_response = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'Second Channel', 'is_public' : True})
+    requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
 
     channel_data = channel_response.json()
-            
-    message_response = requests.post(config.url + 'message/send/v1', json = {'token': user1_data['token'], 
-            'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
-            
 
-    assert message_response.status_code == 200 
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
+
+    assert message_response.status_code == 200
 
 
 '''
@@ -219,8 +218,8 @@ def test_edit_invalid_message_id(send_first_message):
         'token': send_first_message[1]['token'], 'message_id': send_first_message[0]['message_id'] + 1, 'message': new_message})
 
     assert edit_response.status_code == 400
-    
-    
+
+
 def test_edit_message_unauthorised():
     '''
     Tests Access error for dms.
@@ -231,32 +230,33 @@ def test_edit_message_unauthorised():
             - the authorised user has owner permissions in the channel/DM
     Explanation:
         Accessing a message which was not sent by user2 and user2 does is not a global owner nor owner of the dm,
-        so has no owner permission in the dm. 
+        so has no owner permission in the dm.
     '''
-    requests.delete(config.url + 'clear/v1' )
+    requests.delete(config.url + 'clear/v1')
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
-    
-    user2 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'EMAIL@gmail.com', 
-    'password' : 'password1', 'name_first' : 'FIRST', 'name_last' : 'LAST'})
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
 
     user2_data = user2.json()
 
-    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})
+    dm_response = requests.post(config.url + 'dm/create/v1', json={
+                                'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
     dm_data = dm_response.json()
-    
-    message_response = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'], 
-            'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
-            
+
+    message_response = requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                                             'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
     message_data = message_response.json()
 
-    edit_response = requests.put(config.url + 'message/edit/v1', json = {'token' : user2_data['token'], 
-            'message_id' : message_data['message_id'], 'message': 'updated message'})
+    edit_response = requests.put(config.url + 'message/edit/v1', json={'token': user2_data['token'],
+                                                                       'message_id': message_data['message_id'], 'message': 'updated message'})
 
-    assert edit_response.status_code == 403    
+    assert edit_response.status_code == 403
 
 
 def test_edit_empty_string():
@@ -266,25 +266,26 @@ def test_edit_empty_string():
     Explanation:
         test status code for modifying a message to empty string is 200
     '''
-    requests.delete(config.url + 'clear/v1' )
+    requests.delete(config.url + 'clear/v1')
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
 
-    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': []})
+    dm_response = requests.post(
+        config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': []})
     dm_data = dm_response.json()
-    
-    message_response = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'], 
-            'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
-            
+
+    message_response = requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                                             'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
     message_data = message_response.json()
 
-    edit_response = requests.put(config.url + 'message/edit/v1', json = {'token' : user1_data['token'], 
-            'message_id' : message_data['message_id'], 'message': ''})
+    edit_response = requests.put(config.url + 'message/edit/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id'], 'message': ''})
 
-    assert edit_response.status_code == 200  
+    assert edit_response.status_code == 200
 
 
 def test_edit_message_channel_success():
@@ -294,32 +295,32 @@ def test_edit_message_channel_success():
     Explanation:
         test status code for updating a channel message is 200
     '''
-    requests.delete(config.url + 'clear/v1' )
+    requests.delete(config.url + 'clear/v1')
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
 
     channel_1_data = channel_1.json()
-    
-    requests.post(config.url + 'message/send/v1', json = {'token': user1_data['token'], 
-            'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
-            
-    message_response = requests.post(config.url + 'message/send/v1', json = {'token': user1_data['token'], 
-            'channel_id': channel_1_data['channel_id'], 'message': 'This is a second message'})
-            
+
+    requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                        'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_1_data['channel_id'], 'message': 'This is a second message'})
+
     message_data = message_response.json()
 
-    edit_response = requests.put(config.url + 'message/edit/v1', json = {'token' : user1_data['token'], 
-            'message_id' : message_data['message_id'], 'message': 'This is updated'})
+    edit_response = requests.put(config.url + 'message/edit/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id'], 'message': 'This is updated'})
 
-    assert edit_response.status_code == 200  
-    
-    
+    assert edit_response.status_code == 200
+
+
 def test_edit_message_dm_success():
     '''
     Error Raised:
@@ -327,28 +328,30 @@ def test_edit_message_dm_success():
     Explanation:
         test status code for editing a dm message is 200
     '''
-    requests.delete(config.url + 'clear/v1' )
+    requests.delete(config.url + 'clear/v1')
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
 
-    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': []})
+    dm_response = requests.post(
+        config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': []})
     dm_data = dm_response.json()
-    
-    requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'], 
-            'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
-        
-    message_response = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'], 
-            'dm_id': dm_data['dm_id'], 'message': 'This is a second message'})
-            
+
+    requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                          'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
+    message_response = requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                                             'dm_id': dm_data['dm_id'], 'message': 'This is a second message'})
+
     message_data = message_response.json()
 
-    edit_response = requests.put(config.url + 'message/edit/v1', json = {'token' : user1_data['token'], 
-            'message_id' : message_data['message_id'], 'message': 'This is updated'})
+    edit_response = requests.put(config.url + 'message/edit/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id'], 'message': 'This is updated'})
 
-    assert edit_response.status_code == 200  
+    assert edit_response.status_code == 200
+
 
 def test_edit_invalid_channel(send_first_message, create_second_user):
     '''
@@ -381,7 +384,8 @@ def test_remove_invalid_message_id(send_first_message):
         'token': send_first_message[1]['token'], 'message_id': send_first_message[0]['message_id'] + 1, 'message': new_message})
 
     assert edit_response.status_code == 400
-    
+
+
 def test_message_remove_unauthorised():
     '''
     Tests access error for channel.
@@ -392,69 +396,72 @@ def test_message_remove_unauthorised():
             - the authorised user has owner permissions in the channel/DM
     Explanation:
         Accessing a message which was not sent by user2 and user2 does is not a global owner nor owner of the channel,
-        so has no owner permission in the channel. 
+        so has no owner permission in the channel.
     '''
-    requests.delete(config.url + 'clear/v1' )
+    requests.delete(config.url + 'clear/v1')
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
-    
-    user2 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'EMAIL@gmail.com', 
-    'password' : 'password1', 'name_first' : 'FIRST', 'name_last' : 'LAST'})
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
 
     user2_data = user2.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
 
     channel_1_data = channel_1.json()
-    
-    requests.post(config.url + 'channel/join/v2', json = {'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
-     
-    message_response = requests.post(config.url + 'message/send/v1', json = {'token': user1_data['token'], 
-            'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
-            
+
+    requests.post(config.url + 'channel/join/v2',
+                  json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+
     message_data = message_response.json()
 
-    removal_response = requests.delete(config.url + 'message/remove/v1', json = {'token' : user2_data['token'], 'message_id' : message_data['message_id']})
+    removal_response = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user2_data['token'], 'message_id': message_data['message_id']})
 
-    assert removal_response.status_code == 403     
-    
-    
-def test_message_remove_channel_success():   
+    assert removal_response.status_code == 403
+
+
+def test_message_remove_channel_success():
     '''
     Error Raised:
         Success case
     Explanation:
         test status code for removing a channel message is 200
     '''
-    requests.delete(config.url + 'clear/v1' )
+    requests.delete(config.url + 'clear/v1')
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
 
     channel_1_data = channel_1.json()
-    
-    requests.post(config.url + 'message/send/v1', json = {'token': user1_data['token'], 
-            'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
-    
-    message_response = requests.post(config.url + 'message/send/v1', json = {'token': user1_data['token'], 
-            'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
-            
+
+    requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                        'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+
     message_data = message_response.json()
 
-    removal_response = requests.delete(config.url + 'message/remove/v1', json = {'token' : user1_data['token'], 'message_id' : message_data['message_id']})
+    removal_response = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user1_data['token'], 'message_id': message_data['message_id']})
 
-    assert removal_response.status_code == 200   
-    
-    
+    assert removal_response.status_code == 200
+
+
 def test_message_remove_dm_success():
     '''
     Error Raised:
@@ -462,29 +469,29 @@ def test_message_remove_dm_success():
     Explanation:
         test status code for removing a dm message is 200
     '''
-    requests.delete(config.url + 'clear/v1' )
+    requests.delete(config.url + 'clear/v1')
 
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
-    
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
     user1_data = user1.json()
 
-    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': []})
+    dm_response = requests.post(
+        config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': []})
     dm_data = dm_response.json()
-        
-    requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'], 
-            'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
-    
-    message_response = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'], 
-            'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
-            
+
+    requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                          'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
+    message_response = requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                                             'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
     message_data = message_response.json()
 
-    removal_response = requests.delete(config.url + 'message/remove/v1', json = {'token' : user1_data['token'], 'message_id' : message_data['message_id']})
+    removal_response = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user1_data['token'], 'message_id': message_data['message_id']})
 
-    assert removal_response.status_code == 200 
-
-
+    assert removal_response.status_code == 200
 
 
 '''test for channel_details_v2'''
@@ -545,7 +552,7 @@ def test_channel_detail_invalid_user():
     Error Raised:
         Access Error: channel_id is valid and the authorised user is not a member of the channel
     Explanation:
-        user2 is not a member of the channel so cannot call channel details for it. 
+        user2 is not a member of the channel so cannot call channel details for it.
     '''
     requests.delete(config.url + 'clear/v1')
 
@@ -569,9 +576,10 @@ def test_channel_detail_invalid_user():
 
     assert response.status_code == 403
 
-    
-    
+
 ''' tests for channel/leave/v1 '''
+
+
 def test_channel_leave_invalid_channel():
     '''
     Error Raised:
@@ -579,52 +587,54 @@ def test_channel_leave_invalid_channel():
     Explanation:
         Passing in channel_1 _data['channel_id'] + 1, which is invalid
     '''
-    requests.delete(config.url + 'clear/v1' ) 
-    
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
 
     user1_data = user1.json()
-    
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
-    
+
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+
     channel_1_data = channel_1.json()
-    
-    response = requests.post(config.url + 'channel/leave/v1', json = {'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'] + 1})
-    
+
+    response = requests.post(config.url + 'channel/leave/v1', json={
+                             'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'] + 1})
+
     assert response.status_code == 400
-    
-    
+
+
 def test_channel_leave_not_member():
     '''
     Error Raised:
         Access Error: channel_id is valid and the authorised user is not a member of the channel
     Explanation:
-        user2 is not a member of the channel so cannot leave the channel. 
+        user2 is not a member of the channel so cannot leave the channel.
     '''
-    requests.delete(config.url + 'clear/v1' ) 
-    
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
 
     user1_data = user1.json()
-    
-    user2 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'EMAIL@gmail.com', 
-    'password' : 'password1', 'name_first' : 'FIRST', 'name_last' : 'LAST'})
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
 
     user2_data = user2.json()
-    
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
-    
+
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+
     channel_1_data = channel_1.json()
-    
-    response = requests.post(config.url + 'channel/leave/v1', json = {'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
-    
+
+    response = requests.post(config.url + 'channel/leave/v1', json={
+                             'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+
     assert response.status_code == 403
-        
-    
+
+
 def test_channel_leave_success():
     '''
     Error Raised:
@@ -632,21 +642,19 @@ def test_channel_leave_success():
     Explanation:
         test status code for leaving channel is 200
     '''
-    requests.delete(config.url + 'clear/v1' ) 
-    
-    user1 = requests.post(config.url + 'auth/register/v2', json = {'email' : 'email@gmail.com', 
-    'password' : 'password', 'name_first' : 'First', 'name_last' : 'Last'})
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
 
     user1_data = user1.json()
-    
-    channel_1 = requests.post(config.url + 'channels/create/v2', json = {'token' : user1_data['token'], 
-    'name' : 'First Channel', 'is_public' : True})
-    
+
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+
     channel_1_data = channel_1.json()
-    
-    response = requests.post(config.url + 'channel/leave/v1', json = {'token': user1_data['token'], 'channel_id': channel_1_data['channel_id']})
-    
-    assert response.status_code == 200    
-    
-    
-   
+
+    response = requests.post(config.url + 'channel/leave/v1', json={
+                             'token': user1_data['token'], 'channel_id': channel_1_data['channel_id']})
+
+    assert response.status_code == 200
