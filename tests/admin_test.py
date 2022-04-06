@@ -231,7 +231,7 @@ def test_check_removed_from_all_dms():
 def test_check_not_in_users_all():
     """
     ensure the removed user is not in users/all/v1 after being removed.
-    check not inlcuded in users returned by users/all. 
+    check not inlcuded in users returned by users/all.
     """
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email123@gmail.com',
@@ -327,7 +327,7 @@ def test_check_channel_message_contents_is_Removed_user():
     message_response = requests.get(config.url + 'channel/messages/v2', params={
         'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'], 'start': 0})
     message_response_data = message_response.json()
-    assert message_response_data['messages'][0]['message'] == "Removed user"
+    assert message_response_data['messages'][1]['message'] == "Removed user"
 
 
 def test_check_dm_message_contents_is_Removed_user():

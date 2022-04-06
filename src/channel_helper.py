@@ -9,22 +9,21 @@ def remove_message(message_id):
     '''
     store = data_store.get()
 
-    found = False
     for channel in store['channels']:
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 channel['messages'].remove(message)
-                found = True
                 data_store.set(store)
-    if found == True:
-        return
+                return
 
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 dm['messages'].remove(message)
                 data_store.set(store)
-    return
+                return
+
+    raise InputError(description="message_id does not exist")
 
 
 def member_leave(u_id, channel_index):
@@ -54,3 +53,33 @@ def time_now():
     returns the current time stamp
     '''
     return datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp()
+
+
+def get_messages(start, end_return, channel_index):
+    store = data_store.get()
+
+    return_messages = []
+
+    for i in range(start, end_return):
+        return_messages.append(
+            store['channels'][channel_index]['messages'][i])
+
+    return_messages.reverse()
+
+    return return_messages
+
+
+def edit_message(message_id, message):
+    store = data_store.get()
+
+    for channel in store['channels']:
+        for messages in channel['messages']:
+            if messages['message_id'] == message_id:
+                messages['message'] = message
+                return
+
+    for dm in store['dms']:
+        for messages in dm['messages']:
+            if messages['message_id'] == message_id:
+                messages['message'] = message
+                return

@@ -1,5 +1,6 @@
 from src.data_store import data_store
 from src.error import AccessError
+from src.channel_helper import time_now
 import hashlib
 import jwt
 
@@ -21,21 +22,23 @@ def generate_token(user_id, handle):
         places it into the token and encodes it as a JWT
     '''
     store = data_store.get()
-    session_id = generate_session_id(user_id, handle)
+    time_logged = time_now()
+    session_id = generate_session_id(user_id, handle, time_logged)
+
     ENCODED_JWT = jwt.encode(
-        {'u_id': user_id, 'session_id': session_id}, SECRET, algorithm='HS256')
+        {'u_id': user_id, 'session_id': session_id, 'time_logged': time_logged}, SECRET, algorithm='HS256')
 
     store['session_list'].append(session_id)
 
     return ENCODED_JWT
 
 
-def generate_session_id(user_id, handle):
+def generate_session_id(user_id, handle, time_logged):
     '''
         Hashes the concatenation of user_id and handle, uses
         it as the session_id
     '''
-    return (hash(str(user_id) + handle))
+    return (hash(str(user_id) + handle + str(time_logged)))
 
 
 def check_valid_token(token):

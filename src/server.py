@@ -140,7 +140,8 @@ def return_dm_messages():
 def send_message_to_dm():
     info = request.get_json()
 
-    result = message_senddm_v1(info['token'], info['dm_id'], info['message'])
+    result = message_senddm_v1(
+        info['token'], info['dm_id'], info['message'])
 
     save_data()
     return dumps({
@@ -152,7 +153,6 @@ def send_message_to_dm():
 def auth_logout_v1():
     data = request.get_json()
     result = auth_logout(data['token'])
-
     save_data()
     return dumps(result)
 
@@ -192,11 +192,8 @@ def channel_join_v2():
 @APP.route("/channel/addowner/v1", methods=['POST'])
 def channel_addowner_v1_wrapper():
     data = request.get_json()
-    print(data_store.get())
     result = channel_addowner_v1(
         data['token'], data['channel_id'], data['u_id'])
-
-    print("hello")
     save_data()
     return dumps(result)
 
@@ -339,4 +336,4 @@ def users_all():
 if __name__ == "__main__":
     load_data()
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port)  # Do not edit this port
+    APP.run(port=config.port, debug=True)  # Do not edit this port
