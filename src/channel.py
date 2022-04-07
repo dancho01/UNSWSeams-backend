@@ -1,11 +1,13 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, \
-    check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm
+    check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
 from src.message_helper import check_valid_message
+from datetime import datetime
+import threading
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification, \
     return_channel_or_dm_name
 
@@ -368,3 +370,34 @@ def channel_removeowner_v1(token, channel_id, u_id):
 
     return {
     }
+
+def message_sendlater_v1(token, channel_id, message, time_sent):
+    '''
+    Send a message from the authorised user to the channel specified by channel_id automatically at a specified time 
+    in the future. The returned message_id will only be considered valid for other actions (editing/deleting/reacting/etc) 
+    once it has been sent (i.e. after time_sent). 
+    You do not need to consider cases where a user's token is invalidated or a user leaves before the message is 
+    scheduled to be sent.
+    
+    Return Type:    dictionary containing int     { message_id }
+    '''
+
+    auth_user_id = check_valid_token(token)['u_id']
+    channel_index = check_valid_channel(channel_id)
+    check_authorized_user(auth_user_id, channel_index)
+    check_message(message)
+
+    new_message_id = generate_new_message_id()
+
+    new_message = create_message(new_message_id, auth_user_id, message)
+
+    time_difference = time_sent - time_now()
+    if float(time_difference) < 0:
+        raise InputError(
+            'time_sent is a time in the past')
+    threading.Timer(time_difference, send_message(new_message, channel_id))
+
+    return {
+        'message_id': new_message_id
+    }
+
