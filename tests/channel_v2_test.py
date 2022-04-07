@@ -716,3 +716,277 @@ def test_channel_leave_success():
                              'token': user1_data['token'], 'channel_id': channel_1_data['channel_id']})
 
     assert response.status_code == 200
+
+'''Test for pin'''
+
+def test_success_with_pin_channel_message():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
+
+    channel_data = channel_response.json()
+
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    pin_data = pin_response.json()
+    assert pin_data == {}
+
+    # data = data.store 
+
+    # channel_search = data['channels'][channel_data['channel_id']]
+
+    # for messages in channel_search['messages']:
+    #     if message['message_id'] = message_data['message_id']:
+    #         assert message['is_pinned'] == True 
+    #         break
+
+    assert pin_response.status_code == 200
+
+def test_already_pinned_channel_message():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
+
+    channel_data = channel_response.json()
+
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    assert pin_response.status_code == 400
+
+def test_not_owner_channel_message_pin():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+    user2_data = user2.json()
+
+    requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
+
+    channel_data = channel_response.json()
+
+    requests.post(config.url + 'channel/join/v2',
+                json={'token': user2_data['token'], 'channel_id': channel_data['channel_id']})
+
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user2_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    assert pin_response.status_code == 403
+
+def test_not_valid_channel_message_pin():
+    
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+
+    user2_data = user2.json()
+
+    channel1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+
+    channel1_data = channel1.json()
+
+    channel2 = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
+                                                           'name': 'Second Channel', 'is_public': False})
+
+    channel2_data = channel2.json()
+
+    message1_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel1_data['channel_id'], 'message': 'This is a message'})
+
+    message1_data = message1_response.json()
+
+    requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
+                                                                           'channel_id': channel2_data['channel_id'], 'message': 'This is a message'})
+    
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user2_data['token'],
+                                                                       'message_id': message1_data['message_id']})  
+
+    assert pin_response.status_code == 400
+
+def test_success_with_pin_dm_message():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+
+    user2_data = user2.json()
+
+    dm_response = requests.post(config.url + 'dm/create/v1', json={
+                                'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
+    dm_data = dm_response.json()
+
+    message_response = requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                                             'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    pin_data = pin_response.json()
+
+    assert pin_data == {}
+
+    assert pin_response.status_code == 200
+    # assert pin_data == {}
+
+    # data = data.store 
+
+    # channel_search = data['channels'][channel_data['channel_id']]
+
+    # for messages in channel_search['messages']:
+    #     if message['message_id'] = message_data['message_id']:
+    #         assert message['is_pinned'] == True 
+    #         break
+
+def test_already_pinned_dm():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+
+    user2_data = user2.json()
+
+    dm_response = requests.post(config.url + 'dm/create/v1', json={
+                                'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
+    dm_data = dm_response.json()
+
+    message_response = requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                                             'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    assert pin_response.status_code == 400
+
+def test_not_dm_owner_pin():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+
+    user2_data = user2.json()
+
+    dm_response = requests.post(config.url + 'dm/create/v1', json={
+                                'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
+    dm_data = dm_response.json()
+
+    message_response = requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                                             'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user2_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    assert pin_response.status_code == 403
+
+def test_not_valid_dm_pin():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+
+    user2_data = user2.json()
+
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@hotmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+
+    user3_data = user3.json()
+
+    dm_response = requests.post(config.url + 'dm/create/v1', json={
+                                'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
+    dm_data = dm_response.json()
+
+    message_response = requests.post(config.url + 'message/senddm/v1', json={'token': user1_data['token'],
+                                                                             'dm_id': dm_data['dm_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user3_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    assert pin_response.status_code == 400
