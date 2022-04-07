@@ -27,17 +27,17 @@ def standup_start_v1(token, channel_id, length):
 
 
 def standup_active_v1(token, channel_id):
-    user_id = check_valid_token(token)
+    user_id = check_valid_token(token)['u_id']
     channel_index = check_valid_channel(channel_id)
     check_authorized_user(user_id, channel_index)
 
     active_status = check_active(channel_id)
-
+    print(data_store.get())
     return active_status
 
 
 def standup_send_v1(token, channel_id, message):
-    user_id = check_valid_token(token)
+    user_id = check_valid_token(token)['u_id']
     channel_index = check_valid_channel(channel_id)
     check_authorized_user(user_id, channel_index)
     check_message_length(message)

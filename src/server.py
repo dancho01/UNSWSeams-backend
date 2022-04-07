@@ -20,7 +20,6 @@ from src.message_iter3 import search_v1
 from src.standup import standup_start_v1, standup_active_v1, standup_send_v1
 
 
-
 def quit_gracefully(*args):
     '''For coverage'''
     exit(0)
@@ -160,7 +159,6 @@ def message_share_wrapper():
                               info['channel_id'], info['dm_id'])
 
     save_data()
-    print(data_store.get()['channels'])
     return dumps({
         'shared_message_id': result
     })
@@ -239,7 +237,6 @@ def messages_send_v1():
     data = request.get_json()
     result = message_send_v1(
         data['token'], data['channel_id'], data['message'])
-    print(data_store.get())
     save_data()
     return dumps(result)
 
@@ -348,13 +345,14 @@ def users_all():
     result = users_all_v1(token)
     return dumps(result)
 
+
 @APP.route("/search/v1", methods=['GET'])
 def search_v1_wrapper():
     token = request.args.get('token')
     query_str = request.args.get('query_str')
     result = search_v1(token, query_str)
     return dumps(result)
-    
+
 
 @APP.route("/message/sendlater/v1", methods=['POST'])
 def message_sendlater_v1_wrapper():
@@ -378,6 +376,7 @@ def standup_start_wrapper():
     result = standup_start_v1(
         data['token'], data['channel_id'], data['length'])
 
+    save_data()
     return dumps(result)
 
 
@@ -388,7 +387,6 @@ def standup_active_wrapper():
 
     result = standup_active_v1(token, channel_id)
 
-    print(dumps(result))
     return dumps(result)
 
 
@@ -397,7 +395,7 @@ def standup_send_wrapper():
     data = request.get_json()
     result = standup_send_v1(
         data['token'], data['channel_id'], data['message'])
-
+    save_data()
     return dumps(result)
 
 
