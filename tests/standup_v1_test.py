@@ -202,7 +202,7 @@ def test_standup_send_unauthorised_user(create_first_user, create_second_user):
     assert response.status_code == 403
 
 
-def test_standup_send_unauthorised_user(create_first_user):
+def test_standup_send_success(create_first_user):
     user1 = create_first_user 
      
     channel_id = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
@@ -216,5 +216,5 @@ def test_standup_send_unauthorised_user(create_first_user):
     
     assert response.status_code == 200
 
-    
-    
+
+
