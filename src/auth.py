@@ -70,3 +70,5 @@ def auth_logout(token):
     store['session_list'].remove(user_info['session_id'])
 
     return {}
+
+
