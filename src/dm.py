@@ -4,6 +4,7 @@ from src.token import check_valid_token
 from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, generate_new_dm_id,\
     generate_DM_name, calculate_time_stamp
 from src.global_helper import generate_new_message_id, return_member_information, check_valid_user
+from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
 
 
 def dm_create_v1(token, u_ids):
@@ -37,9 +38,10 @@ def dm_create_v1(token, u_ids):
         raise InputError(description='duplicate user ids not allowed')
 
     new_dm_id = generate_new_dm_id()
+    new_dm_name = generate_DM_name(auth_user_id, u_ids, store)
 
     new_dm = {'dm_id': new_dm_id,
-              'name': generate_DM_name(auth_user_id, u_ids, store),
+              'name': new_dm_name,
               'all_members': [],
               'messages': [],
               }
@@ -54,7 +56,10 @@ def dm_create_v1(token, u_ids):
     new_dm['owner'] = return_member_information(auth_user_id, store)
 
     store['dms'].append(new_dm)
-    data_store.set(store)
+
+    for user_id in u_ids:
+        create_channel_invite_notification(-1,
+                                           new_dm_id, auth_user_id, user_id, new_dm_name)
 
     return {
         'dm_id': new_dm_id,
@@ -241,7 +246,7 @@ def dm_messages_v1(token, dm_id, start):
     for i in range(start, end_return):
         return_messages.append(
             store['dms'][dm_index]['messages'][i])
-            
+
     return_messages.reverse()
 
     return {
@@ -283,6 +288,8 @@ def message_senddm_v1(token, dm_id, message):
         raise InputError(
             description='Message must be between 1 and 1000 characters inclusive')
 
+    check_for_tags_and_send_notifications(message, auth_user_id, -1, dm_id)
+
     new_message_id = generate_new_message_id()
 
     new_message = {
@@ -293,8 +300,6 @@ def message_senddm_v1(token, dm_id, message):
     }
 
     store['dms'][dm_index]['messages'].append(new_message)
-
-    data_store.set(store)
 
     return {
         'message_id': new_message_id
