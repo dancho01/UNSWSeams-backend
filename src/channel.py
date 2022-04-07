@@ -5,7 +5,7 @@ from src.channel_helper import check_message, remove_message, member_leave, get_
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
-from src.message_helper import check_valid_message
+from src.message_helper import check_valid_message, find_channel_or_dm, check_if_pinned_v2, check_if_unpinned_v2, check_part_of_message_group_v2, check_owner_dm_channel
 from datetime import datetime
 import threading
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification, \
@@ -401,3 +401,36 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
         'message_id': new_message_id
     }
 
+def message_pin_v1(token, message_id):
+    
+    auth_user_id = check_valid_token(token)['u_id']
+    store = data_store.get()
+
+    check_valid_user(auth_user_id)
+
+    message_pair = find_channel_or_dm(store, message_id) 
+
+    check_if_pinned_v2(message_pair[1])
+
+    check_part_of_message_group_v2(message_pair[0], auth_user_id)
+
+    check_owner_dm_channel(message_pair[0], auth_user_id, store)
+
+    return {}
+
+def message_unpin_v1(token, message_id):
+    
+    auth_user_id = check_valid_token(token)['u_id']
+    store = data_store.get()
+
+    check_valid_user(auth_user_id)
+
+    message_pair = find_channel_or_dm(store, message_id) 
+
+    check_if_unpinned_v2(message_pair[1])
+
+    check_part_of_message_group_v2(message_pair[0], auth_user_id)
+
+    check_owner_dm_channel(message_pair[0], auth_user_id, store)
+
+    return {}

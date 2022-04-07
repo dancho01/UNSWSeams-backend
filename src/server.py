@@ -11,7 +11,7 @@ from src.persistence import save_data, load_data
 from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1
 from src.auth import auth_register_v1, auth_login_v1, auth_logout
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
-from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1
+from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1, message_pin_v1, message_unpin_v1
 from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.user import user_profile_v1, notifications_get_v1
@@ -369,6 +369,21 @@ def notifications_get_wrapper():
     result = notifications_get_v1(token)
     return dumps(result)
 
+@APP.route("/message/pin/v1", methods=['POST'])
+def message_pin():
+    data = request.get_json()
+    result = message_pin_v1(
+        data['token'], data['message_id'])
+    save_data()
+    return dumps(result)
+
+@APP.route("/message/unpin/v1", methods=['POST'])
+def message_unpin():
+    data = request.get_json()
+    result = message_unpin_v1(
+        data['token'], data['message_id'])
+    save_data()
+    return dumps(result)
 
 @APP.route("/standup/start/v1", methods=['POST'])
 def standup_start_wrapper():
