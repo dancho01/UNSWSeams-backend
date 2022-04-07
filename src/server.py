@@ -375,10 +375,11 @@ def standup_start_wrapper():
 @APP.route("/standup/active/v1", methods=['GET'])
 def standup_active_wrapper():
     token = request.args.get('token')
-    channel_id = request.args.get('channel_id')
+    channel_id = int(request.args.get('channel_id'))
 
     result = standup_active_v1(token, channel_id)
 
+    print(dumps(result))
     return dumps(result)
 
 
