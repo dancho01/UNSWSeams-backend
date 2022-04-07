@@ -4,7 +4,7 @@ from src.channel_helper import check_message, time_now, remove_message, member_l
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
-from src.message_helper import check_valid_message
+from src.message_helper import check_valid_message, check_pin_authorised, check_if_pinned, check_part_of_message_group
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -136,7 +136,8 @@ def message_send_v1(token, channel_id, message):
         'message_id': new_message_id,
         'u_id': user_id,
         'message': message,
-        'time_sent': time_now()
+        'time_sent': time_now(),
+        'is_pinned': False
     }
 
     store = data_store.get()
@@ -348,3 +349,21 @@ def channel_removeowner_v1(token, channel_id, u_id):
 
     return {
     }
+
+def message_pin_v1(token, message_id):
+    
+    auth_user_id = check_valid_token(token)['u_id']
+    store = data_store.get()
+
+    check_valid_user(auth_user_id)
+
+    check_part_of_message_group(message_id, auth_user_id, store)
+
+    check_pin_authorised(message_id, auth_user_id, store)    
+
+    check_if_pinned(message_id, auth_user_id, store)
+
+    data_store.set(store)
+    return {}
+
+ 

@@ -289,7 +289,8 @@ def message_senddm_v1(token, dm_id, message):
         'message_id': new_message_id,
         'u_id': auth_user_id,
         'message': message,
-        'time_sent': calculate_time_stamp()
+        'time_sent': calculate_time_stamp(),
+        'is_pinned' : False
     }
 
     store['dms'][dm_index]['messages'].append(new_message)
