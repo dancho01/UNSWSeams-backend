@@ -3,7 +3,7 @@ import signal
 from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
-from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1, message_share_v1
+from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1, message_share_v1, message_sendlater_v1
 from src import config
 from src.other import clear_v1
 from src.data_store import data_store
@@ -343,6 +343,14 @@ def users_all():
 
     token = request.args.get('token')
     result = users_all_v1(token)
+    return dumps(result)
+
+@APP.route("/message/sendlater/v1", methods=['POST'])
+def message_sendlater_v1_wrapper():
+    data = request.get_json()
+    result = message_sendlater_v1(
+        data['token'], data['channel_id'], data['message'], data['time_sent'])
+    save_data()
     return dumps(result)
 
 
