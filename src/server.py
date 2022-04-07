@@ -14,7 +14,7 @@ from src.channels import channels_list_v1, channels_listall_v1, channels_create_
 from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1
 from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
-from src.user import user_profile_v1
+from src.user import user_profile_v1, notifications_get_v1
 from src.users import users_all_v1
 
 
@@ -236,6 +236,7 @@ def messages_send_v1():
     data = request.get_json()
     result = message_send_v1(
         data['token'], data['channel_id'], data['message'])
+    print(data_store.get())
     save_data()
     return dumps(result)
 
@@ -340,9 +341,15 @@ def admin_userpermission_change_v1_wrapper():
 
 @APP.route("/users/all/v1", methods=['GET'])
 def users_all():
-
     token = request.args.get('token')
     result = users_all_v1(token)
+    return dumps(result)
+
+
+@APP.route("/notifications/get/v1", methods=['GET'])
+def notifications_get_wrapper():
+    token = request.args.get('token')
+    result = notifications_get_v1(token)
     return dumps(result)
 
 
