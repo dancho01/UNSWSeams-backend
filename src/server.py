@@ -69,6 +69,15 @@ def auth_register_wrapper():
     })
 
 
+@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+def auth_password_reset_v1():
+    data = request.get_json()
+    auth_passord_reset(data['reset_code'], data['new_password'])
+    save_data() # por que?       
+
+    return dumps({})
+
+
 @APP.route("/dm/create/v1", methods=['POST'])
 def dm_create_wrapper():
     info = request.get_json()
