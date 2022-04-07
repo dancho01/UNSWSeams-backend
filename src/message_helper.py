@@ -58,12 +58,16 @@ def check_part_of_message_group_v2(message_store, u_id):
     raise InputError(
         description=f"Not part of channel or DM")
 
-def check_owner_dm_channel(message_store, u_id):
+def check_owner_dm_channel(message_store, u_id, store):
 
     if 'owner_members' in message_store.keys():
         for member in message_store['owner_members']:
             if member['u_id'] == u_id:
                 return
+        for user in store['users']:
+            if user['auth_user_id'] == u_id:
+                if user['global_permissions'] == 1:
+                    return
     else: 
         if u_id == message_store['owner']['u_id']:
             return

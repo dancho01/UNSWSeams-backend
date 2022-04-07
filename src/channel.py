@@ -414,6 +414,6 @@ def message_pin_v1(token, message_id):
 
     check_part_of_message_group_v2(message_pair[0], auth_user_id)
 
-    check_owner_dm_channel(message_pair[0], auth_user_id)
+    check_owner_dm_channel(message_pair[0], auth_user_id, store)
 
     return {}
