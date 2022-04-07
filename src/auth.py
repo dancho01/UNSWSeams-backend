@@ -77,12 +77,17 @@ def auth_password_request(email):
         some
         words
     '''
-    if not check_email_exist(email): # TODO
+    
+    uid = check_email_exist(email) # TODO
+    if uid == "":
         return {}
     
 
-    generate_reset_code() # TODO creates dict with user id and a unique code
-    check_logged_in() # TODO checks if user associated with email 
+    generate_reset_code(uid) # TODO creates dict with user id and a unique code
+    
+    if check_logged_in(): # TODO checks if user associated with email 
+        remove_session_id(email) # TODO
+
     email_reset_code() # TODO emails this code to user
     
     return {}
