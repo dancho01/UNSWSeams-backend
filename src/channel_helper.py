@@ -1,7 +1,6 @@
 from src.error import InputError, AccessError
 from datetime import datetime, timezone
 from src.data_store import data_store
-from src.global_helper import is_user_member
 
 
 def remove_message(message_id):

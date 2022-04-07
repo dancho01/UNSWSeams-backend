@@ -16,6 +16,7 @@ from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.user import user_profile_v1, notifications_get_v1
 from src.users import users_all_v1
+from src.standup import standup_start_v1
 
 
 def quit_gracefully(*args):
@@ -345,6 +346,7 @@ def users_all():
     result = users_all_v1(token)
     return dumps(result)
 
+
 @APP.route("/message/sendlater/v1", methods=['POST'])
 def message_sendlater_v1_wrapper():
     data = request.get_json()
@@ -358,6 +360,15 @@ def message_sendlater_v1_wrapper():
 def notifications_get_wrapper():
     token = request.args.get('token')
     result = notifications_get_v1(token)
+    return dumps(result)
+
+
+@APP.route("/standup/start/v1", methods=['POST'])
+def standup_start_wrapper():
+    data = request.get_json()
+    result = standup_start_v1(
+        data['token'], data['channel_id'], data['length'])
+
     return dumps(result)
 
 

@@ -42,6 +42,11 @@ def create_new_channel(new_channel_id, name, is_public):
                    'owner_members': [],
                    'all_members': [],
                    'messages': [],
+                   'standup': {
+                       'active': False,
+                       'finish_time': -1,
+                       'standup_cache': []
+                   }
                    }
     return new_channel
 
