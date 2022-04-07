@@ -50,6 +50,13 @@ def check_if_pinned_v2(message):
         raise InputError(
             description="Already pinned!")
 
+def check_if_unpinned_v2(message):
+    if message['is_pinned'] == True:
+        message['is_pinned'] = False
+    else:
+        raise InputError(
+            description="Already unpinned!")
+
 def check_part_of_message_group_v2(message_store, u_id):
     for member in message_store['all_members']:
         if u_id == member['u_id']:
