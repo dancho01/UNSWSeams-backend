@@ -30,3 +30,43 @@ def check_channel_owner(channel, u_id):
             return True
 
     return False
+
+def find_channel_or_dm(store, message_id):
+    for dm in store['dms']:
+        for message in dm['messages']:
+            if message_id == message['message_id']:
+                return dm, message
+
+    for channel in store['channels']:
+        for message in channel['messages']:
+            if message_id == message['message_id']:
+                return channel, message 
+    return
+
+def check_if_pinned_v2(message):
+    if message['is_pinned'] == False:
+        message['is_pinned'] = True
+    else:
+        raise InputError(
+            description="Already pinned!")
+
+def check_part_of_message_group_v2(message_store, u_id):
+    for member in message_store['all_members']:
+        if u_id == member['u_id']:
+            return
+
+    raise InputError(
+        description=f"Not part of channel or DM")
+
+def check_owner_dm_channel(message_store, u_id):
+
+    if 'owner_members' in message_store.keys():
+        for member in message_store['owner_members']:
+            if member['u_id'] == u_id:
+                return
+    else: 
+        if u_id == message_store['owner']['u_id']:
+            return
+
+    raise AccessError(
+        description=f"Not owner of channel or DM")

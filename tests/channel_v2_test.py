@@ -889,6 +889,8 @@ def test_success_with_pin_dm_message():
 
     pin_data = pin_response.json()
 
+    assert pin_data == {}
+
     assert pin_response.status_code == 200
     # assert pin_data == {}
 
@@ -900,8 +902,6 @@ def test_success_with_pin_dm_message():
     #     if message['message_id'] = message_data['message_id']:
     #         assert message['is_pinned'] == True 
     #         break
-
-    assert pin_response.status_code == 200
 
 def test_already_pinned_dm():
 
