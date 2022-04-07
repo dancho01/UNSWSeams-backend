@@ -1091,7 +1091,7 @@ def test_not_owner_channel_message_unpin():
     requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
                                                                     'message_id': message_data['message_id']})
 
-    unpin_data = unpin_response = requests.post(config.url + 'message/unpin/v1', json={'token': user2_data['token'],
+    unpin_response = requests.post(config.url + 'message/unpin/v1', json={'token': user2_data['token'],
                                                                        'message_id': message_data['message_id']})
 
     assert unpin_response.status_code == 403
@@ -1209,7 +1209,7 @@ def test_already_unpinned_dm():
 
     assert unpin_response.status_code == 400
 
-def test_not_dm_owner_pin():
+def test_not_dm_owner_unpin():
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1240,7 +1240,7 @@ def test_not_dm_owner_pin():
 
     assert unpin_response.status_code == 403
 
-def test_not_valid_dm_pin():
+def test_not_valid_dm_unpin():
 
     requests.delete(config.url + 'clear/v1')
 
