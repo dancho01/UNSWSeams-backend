@@ -72,6 +72,24 @@ def auth_logout(token):
     return {}
 
 
+def auth_password_request(email):
+    '''
+        some
+        words
+    '''
+    if not check_email_exist(email): # TODO
+        return {}
+    
+
+    generate_reset_code() # TODO creates dict with user id and a unique code
+    check_logged_in() # TODO checks if user associated with email 
+    email_reset_code() # TODO emails this code to user
+    
+    return {}
+
+
+
+
 def auth_password_reset(code, new_pass):
     '''
         words 
@@ -94,3 +112,5 @@ def auth_password_reset(code, new_pass):
         raise InputError(description="Invalid Reset Code")
 
     return {}
+
+

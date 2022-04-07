@@ -261,3 +261,13 @@ def test_reset_success():
     requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
     response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': '123456', 'new_password': 'pass'})
     assert response.status_code == 200 # not sure what code should go here.  
+    
+    
+''' tests for password /auth/passwordreset/request/v1  '''
+
+
+def test_invalid_email():
+    pass
+
+def test_valid_email():
+    pass
