@@ -16,7 +16,9 @@ from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.user import user_profile_v1, notifications_get_v1
 from src.users import users_all_v1
+from src.message_iter3 import search_v1
 from src.standup import standup_start_v1, standup_active_v1, standup_send_v1
+
 
 
 def quit_gracefully(*args):
@@ -346,6 +348,13 @@ def users_all():
     result = users_all_v1(token)
     return dumps(result)
 
+@APP.route("/search/v1", methods=['GET'])
+def search_v1_wrapper():
+    token = request.args.get('token')
+    query_str = request.args.get('query_str')
+    result = search_v1(token, query_str)
+    return dumps(result)
+    
 
 @APP.route("/message/sendlater/v1", methods=['POST'])
 def message_sendlater_v1_wrapper():
