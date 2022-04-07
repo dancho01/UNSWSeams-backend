@@ -870,11 +870,6 @@ def test_success_with_pin_dm_message():
 
     user2_data = user2.json()
 
-    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@hotmail.com',
-                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
-
-    user3_data = user3.json()
-
     dm_response = requests.post(config.url + 'dm/create/v1', json={
                                 'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
     dm_data = dm_response.json()
@@ -933,8 +928,6 @@ def test_already_pinned_dm():
     pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
                                                                        'message_id': message_data['message_id']})
 
-    pin_data = pin_response.json()
-
     assert pin_response.status_code == 400
 
 def test_not_dm_owner_pin():
@@ -962,8 +955,6 @@ def test_not_dm_owner_pin():
 
     pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user2_data['token'],
                                                                        'message_id': message_data['message_id']})
-
-    pin_data = pin_response.json()
 
     assert pin_response.status_code == 403
 
@@ -997,7 +988,5 @@ def test_not_valid_dm_pin():
 
     pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user3_data['token'],
                                                                        'message_id': message_data['message_id']})
-
-    pin_data = pin_response.json()
 
     assert pin_response.status_code == 400
