@@ -14,4 +14,17 @@ def user_profile_v1(token, u_id):
 
     profile_info = return_profile(u_id)
 
-    return {"user": profile_info}
+    return {'user': profile_info}
+
+# def user_stats_v1(token):
+# #     Outputs: Dictionary of shape {
+# #  channels_joined: [{num_channels_joined, time_stamp}],
+# #  dms_joined: [{num_dms_joined, time_stamp}],
+# #  messages_sent: [{num_messages_sent, time_stamp}],
+# #  involvement_rate
+# # }
+
+#     store = data_store.get()
+
+
+#     return {'user_stats': stats_info}
