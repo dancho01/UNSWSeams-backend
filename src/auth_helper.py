@@ -78,7 +78,6 @@ def check_login(email, password):
         hashed password that is inputted matches
     '''
     store = data_store.get()
-    print("HASHEDPWRODD--------------------")
 
     for user in store['users']:
         if user['email'] == email:

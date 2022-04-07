@@ -8,6 +8,8 @@ from src.global_helper import check_valid_channel, check_authorized_user, check_
 from src.message_helper import check_valid_message
 from datetime import datetime
 import threading
+from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification, \
+    return_channel_or_dm_name
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -41,7 +43,9 @@ def channel_invite_v1(token, channel_id, u_id):
     store['channels'][channel_index]['all_members'].append(
         return_member_information(u_id, store))
 
-    data_store.set(store)
+    channel_name = return_channel_or_dm_name(channel_id, -1)
+    create_channel_invite_notification(
+        channel_id, -1, auth_user_id, u_id, channel_name)
 
     return {}
 
@@ -106,8 +110,6 @@ def channel_messages_v1(token, channel_id, start):
         end = -1
 
     return_messages = get_messages(start, end_return, auth_list_index)
-    print("RETURNMESSAGES-------------------")
-    print(return_messages)
 
     return {'messages': return_messages,
             'start': start,
@@ -133,6 +135,9 @@ def message_send_v1(token, channel_id, message):
     check_message(message)
     channel_index = check_valid_channel(channel_id)
     check_authorized_user(user_id, channel_index)
+
+    # -1 is passed in for dm_id as all tags originate from a channel
+    check_for_tags_and_send_notifications(message, user_id, channel_id, -1)
 
     new_message_id = generate_new_message_id()
 

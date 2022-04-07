@@ -50,7 +50,8 @@ def auth_register_v1(email, password, name_first, name_last):
                            'password': hash(password),
                            'handle': final_handle,
                            'global_permissions': assign_permissions(),
-                           'active': True})
+                           'active': True,
+                           'notifications': []})
 
     return {
         'auth_user_id': new_id,
