@@ -102,7 +102,7 @@ def test_standup_start_success(create_first_user):
     channel_id = channel_id_resp.json()
 
     response = requests.post(config.url + 'standup/start/v1', json={'token': user['token'],
-                                                         'channel_id': channel_id['channel_id'], 'length': 1})
+                                                                    'channel_id': channel_id['channel_id'], 'length': 1})
 
     assert response.status_code == 200
 
@@ -153,11 +153,10 @@ def test_standup_active_success(create_first_user):
     channel_id = channel_id_resp.json()
 
     requests.post(config.url + 'standup/start/v1', json={'token': user['token'],
-                                                         'channel_id': channel_id['channel_id'], 'length': 1})
+                                                         'channel_id': channel_id['channel_id'], 'length': 5})
 
     response = requests.get(config.url + 'standup/active/v1', params={'token': user['token'],
                                                                       'channel_id': channel_id['channel_id']})
-
     assert response.status_code == 200
 
 
