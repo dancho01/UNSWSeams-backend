@@ -76,8 +76,8 @@ def test_valid_notification(create_first_user, create_second_user):
         User 1 invites user 2, expects a notification for user 2
     '''
 
-    u1, u2 = create_first_user, create_second_user
-    user1, user2 = u1.json(), u2.json()
+    user1 = create_first_user
+    user2 = create_second_user
 
     channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
                                                                        'is_public': True})
@@ -90,7 +90,10 @@ def test_valid_notification(create_first_user, create_second_user):
                                      params={'token': user2['token']})
     response_sender = requests.get(config.url + 'notifications/get/v1',
                                    params={'token': user1['token']})
-    assert len(response_receiver['notifications']) == 1
-    assert len(response_sender['notifications']) == 0
+    response_receiver_data = response_receiver.json()
+    response_sender_data = response_sender.json()
+
+    assert len(response_receiver_data['notifications']) == 1
+    assert len(response_sender_data['notifications']) == 0
     assert response_receiver.status_code == 200
     assert response_sender.status_code == 200
