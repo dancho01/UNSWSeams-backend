@@ -57,7 +57,6 @@ def channels_create_v1(token, name, is_public):
         return_member_information(auth_user_id, store))
     # new_channel is then added to list of channels
     store['channels'].append(new_channel)
-    data_store.set(store)
 
     return {
         'channel_id': new_channel_id,

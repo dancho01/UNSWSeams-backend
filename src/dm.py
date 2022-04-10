@@ -5,6 +5,7 @@ from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user
     generate_DM_name, calculate_time_stamp
 from src.global_helper import generate_new_message_id, return_member_information, check_valid_user
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
+from src.iter3_message_helper import is_user_reacted
 
 
 def dm_create_v1(token, u_ids):
@@ -248,9 +249,11 @@ def dm_messages_v1(token, dm_id, start):
             store['dms'][dm_index]['messages'][i])
 
     return_messages.reverse()
+    
+    list_messages = is_user_reacted(return_messages, auth_user_id)
 
     return {
-        'messages': return_messages,
+        'messages': list_messages,
         'start': start,
         'end': end,
     }
@@ -296,7 +299,9 @@ def message_senddm_v1(token, dm_id, message):
         'message_id': new_message_id,
         'u_id': auth_user_id,
         'message': message,
-        'time_sent': calculate_time_stamp()
+        'time_sent': calculate_time_stamp(),
+        'reacts': [],
+        'is_pinned' : False
     }
 
     store['dms'][dm_index]['messages'].append(new_message)

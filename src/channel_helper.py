@@ -1,7 +1,6 @@
 from src.error import InputError, AccessError
 from datetime import datetime, timezone
 from src.data_store import data_store
-from src.global_helper import is_user_member
 
 
 def remove_message(message_id):
@@ -111,6 +110,7 @@ def create_message(new_message_id, user_id, message):
         'u_id': user_id,
         'message': message,
         'time_sent': time_now(),
+        'reacts': [],
         'is_pinned': False
     }
 

@@ -39,17 +39,12 @@ def check_authorized_user(u_id, channel_index):
     '''
     store = data_store.get()
 
-    found = False
     for users in store['channels'][channel_index]['all_members']:
         if users['u_id'] == u_id:
-            found = True
-            break
+            return
 
-    if found == False:
-        raise AccessError(
-            description="channel_id is valid and the authorised user is not a member of the channel")
-
-    return
+    raise AccessError(
+        description="channel_id is valid and the authorised user is not a member of the channel")
 
 
 def check_already_auth(u_id, channel_index):
