@@ -413,6 +413,14 @@ def standup_send_wrapper():
     save_data()
     return dumps(result)
 
+@APP.route("user/profile/uploadphoto/v1", methods=['POST'])
+def standup_send_wrapper():
+    data = request.get_json()
+    result = user_profile_uploadphoto_v1(
+        data['token'], data['img_url'], data['x_start'], data['y_start'], data['x_end'], data['y_end'])
+    save_data()
+    return dumps(result)
+
 
 # NO NEED TO MODIFY BELOW THIS POINT
 if __name__ == "__main__":

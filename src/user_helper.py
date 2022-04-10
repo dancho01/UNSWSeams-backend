@@ -1,4 +1,5 @@
 from src.data_store import data_store
+import urllib.request
 
 
 def check_for_tags_and_send_notifications(message, u_id, c_id, dm_id):
@@ -126,3 +127,20 @@ def user_in_channel(user_handle, channel_id, dm_id):
                         return True
 
     return False
+
+de
+
+def imgDown(img_url, handle):
+
+    urllib.request.urlretrieve(img_url, f"static/{handle}.jpg")
+
+    return 
+
+def crop(x1, x1, x2, y2, handle):
+    imageObject = Image.open(f"static/{handle}.jpg")
+    cropped = imageObject.crop((x1, y1, x2, y2))
+    cropped.save(f"static/{handle}.jpg")
+
+    return
+
+
