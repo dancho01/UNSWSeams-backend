@@ -110,6 +110,7 @@ def create_message(new_message_id, user_id, message):
         'u_id': user_id,
         'message': message,
         'time_sent': time_now(),
+        'reacts': [],
         'is_pinned': False
     }
 

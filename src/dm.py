@@ -297,6 +297,7 @@ def message_senddm_v1(token, dm_id, message):
         'u_id': auth_user_id,
         'message': message,
         'time_sent': calculate_time_stamp(),
+        'reacts': [],
         'is_pinned' : False
     }
 
