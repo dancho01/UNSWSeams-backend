@@ -237,7 +237,7 @@ def test_invalid_resetcode():
                                                          'name_first': 'First2', \
                                                          'name_last': 'Last'})
     requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
-    response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': '999999', 'new_password': 'password123'})
+    response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': 9999, 'new_password': 'password123'})
     assert response.status_code == 400
 
 
@@ -251,7 +251,7 @@ def test_invalid_password():
                                                          'name_first': 'First2', \
                                                          'name_last': 'Last'})
     requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
-    response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': '123456', 'new_password': 'pass'})
+    response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': 1234, 'new_password': 'pass'})
     assert response.status_code == 400
 
 
