@@ -16,7 +16,7 @@ from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.user import user_profile_v1, notifications_get_v1
 from src.users import users_all_v1
-from src.message_iter3 import search_v1
+from src.message_iter3 import search_v1, message_react_v1, message_unreact_v1
 from src.standup import standup_start_v1, standup_active_v1, standup_send_v1
 
 
@@ -368,6 +368,20 @@ def notifications_get_wrapper():
     token = request.args.get('token')
     result = notifications_get_v1(token)
     return dumps(result)
+    
+@APP.route("/message/react/v1", methods=['POST'])    
+def message_react_wrapper():
+    data = request.get_json()
+    result = message_react_v1(data['token'], data['message_id'], data['react_id'])
+    save_data()
+    return dumps(result)
+    
+@APP.route("/message/unreact/v1", methods=['POST'])    
+def message_unreact_wrapper():
+    data = request.get_json()
+    result = message_unreact_v1(data['token'], data['message_id'], data['react_id'])
+    save_data()
+    return dumps(result)   
 
 @APP.route("/message/pin/v1", methods=['POST'])
 def message_pin():
