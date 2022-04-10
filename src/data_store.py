@@ -30,7 +30,8 @@ initial_object = {
     'users': [],
     'channels': [],
     'dms': [],
-    'session_list': []
+    'session_list': [],
+    'reset_codes': []
 }
 # YOU SHOULD MODIFY THIS OBJECT ABOVE
 

@@ -2,7 +2,11 @@ import re
 from src.data_store import data_store
 from src.error import InputError
 from src.token import hash, generate_token
-from src.auth_helper import generate_new_handle, check_info_syntax, check_login, assign_permissions
+from src.auth_helper import generate_new_handle, check_info_syntax, \
+                            check_login, assign_permissions, \
+                            check_email_exist, generate_reset_code, \
+                            check_logged_in, set_user_inactive, \
+                            email_reset_code
 from src.token import hash, generate_token, check_valid_token
 from src.global_helper import generate_user_id
 
@@ -72,23 +76,25 @@ def auth_logout(token):
     return {}
 
 
-def auth_password_request(email):
+def auth_password_request(mail, email):
     '''
-        some
-        words
+        takes in an email, runs through some validation checks and
+        sends an email to user with the reset code
     '''
     
-    uid = check_email_exist(email) # TODO
+    uid = check_email_exist(email)
+
     if uid == "":
+        print("leaving")
         return {}
     
-
-    generate_reset_code(uid) # TODO creates dict with user id and a unique code
+    code = generate_reset_code(uid)
+    print("your code is " + str(code))
     
-    if check_logged_in(): # TODO checks if user associated with email 
-        remove_session_id(email) # TODO
+    if check_logged_in(uid):
+        set_user_inactive(uid)
 
-    email_reset_code() # TODO emails this code to user
+    email_reset_code(email, code, mail)
     
     return {}
 
@@ -103,6 +109,7 @@ def auth_password_reset(code, new_pass):
     store = data_store.get()
     found = 0
     
+
     for codes in reset_codes: # iterating through a list of dicts. these dicts contain the reset code and the user_id the code belongs to
         if code in codes['code']:
             found = 1
@@ -117,5 +124,6 @@ def auth_password_reset(code, new_pass):
         raise InputError(description="Invalid Reset Code")
 
     return {}
+
 
 
