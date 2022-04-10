@@ -43,3 +43,11 @@ def test_invalid_user():
                             'token': user1_data['token'], 'u_id': user1_data['auth_user_id'] + 1})
 
     assert response.status_code == 400
+
+
+'''
+user/stats test
+
+'''
+
+# test number of messages after removing messages

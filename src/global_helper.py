@@ -126,6 +126,25 @@ def return_member_information(u_id, store):
                 'handle_str': user['handle']
             }
 
+def decrement_messages_sent(auth_user_id):
+    store = data_store.get()
+    for user in store['users']:
+        if user['u_id'] == auth_user_id: 
+            user['stats']['total_messages_sent'] -= 1
+            num_messages_sent = user['stats']['total_messages_sent']
+            user['stats']['user_stats']['messages_sent'].append({
+                "num_messages_sent": num_messages_sent,
+                "time_stamp": time_now()
+            })
+
+def decrement_total_messages():
+    store = data_store.get()
+    store['stats']['total_num_messages'] -= 1
+    total_num_messages = store['stats']['total_num_messages']
+    store['stats']['workspace_stats']['channels_exist'].append({
+        'num_messages_exist': total_num_messages,
+        'time_stamp': time_now()
+    })
 
 def generate_new_message_id():
     '''
@@ -168,3 +187,4 @@ def get_globals():
     global AUTH_COUNTER, CHANNEL_COUNTER, MESSAGE_ID_COUNTER
 
     return AUTH_COUNTER, CHANNEL_COUNTER, MESSAGE_ID_COUNTER
+

@@ -5,6 +5,7 @@ from src.token import hash, generate_token
 from src.auth_helper import generate_new_handle, check_info_syntax, check_login, assign_permissions
 from src.token import hash, generate_token, check_valid_token
 from src.global_helper import generate_user_id
+from src.channel_helper import time_now
 
 
 def auth_login_v1(email, password):
@@ -51,7 +52,33 @@ def auth_register_v1(email, password, name_first, name_last):
                            'handle': final_handle,
                            'global_permissions': assign_permissions(),
                            'active': True,
-                           'notifications': []})
+                           'notifications': [],
+                           'stats': {
+                               'user_stats': {
+                                    "channels_joined": [
+                                        {
+                                            "num_channels_joined": 0,
+                                            "time_stamp": time_now()
+                                        }
+                                    ],
+                                    "dms_joined": [
+                                        {
+                                            "num_dms_joined": 0,
+                                            "time_stamp": time_now()
+                                        }
+                                    ],
+                                    "messages_sent": [
+                                        {
+                                            "num_messages_sent": 0,
+                                            "time_stamp": time_now()
+                                        }
+                                    ],
+                                    "involvement_rate": 0.0
+                               },
+                               "total_channels_joined": 0,
+                               "total_dms_joined": 0,
+                               "total_messages_sent": 0
+                           }})
 
     return {
         'auth_user_id': new_id,

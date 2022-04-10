@@ -2,7 +2,7 @@ from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.token import check_valid_token
 from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, generate_new_dm_id,\
-    generate_DM_name, calculate_time_stamp
+    generate_DM_name, calculate_time_stamp, increment_user_dms_joined, decrement_user_dms_joined, increment_total_num_dms, decrement_total_num_dms
 from src.global_helper import generate_new_message_id, return_member_information, check_valid_user
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
 from src.iter3_message_helper import is_user_reacted
@@ -52,9 +52,13 @@ def dm_create_v1(token, u_ids):
         return_member_information(auth_user_id, store))
     for u_id in u_ids:
         new_dm['all_members'].append(return_member_information(u_id, store))
+        increment_user_dms_joined(u_id)
 
     # only original creator of DM is added to owner
     new_dm['owner'] = return_member_information(auth_user_id, store)
+
+    increment_user_dms_joined(auth_user_id)
+    increment_total_num_dms()
 
     store['dms'].append(new_dm)
 
@@ -127,6 +131,13 @@ def dm_remove_v1(token, dm_id):
 
     store['dms'] = list(filter(lambda i: i['dm_id'] != dm_id, store['dms']))
 
+    decrement_total_num_dms()
+    for dm in store['dms']:
+        if dm['dm_id'] == dm_id:
+            for member in dm['all_members']:
+                decrement_user_dms_joined(member['u_id'])
+            decrement_user_dms_joined(dm['owner']['u_id'])
+
     data_store.set(store)
 
     return {}
@@ -195,6 +206,8 @@ def dm_leave_v1(token, dm_id):
 
     store['dms'][dm_index]['all_members'] = list(filter(
         lambda i: i['u_id'] != auth_user_id, store['dms'][dm_index]['all_members']))
+    
+    decrement_user_dms_joined(auth_user_id)
 
     return {}
 

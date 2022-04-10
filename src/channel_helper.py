@@ -1,6 +1,7 @@
 from src.error import InputError, AccessError
 from datetime import datetime, timezone
 from src.data_store import data_store
+from global_helper import decrement_messages_sent, decrement_total_messages
 
 
 def remove_message(message_id):
@@ -12,6 +13,8 @@ def remove_message(message_id):
     for channel in store['channels']:
         for message in channel['messages']:
             if message['message_id'] == message_id:
+                decrement_total_messages()
+                decrement_messages_sent(message['u_id'])
                 channel['messages'].remove(message)
                 data_store.set(store)
                 return
@@ -19,6 +22,8 @@ def remove_message(message_id):
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
+                decrement_total_messages()
+                decrement_messages_sent(message['u_id'])
                 dm['messages'].remove(message)
                 data_store.set(store)
                 return
@@ -185,3 +190,46 @@ def share_message_format(to_share, message):
         to_share, message)
 
     return formatted
+
+def increment_user_channels_joined(auth_user_id):
+    store = data_store.get()
+    for user in store['users']:
+        if user['u_id'] == auth_user_id: 
+            user['stats']['total_channels_joined'] += 1
+            num_channels_joined = user['stats']['total_channels_joined']
+            user['stats']['user_stats']['channels_joined'].append({
+                "num_channels_joined": num_channels_joined,
+                "time_stamp": time_now()
+            })
+
+def decrement_user_channels_joined(auth_user_id):
+    store = data_store.get()
+    for user in store['users']:
+        if user['u_id'] == auth_user_id: 
+            user['stats']['total_channels_joined'] -= 1
+            num_channels_joined = user['stats']['total_channels_joined']
+            user['stats']['user_stats']['channels_joined'].append({
+                "num_channels_joined": num_channels_joined,
+                "time_stamp": time_now()
+            })
+
+def increment_messages_sent(auth_user_id):
+    store = data_store.get()
+    for user in store['users']:
+        if user['u_id'] == auth_user_id: 
+            user['stats']['total_messages_sent'] += 1
+            num_messages_sent = user['stats']['total_messages_sent']
+            user['stats']['user_stats']['messages_sent'].append({
+                "num_messages_sent": num_messages_sent,
+                "time_stamp": time_now()
+            })
+
+def increment_total_messages():
+    store = data_store.get()
+    store['stats']['total_num_messages'] += 1
+    total_num_messages = store['stats']['total_num_messages']
+    store['stats']['workspace_stats']['channels_exist'].append({
+        'num_messages_exist': total_num_messages,
+        'time_stamp': time_now()
+    })
+

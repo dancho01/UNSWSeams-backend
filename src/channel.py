@@ -1,7 +1,8 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
-from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, \
-    check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now
+from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, increment_messages_sent, decrement_messages_sent, \
+    check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now, increment_user_channels_joined, decrement_user_channels_joined, \
+    increment_total_messages, decrement_total_messages
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
@@ -43,6 +44,9 @@ def channel_invite_v1(token, channel_id, u_id):
 
     store['channels'][channel_index]['all_members'].append(
         return_member_information(u_id, store))
+
+    # update data store to reflect increased number of channels this user is a part of
+    increment_user_channels_joined(auth_user_id)
 
     channel_name = return_channel_or_dm_name(channel_id, -1)
     create_channel_invite_notification(
@@ -148,6 +152,9 @@ def message_send_v1(token, channel_id, message):
 
     send_message(new_message, channel_id)
 
+    increment_messages_sent(user_id)
+    increment_total_messages()
+
     return {
         'message_id': new_message_id
     }
@@ -165,12 +172,13 @@ def messages_edit_v1(token, message_id, message):
         Returns an empty dictionary {}. 
 
     """
+    store = data_store.get()
+    user_id = check_valid_token(token)['u_id']
+
     if len(message) == 0:
         remove_message(message_id)
         return {}
 
-    store = data_store.get()
-    user_id = check_valid_token(token)['u_id']
     check_message(message)
     check_valid_message(message_id, user_id, store)
 
@@ -241,6 +249,8 @@ def channel_leave_v1(token, channel_id):
     # Filters that user out of the list of all_members and owner_members
     member_leave(user_info['u_id'], channel_index)
 
+    decrement_user_channels_joined(user_info['u_id'])
+
     return {}
 
 
@@ -281,6 +291,8 @@ def channel_join_v1(token, channel_id):
 
     store['channels'][channel_index]['all_members'].append(
         return_member_information(auth_user_id, store))
+
+    increment_user_channels_joined(auth_user_id)
 
     data_store.set(store)
 

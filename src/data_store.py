@@ -1,3 +1,5 @@
+from src.channel_helper import time_now
+
 '''
 data_store.py
 
@@ -30,7 +32,33 @@ initial_object = {
     'users': [],
     'channels': [],
     'dms': [],
-    'session_list': []
+    'session_list': [],
+    'stats': {
+        'workspace_stats':{
+            'channels_exist': [
+                {
+                    'num_channels_exist': 0,
+                    'time_stamp': time_now()
+                }
+            ],
+            'dms_exist': [
+                {
+                    'num_dms_exist': 0,
+                    'time_stamp': time_now()
+                }
+            ],
+            'messages_exist': [
+                {
+                    'num_messages_exist': 0,
+                    'time_stamp': time_now()
+                }
+            ],
+            'utilization_rate': 0.0
+        },
+        'total_num_channels': 0,
+        'total_num_dms': 0,
+        'total_num_messages': 0
+    }
 }
 # YOU SHOULD MODIFY THIS OBJECT ABOVE
 
@@ -67,12 +95,88 @@ data = {
             'auth_user_id': 1,
             'name': 'user1',
             'global_permissions': 1,
-            'handle' : ''
+            'handle' : '',
+            'stats': {
+                'user_stats': {
+                    'channels_joined': [
+                        {
+                            'num_channels_joined': 0,
+                            'time_stamp': 0
+                        }, 
+                        {
+                            'num_channels_joined': 1,
+                            'time_stamp': 23456789
+                        }
+                    ],
+                    'dms_joined': [
+                        {
+                            'num_dms_joined': 0,
+                            'time_stamp': 0
+                        },
+                        {
+                            'num_dms_joined': 1,
+                            'time_stamp': 987654
+                        }
+                    ],
+                    'messages_sent': [
+                        {
+                            'num_msgs_sent': 0,
+                            'time_stamp': 0
+                        }, 
+                        {
+                            'num_msgs_sent': 1,
+                            'time_stamp': 1234590
+                        }
+                    ],
+                    'involvement_rate': 0.0
+                },
+                "total_channels_joined": 1,
+                "total_dms_joined": 1,
+                "total_messages_sent": 1
+            }
         },
         {
             'auth_user_id': 2,
             'name': 'user2',
             'global_permissions': 2,
+            'stats': {
+                'user_stats': {
+                    'channels_joined': [
+                        {
+                            'num_channels_joined': 0,
+                            'time_stamp': 0
+                        }, 
+                        {
+                            'num_channels_joined': 1,
+                            'time_stamp': 23456789
+                        }
+                    ],
+                    'dms_joined': [
+                        {
+                            'num_dms_joined': 0,
+                            'time_stamp': 0
+                        },
+                        {
+                            'num_dms_joined': 1,
+                            'time_stamp': 987654
+                        }
+                    ],
+                    'messages_sent': [
+                        {
+                            'num_msgs_sent': 0,
+                            'time_stamp': 0
+                        }, 
+                        {
+                            'num_msgs_sent': 1,
+                            'time_stamp': 1234590
+                        }
+                    ],
+                    'involvement_rate': 0.0
+                }, 
+                "total_channels_joined": 0,
+                "total_dms_joined": 0,
+                "total_messages_sent": 0
+            }
         },
     ],
     'channels': [
@@ -104,5 +208,38 @@ data = {
               'all_members': [],
               'messages': [],
             ],
+    'workspace_stats': {
+        'channels_exist': [
+            {
+                'num_channels_exist': 0,
+                'time_stamp': 0
+            }, 
+            {
+                'num_channels_exist': 1,
+                'time_stamp': 23456789
+            }
+        ],
+        'dms_exist': [
+            {
+                'num_dms_exist': 0,
+                'time_stamp': 0
+            },
+            {
+                'num_dms_exist': 1,
+                'time_stamp': 987654
+            }
+        ],
+        'messages_exist': [
+            {
+                'num_messages_exist': 0,
+                'time_stamp': 0
+            }, 
+            {
+                'num_messages_exist': 1,
+                'time_stamp': 1234590
+            }
+        ],
+        'utilization_rate': 0.0
+    }
 }
 '''
