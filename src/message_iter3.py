@@ -2,7 +2,7 @@ from src.data_store import data_store
 from src.error import InputError, AccessError
 from src.token import check_valid_token
 from src.channel_helper import check_message
-from src.iter3_message_helper import is_user_joined, return_messages_with_query, is_message_id_valid, has_user_already_reacted, add_react_message, remove_react_message, check_invalid_message_id
+from src.iter3_message_helper import is_user_joined, return_messages_with_query, is_message_id_valid, has_user_already_reacted, add_react_message, remove_react_message, check_invalid_message_id, is_user_reacted
 from src.user_helper import create_message_react_notification
 
 def search_v1(token, query_str):
@@ -19,10 +19,12 @@ def search_v1(token, query_str):
     
     for dm in store['dms']:
         if is_user_joined(dm, user_id):
-            query_collection = return_messages_with_query(query_str, dm, query_collection)                
+            query_collection = return_messages_with_query(query_str, dm, query_collection) 
+            
+    return_messages = is_user_reacted(query_collection, user_id)               
     
     return {
-        'messages': query_collection
+        'messages': return_messages
     }
     
     

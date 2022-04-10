@@ -70,3 +70,22 @@ def generate_new_react(user_id, react_id):
     new_react['u_ids'].append(user_id)
     
     return new_react
+
+def is_user_reacted(list_messages, auth_id):
+    for message in list_messages:
+        for react in message['reacts']:
+            found = False
+            for u_id in react['u_ids']:
+                if u_id == auth_id:
+                    react['is_this_user_reacted'] = True
+                    found = True
+            if found != True:
+                react['is_this_user_reacted'] = False
+                
+    return list_messages
+    
+    
+    
+    
+    
+    
