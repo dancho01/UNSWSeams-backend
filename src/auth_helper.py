@@ -137,7 +137,7 @@ def generate_reset_code(uid):
     # case: code already exists
     if store['reset_codes']: # so that we don't iterate through an empty list
         for codes in store['reset_codes']:
-            if codes[1] == code:
+            if codes['code'] == code:
                 generate_reset_code(uid)
             
     store['reset_codes'].append({'uid': uid,
@@ -177,8 +177,7 @@ def email_reset_code(email, code, mail):
         sends the reset email to user
     '''
     msg = Message('Your Seams Reset Code', sender = 'h09belephant@gmail.com', recipients = [email])
-    msg.body = code
+    msg.body = str(code)
     mail.send(msg) 
-    print("email is " + email + " code is " + code)
     return
     

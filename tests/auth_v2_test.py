@@ -214,8 +214,10 @@ def test_invalid_session_id():
         previous user's handle
     '''
     requests.delete(config.url + 'clear/v1')
-    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
-                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
+    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com', \
+                                                         'password': 'password', \
+                                                         'name_first': 'First2', \
+                                                         'name_last': 'Last'})
     requests.post(config.url + 'auth/login/v2', json={'email': 'email@gmail.com',
                                                                        'password': 'password'})
     response = requests.post(config.url + 'auth/logout/v1', json={'token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1X2lkIjoxLCJzZXNzaW9uX2lkIjoiZGQ1NWFkMzcxZjRjNmQyNTExYWFlYjNkMzkwMmNiZGJhZWFmZGFiNDdiMWQzOTI2NDUzYTFhNTg5MjQzZTZjMCJ9.dwiWCf54xraWhX4wuPogufTYEKgraxuRR392DNXPvmk'})
@@ -230,12 +232,13 @@ def test_invalid_resetcode():
         docstring
     '''
     requests.delete(config.url + 'clear/v1')
-    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
-                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
-                                                                       'password': 'password'})
+    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com', \
+                                                         'password': 'password', \
+                                                         'name_first': 'First2', \
+                                                         'name_last': 'Last'})
     requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
     response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': '999999', 'new_password': 'password123'})
-    assert response.status_code == 400 # not sure what code should go here.  
+    assert response.status_code == 400
 
 
 def test_invalid_password():
@@ -243,12 +246,13 @@ def test_invalid_password():
         docstring
     '''
     requests.delete(config.url + 'clear/v1')
-    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
-                                                                 'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
-                                                                       'password': 'password'})
+    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com', \
+                                                         'password': 'password', \
+                                                         'name_first': 'First2', \
+                                                         'name_last': 'Last'})
     requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
     response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': '123456', 'new_password': 'pass'})
-    assert response.status_code == 400 # not sure what code should go here.  
+    assert response.status_code == 400
 
 
 def test_reset_success():
@@ -260,14 +264,18 @@ def test_reset_success():
                                                                  'password': 'password', 'name_first': 'First2', 'name_last': 'Last'})
     requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
     response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': '123456', 'new_password': 'pass'})
-    assert response.status_code == 200 # not sure what code should go here.  
+    assert response.status_code == 200
     
     
 ''' tests for password /auth/passwordreset/request/v1  '''
 
 
 def test_invalid_email():
-    pass
+    requests.delete(config.url + 'clear/v1')
+    response = requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
+    assert response.status_code == 200
 
 def test_valid_email():
-    pass
+    requests.delete(config.url + 'clear/v1')
+    response = requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
+    assert response.status_code == 200

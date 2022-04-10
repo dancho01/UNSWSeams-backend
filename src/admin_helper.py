@@ -115,3 +115,5 @@ def check_and_set_new_permissions(u_id, permission_id):
                 store['users'][i]['global_permissions'] = permission_id
                 data_store.set(store)
                 return {}
+            
+

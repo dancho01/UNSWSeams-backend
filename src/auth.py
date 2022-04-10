@@ -85,11 +85,9 @@ def auth_password_request(mail, email):
     uid = check_email_exist(email)
 
     if uid == "":
-        print("leaving")
         return {}
     
     code = generate_reset_code(uid)
-    print("your code is " + str(code))
     
     if check_logged_in(uid):
         set_user_inactive(uid)
@@ -106,24 +104,23 @@ def auth_password_reset(code, new_pass):
         words 
         here
     '''
+
     store = data_store.get()
     found = 0
     
 
-    for codes in reset_codes: # iterating through a list of dicts. these dicts contain the reset code and the user_id the code belongs to
-        if code in codes['code']:
-            found = 1
-            if check_password_syntax(new_password): # checking if the code and password are valid
+    for codes in store['reset_codes']: # iterating through a list of dicts. these dicts contain the reset code and the user_id the code belongs to
+        if codes['code'] == int(code): # checks if user inputted code is valid
+            print("in")
+            if len(new_pass) >= 6: # checking if password is valid
                 for user in store['users']:
                     if user['auth_user_id'] == codes['uid']: # finds the user who the reset code belongs to
-                       store['users'][user['auth_user_id'] + 1]['password'] = hash(new_password) # sets this users password
+                       user['password'] = hash(new_pass) # sets this users password
                 del code # removes the reset_code and uid dict from reset_codes list
+                return
             else:
                 raise InputError(description="Invalid Password")
-    if found == 0:
-        raise InputError(description="Invalid Reset Code")
+    raise InputError(description="Invalid Reset Code")
 
-    return {}
-
-
+    return
 
