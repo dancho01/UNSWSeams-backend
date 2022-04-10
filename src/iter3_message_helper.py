@@ -19,13 +19,13 @@ def check_invalid_message_id(store, message_id, user_id):
         if is_user_joined(channel, user_id):
             result = is_message_id_valid(channel, message_id)
             if result != False:            
-                return result
+                return result, 1, channel['channel_id']
       
     for dm in store['dms']:
         if is_user_joined(dm, user_id):
             result = is_message_id_valid(dm, message_id)
             if result != False:
-                return result
+                return result, 2, dm['dm_id']
         
     raise InputError(description='message id is not valid')                  
       

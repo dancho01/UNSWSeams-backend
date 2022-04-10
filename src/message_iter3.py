@@ -3,6 +3,7 @@ from src.error import InputError, AccessError
 from src.token import check_valid_token
 from src.channel_helper import check_message
 from src.iter3_message_helper import is_user_joined, return_messages_with_query, is_message_id_valid, has_user_already_reacted, add_react_message, remove_react_message, check_invalid_message_id
+from src.user_helper import create_message_react_notification
 
 def search_v1(token, query_str):
     store = data_store.get()
@@ -35,10 +36,19 @@ def message_react_v1(token, message_id, react_id):
     if react_id is not 1:
         raise InputError(description='not a valid react ID') 
            
-    if has_user_already_reacted(message, user_id, react_id):
+    if has_user_already_reacted(message[0], user_id, react_id):
         raise InputError(description='user has already reacted to this message')
     
-    add_react_message(user_id, message, react_id)
+    add_react_message(user_id, message[0], react_id)
+    
+    if message[1] == 1:
+        channel_id = message[2]
+        dm_id = -1
+    else:
+        channel_id = -1
+        dm_id = message[2]
+    
+    create_message_react_notification(channel_id, dm_id, user_id, message[0]['u_id'])
 
     return {}
     
@@ -54,9 +64,9 @@ def message_unreact_v1(token, message_id, react_id):
     if react_id is not 1:
         raise InputError(description='not a valid react ID') 
     
-    if has_user_already_reacted(message, user_id, react_id) == False:
+    if has_user_already_reacted(message[0], user_id, react_id) == False:
         raise InputError(description='user has not reacted to this message')    
     
-    remove_react_message(user_id, message, react_id)
+    remove_react_message(user_id, message[0], react_id)
     
     return {}
