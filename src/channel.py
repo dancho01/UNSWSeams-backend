@@ -387,6 +387,8 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     check_authorized_user(auth_user_id, channel_index)
     check_message(message)
 
+    check_for_tags_and_send_notifications(message, auth_user_id, channel_id, -1)
+
     new_message_id = generate_new_message_id()
 
     new_message = create_message(new_message_id, auth_user_id, message)
@@ -395,7 +397,8 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     if float(time_difference) < 0:
         raise InputError(
             'time_sent is a time in the past')
-    threading.Timer(time_difference, send_message(new_message, channel_id))
+    t = threading.Timer(time_difference, send_message, [new_message, channel_id])
+    t.start()
 
     return {
         'message_id': new_message_id

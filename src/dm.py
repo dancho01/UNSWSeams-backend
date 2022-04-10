@@ -304,3 +304,64 @@ def message_senddm_v1(token, dm_id, message):
     return {
         'message_id': new_message_id
     }
+
+def message_sendlaterdm_v1(token, dm_id, message, time_sent):
+    '''
+    Send a message from the authorised user to the DM specified by dm_id automatically at a specified time in the future. 
+    The returned message_id will only be considered valid for other actions (editing/deleting/reacting/etc) once it has been 
+    sent (i.e. after time_sent). If the DM is removed before the message has sent, the message will not be sent. 
+    You do not need to consider cases where a user's token is invalidated or a user leaves before the message is scheduled 
+    to be sent.
+    
+    Args:
+        token       str             the encoded JWT string to verify user
+        dm_id       int             the id of the DM
+        message     str             the message that the user wishes to send   
+        time_sent   int             the timestamp of the datetime the message is to be sent in the future   
+    Exceptions:
+        InputError      occurs when dm_id does not refer to a valid DM
+        InputError      occurs when length of message is less than 1 or over 1000 characters
+        InputError      occurs when time_sent is a time in the past
+        AccessError     dm_id is valid and the authorised user is not a member of the DM they are trying to post to
+    Return:
+        Returns the newly generated message id 
+    '''
+    store = data_store.get()
+
+    user_info = check_valid_token(token)
+    auth_user_id = user_info['u_id']
+
+    if check_valid_dm(dm_id, store) == False:
+        raise InputError(description='dm_id does not refer to a valid DM')
+
+    dm_index = check_valid_dm(dm_id, store)[1]
+
+    if check_user_member_dm(auth_user_id, store, dm_index) == False:
+        raise AccessError(description='authorised user is not member of DM')
+
+    if len(message) < 1 or len(message) > 1000:
+        raise InputError(
+            description='Message must be between 1 and 1000 characters inclusive')
+
+    check_for_tags_and_send_notifications(message, auth_user_id, -1, dm_id)
+
+    new_message_id = generate_new_message_id()
+
+    new_message = {
+        'message_id': new_message_id,
+        'u_id': auth_user_id,
+        'message': message,
+        'time_sent': calculate_time_stamp()
+    }
+
+
+    time_difference = time_sent - time_now()
+    if float(time_difference) < 0:
+        raise InputError(
+            'time_sent is a time in the past')
+    t = threading.Timer(time_difference, store['dms'][dm_index]['messages'].append(new_message))
+    t.start()
+
+    return {
+        'message_id': new_message_id
+    }
