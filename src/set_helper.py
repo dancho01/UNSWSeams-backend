@@ -16,8 +16,6 @@ def check_name(name_first, name_last):
         raise InputError(
             description="Last name must be between 1 and 50 characters inclusive")
 
-    return
-
 
 def insert_name(u_id, name_first, name_last):
     '''
@@ -49,8 +47,9 @@ def insert_name(u_id, name_first, name_last):
             if all_member['u_id'] == u_id:
                 all_member['name_first'] = name_first
                 all_member['name_last'] = name_last
-
-    data_store.set(store)
+        if dm['owner']['u_id'] == u_id:
+            dm['owner']['name_first'] == name_first
+            dm['owner']['name_last'] == name_last
 
 
 def check_email(email):
@@ -93,9 +92,9 @@ def insert_email(u_id, email):
     for dm in store['dms']:
         for all_member in dm['all_members']:
             if all_member['u_id'] == u_id:
-                owner_member['email'] = email
-
-    data_store.set(store)
+                all_member['email'] = email
+        if dm['owner']['u_id'] == u_id:
+            dm['owner']['email'] == email
 
 
 def check_handle(handle):
@@ -116,7 +115,8 @@ def check_handle(handle):
     for user in store['users']:
         if user['handle'] == handle:
             raise InputError(
-                description="the handle is already used by another user")
+                description="the handle is already used by another user")\
+
 
 
 def insert_handle(u_id, handle):
@@ -136,8 +136,7 @@ def insert_handle(u_id, handle):
         for owner_member in channels['owner_members']:
             if owner_member['u_id'] == u_id:
                 owner_member['handle'] = handle
-    # Updates owner members
-    for channels in store['channels']:
+
         for all_member in channels['all_members']:
             if all_member['u_id'] == u_id:
                 owner_member['handle'] = handle
@@ -145,6 +144,6 @@ def insert_handle(u_id, handle):
     for dm in store['dms']:
         for all_member in dm['all_members']:
             if all_member['u_id'] == u_id:
-                owner_member['handle'] = handle
-
-    data_store.set(store)
+                all_member['handle'] = handle
+        if dm['owner']['u_id'] == u_id:
+            dm['owner']['handle_str'] == handle
