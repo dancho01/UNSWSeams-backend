@@ -1,9 +1,17 @@
-from src.data_store import data_store
 from src.error import InputError, AccessError
+from src.data_store import data_store
+from datetime import datetime, timezone
+
 
 AUTH_COUNTER = 0
 CHANNEL_COUNTER = 0
 MESSAGE_ID_COUNTER = 0
+
+def time_now():
+    '''
+    returns the current time stamp
+    '''
+    return int(datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp())
 
 
 def check_valid_user(u_id):
@@ -129,7 +137,7 @@ def return_member_information(u_id, store):
 def decrement_messages_sent(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['u_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id: 
             user['stats']['total_messages_sent'] -= 1
             num_messages_sent = user['stats']['total_messages_sent']
             user['stats']['user_stats']['messages_sent'].append({

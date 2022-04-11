@@ -14,7 +14,7 @@ from src.channels import channels_list_v1, channels_listall_v1, channels_create_
 from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1, message_pin_v1, message_unpin_v1
 from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
-from src.user import user_profile_v1, notifications_get_v1
+from src.user import user_profile_v1, notifications_get_v1, user_stats_v1, users_stats_v1
 from src.users import users_all_v1
 from src.message_iter3 import search_v1, message_react_v1, message_unreact_v1
 from src.standup import standup_start_v1, standup_active_v1, standup_send_v1
@@ -425,6 +425,20 @@ def standup_send_wrapper():
     result = standup_send_v1(
         data['token'], data['channel_id'], data['message'])
     save_data()
+    return dumps(result)
+
+@APP.route("/user/stats/v1", methods=['GET'])
+def user_stats_wrapper():
+    token = request.args.get('token')
+    result = user_stats_v1(token)
+
+    return dumps(result)
+
+@APP.route("/users/stats/v1", methods=['GET'])
+def users_stats_wrapper():
+    token = request.args.get('token')
+    result = users_stats_v1(token)
+
     return dumps(result)
 
 

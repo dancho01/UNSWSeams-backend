@@ -1,7 +1,7 @@
 from src.error import InputError, AccessError
 from datetime import datetime, timezone
+from src.global_helper import decrement_messages_sent, decrement_total_messages
 from src.data_store import data_store
-from global_helper import decrement_messages_sent, decrement_total_messages
 
 
 def remove_message(message_id):
@@ -57,7 +57,7 @@ def time_now():
     '''
     returns the current time stamp
     '''
-    return datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp()
+    return int(datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp())
 
 
 def get_messages(start, end_return, channel_index):
@@ -194,7 +194,7 @@ def share_message_format(to_share, message):
 def increment_user_channels_joined(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['u_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id: 
             user['stats']['total_channels_joined'] += 1
             num_channels_joined = user['stats']['total_channels_joined']
             user['stats']['user_stats']['channels_joined'].append({
@@ -205,7 +205,7 @@ def increment_user_channels_joined(auth_user_id):
 def decrement_user_channels_joined(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['u_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id: 
             user['stats']['total_channels_joined'] -= 1
             num_channels_joined = user['stats']['total_channels_joined']
             user['stats']['user_stats']['channels_joined'].append({
@@ -216,7 +216,7 @@ def decrement_user_channels_joined(auth_user_id):
 def increment_messages_sent(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['u_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id: 
             user['stats']['total_messages_sent'] += 1
             num_messages_sent = user['stats']['total_messages_sent']
             user['stats']['user_stats']['messages_sent'].append({

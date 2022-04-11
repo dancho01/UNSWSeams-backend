@@ -1,4 +1,5 @@
-from src.channel_helper import time_now
+from datetime import datetime, timezone
+
 
 '''
 data_store.py
@@ -25,6 +26,12 @@ Example usage:
     print(store) # Prints { 'names': ['Emily', 'Hayden', 'Jake', 'Nick'] }
     data_store.set(store)
 '''
+
+def time_now():
+    '''
+    returns the current time stamp
+    '''
+    return int(datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp())
 
 # YOU SHOULD MODIFY THIS OBJECT BELOW
 

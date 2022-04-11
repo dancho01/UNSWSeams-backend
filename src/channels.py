@@ -3,7 +3,7 @@ from src.token import check_valid_token
 from src.global_helper import generate_channel_id, check_valid_user, return_member_information
 from src.channels_helper import search_user_channel, return_all_channels, create_new_channel, check_channel_len, \
     increment_total_num_channels
-from channel_helper import increment_user_channels_joined
+from src.channel_helper import increment_user_channels_joined
 
 
 def channels_list_v1(token):

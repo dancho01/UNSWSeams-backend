@@ -1,5 +1,7 @@
 from datetime import timezone
 import datetime
+from src.data_store import data_store
+from src.channel_helper import time_now
 
 DM_ID_COUNTER = 0
 
@@ -120,7 +122,7 @@ def calculate_time_stamp():
 def increment_user_dms_joined(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['u_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id: 
             user['stats']['total_dms_joined'] += 1
             num_dms_joined = user['stats']['total_dms_joined']
             user['stats']['user_stats']['dms_joined'].append({
@@ -131,7 +133,7 @@ def increment_user_dms_joined(auth_user_id):
 def decrement_user_dms_joined(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['u_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id: 
             user['stats']['total_dms_joined'] -= 1
             num_dms_joined = user['stats']['total_dms_joined']
             user['stats']['user_stats']['dms_joined'].append({
@@ -142,7 +144,7 @@ def decrement_user_dms_joined(auth_user_id):
 def increment_total_num_dms():
     store = data_store.get()
     store['stats']['total_num_dms'] += 1
-    num_channels_exist = store['stats']['total_num_dms']
+    num_dms_exist = store['stats']['total_num_dms']
     store['stats']['workspace_stats']['dms_exist'].append({
         'num_dms_exist': num_dms_exist,
         'time_stamp': time_now()
@@ -151,7 +153,7 @@ def increment_total_num_dms():
 def decrement_total_num_dms():
     store = data_store.get()
     store['stats']['total_num_dms'] -= 1
-    num_channels_exist = store['stats']['total_num_dms']
+    num_dms_exist = store['stats']['total_num_dms']
     store['stats']['workspace_stats']['dms_exist'].append({
         'num_dms_exist': num_dms_exist,
         'time_stamp': time_now()
