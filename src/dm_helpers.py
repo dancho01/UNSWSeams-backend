@@ -145,3 +145,7 @@ def decrement_total_num_dms():
         'num_dms_exist': num_dms_exist,
         'time_stamp': time_now()
     })
+
+def store_message_send_dm_message(dm_index, new_message):
+    store = data_store.get()
+    store['dms'][dm_index]['messages'].append(new_message)

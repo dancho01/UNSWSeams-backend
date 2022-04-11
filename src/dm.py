@@ -1,12 +1,13 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.token import check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm,\
+from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, store_message_send_dm_message, \
     generate_DM_name, calculate_time_stamp, increment_user_dms_joined, decrement_user_dms_joined, increment_total_num_dms, decrement_total_num_dms
 from src.global_helper import generate_new_message_id, return_member_information, check_valid_user, generate_new_dm_id
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
 from src.iter3_message_helper import is_user_reacted
-from src.channel_helper import check_message, create_message
+from src.channel_helper import check_message, create_message, time_now
+import threading
 
 
 def dm_create_v1(token, u_ids):
@@ -302,38 +303,22 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
     '''
     store = data_store.get()
 
-    user_info = check_valid_token(token)
-    auth_user_id = user_info['u_id']
-
-    if check_valid_dm(dm_id, store) == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = check_valid_dm(dm_id, store)[1]
-
-    if check_user_member_dm(auth_user_id, store, dm_index) == False:
-        raise AccessError(description='authorised user is not member of DM')
-
-    if len(message) < 1 or len(message) > 1000:
-        raise InputError(
-            description='Message must be between 1 and 1000 characters inclusive')
+    auth_user_id = check_valid_token(token)['u_id']
+    dm_index = check_valid_dm(dm_id, store)
+    check_user_member_dm(auth_user_id, store, dm_index)
+    check_message(message)
 
     check_for_tags_and_send_notifications(message, auth_user_id, -1, dm_id)
 
     new_message_id = generate_new_message_id()
 
-    new_message = {
-        'message_id': new_message_id,
-        'u_id': auth_user_id,
-        'message': message,
-        'time_sent': calculate_time_stamp()
-    }
-
+    new_message = create_message(new_message_id, auth_user_id, message)
 
     time_difference = time_sent - time_now()
     if float(time_difference) < 0:
         raise InputError(
             'time_sent is a time in the past')
-    t = threading.Timer(time_difference, store['dms'][dm_index]['messages'].append(new_message))
+    t = threading.Timer(time_difference, store_message_send_dm_message, [dm_index, new_message])
     t.start()
 
     return {
