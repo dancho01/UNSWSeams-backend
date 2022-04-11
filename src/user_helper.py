@@ -146,10 +146,8 @@ def user_in_channel(user_handle, channel_id, dm_id):
 # total channel counter
 def total_channel_count():
     store = data_store.get()
-    channel_counter = 0
-    for channel in store['channels']:
-        channel_counter += 1
-
+    channel_counter = len(store['channels'])
+    
     return channel_counter
 
 # user channels counter
@@ -166,9 +164,7 @@ def user_channels_count(u_id):
 # total dm counter
 def total_dms_count():
     store = data_store.get()
-    dm_counter = 0
-    for dm in store['dms']:
-        dm_counter += 1
+    dm_counter = len(store['dms'])
 
     return dm_counter
 

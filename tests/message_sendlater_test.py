@@ -232,8 +232,8 @@ def test_message_sendlaterdm_invalid_dm_id(create_future_timestamp, create_secon
         "name_last": "last"
     })
     user1_data = user1.json()
-    user2_data = create_second_user
-    user3 = requests.post(config.url + 'auth/register/v2', json={
+    create_second_user
+    requests.post(config.url + 'auth/register/v2', json={
         "email": "email3@gmail.com",
         "password": "password123",
         "name_first": "first",
@@ -270,8 +270,8 @@ def test_message_sendlaterdm_message_too_long(generate_invalid_message, create_f
         "name_last": "last"
     })
     user1_data = user1.json()
-    user2_data = create_second_user
-    user3 = requests.post(config.url + 'auth/register/v2', json={
+    create_second_user
+    requests.post(config.url + 'auth/register/v2', json={
         "email": "email3@gmail.com",
         "password": "password123",
         "name_first": "first",
@@ -300,8 +300,8 @@ def test_message_sendlaterdm_empty_message(create_public_channel, generate_inval
         "name_last": "last"
     })
     user1_data = user1.json()
-    user2_data = create_second_user
-    user3 = requests.post(config.url + 'auth/register/v2', json={
+    create_second_user
+    requests.post(config.url + 'auth/register/v2', json={
         "email": "email3@gmail.com",
         "password": "password123",
         "name_first": "first",
@@ -330,8 +330,8 @@ def test_message_sendlaterdm_invalid_time(create_second_user):
         "name_last": "last"
     })
     user1_data = user1.json()
-    user2_data = create_second_user
-    user3 = requests.post(config.url + 'auth/register/v2', json={
+    create_second_user
+    requests.post(config.url + 'auth/register/v2', json={
         "email": "email3@gmail.com",
         "password": "password123",
         "name_first": "first",
@@ -359,7 +359,7 @@ def test_message_sendlaterdm_not_member(create_second_user, create_future_timest
         "name_last": "last"
     })
     user1_data = user1.json()
-    user2_data = create_second_user
+    create_second_user
     user3 = requests.post(config.url + 'auth/register/v2', json={
         "email": "email3@gmail.com",
         "password": "password123",
@@ -381,8 +381,8 @@ def test_message_sendlaterdm_success(create_future_timestamp, create_public_chan
     '''
     
     user1_data = create_public_channel[1]
-    user2_data = create_second_user
-    user3 = requests.post(config.url + 'auth/register/v2', json={
+    create_second_user
+    requests.post(config.url + 'auth/register/v2', json={
         "email": "email3@gmail.com",
         "password": "password123",
         "name_first": "first",

@@ -89,7 +89,7 @@ def test_user_stats_total_num_messages_after_removing_messages():
     
     message_data = message_response.json()
 
-    removal_response = requests.delete(config.url + 'message/remove/v1', json={
+    requests.delete(config.url + 'message/remove/v1', json={
                                        'token': user1_data['token'], 'message_id': message_data['message_id']})
 
 
@@ -173,12 +173,11 @@ def test_users_stats_total_num_messages_after_removing_messages():
     requests.post(config.url + 'channel/join/v2',
                   json={'token': user2_data['token'], 'channel_id': channel_data['channel_id']})
 
-    removal_response = requests.delete(config.url + 'message/remove/v1', json={
+    requests.delete(config.url + 'message/remove/v1', json={
                                        'token': user1_data['token'], 'message_id': message_data['message_id']})
 
 
     response = requests.get(config.url + 'users/stats/v1', params={'token': user1_data['token']})
-    response_data = response.json()
 
     assert response.status_code == 200
     # assert response_data = {}
