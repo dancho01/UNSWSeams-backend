@@ -232,4 +232,3 @@ def increment_total_messages():
         'num_messages_exist': total_num_messages,
         'time_stamp': time_now()
     })
-

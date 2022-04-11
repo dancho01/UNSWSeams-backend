@@ -6,7 +6,7 @@ from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user
 from src.global_helper import generate_new_message_id, return_member_information, check_valid_user, generate_new_dm_id
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
 from src.iter3_message_helper import is_user_reacted
-from src.channel_helper import check_message, create_message, time_now
+from src.channel_helper import check_message, create_message, time_now, increment_total_messages, increment_messages_sent
 import threading
 
 
@@ -275,6 +275,9 @@ def message_senddm_v1(token, dm_id, message):
     new_message = create_message(new_message_id, auth_user_id, message)
 
     store['dms'][dm_index]['messages'].append(new_message)
+
+    increment_messages_sent(auth_user_id)
+    increment_total_messages()
 
     return {
         'message_id': new_message_id
