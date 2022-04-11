@@ -41,6 +41,7 @@ def clear_v1():
         'total_num_dms': 0,
         'total_num_messages': 0
         }
+        'reset_codes':[]
     }
 
     data_store.set(store)
