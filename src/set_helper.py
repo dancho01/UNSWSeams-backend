@@ -47,11 +47,9 @@ def insert_name(u_id, name_first, name_last):
             if all_member['u_id'] == u_id:
                 all_member['name_first'] = name_first
                 all_member['name_last'] = name_last
-
-        for owner_member in dm['all_members']:
-            if owner_member['u_id'] == u_id:
-                owner_member['name_first'] = name_first
-                owner_member['name_last'] = name_last
+        if dm['owner']['u_id'] == u_id:
+            dm['owner']['name_first'] == name_first
+            dm['owner']['name_last'] == name_last
 
 
 def check_email(email):
@@ -95,10 +93,8 @@ def insert_email(u_id, email):
         for all_member in dm['all_members']:
             if all_member['u_id'] == u_id:
                 all_member['email'] = email
-
-        for owner_member in dm['owner_members']:
-            if owner_member['u_id'] == u_id:
-                owner_member['email'] == email
+        if dm['owner']['u_id'] == u_id:
+            dm['owner']['email'] == email
 
 
 def check_handle(handle):
@@ -149,7 +145,5 @@ def insert_handle(u_id, handle):
         for all_member in dm['all_members']:
             if all_member['u_id'] == u_id:
                 all_member['handle'] = handle
-
-        for owner_member in dm['all_members']:
-            if owner_member['u_id'] == u_id:
-                owner_member['handle'] = handle
+        if dm['owner']['u_id'] == u_id:
+            dm['owner']['handle_str'] == handle
