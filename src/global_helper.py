@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 AUTH_COUNTER = 0
 CHANNEL_COUNTER = 0
 MESSAGE_ID_COUNTER = 0
+DM_ID_COUNTER = 0
 
 def time_now():
     '''
@@ -167,6 +168,19 @@ def generate_new_message_id():
     return MESSAGE_ID_COUNTER
 
 
+def generate_new_dm_id():
+    '''
+    Generates a new dm_id that is unique and sequentially increases by 1
+    Args:
+        None
+    Return:
+        Returns the next dm_id
+    '''
+    global DM_ID_COUNTER
+    DM_ID_COUNTER += 1
+    return DM_ID_COUNTER
+
+
 def generate_user_id():
     global AUTH_COUNTER
     AUTH_COUNTER += 1
@@ -180,19 +194,20 @@ def generate_channel_id():
 
 
 def reset_globals():
-    global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER
-    CHANNEL_COUNTER = AUTH_COUNTER = MESSAGE_ID_COUNTER = 0
+    global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
+    CHANNEL_COUNTER = AUTH_COUNTER = MESSAGE_ID_COUNTER = DM_ID_COUNTER = 0
 
 
-def load_globals(auth, channel, message):
-    global AUTH_COUNTER, CHANNEL_COUNTER, MESSAGE_ID_COUNTER
+def load_globals(auth, channel, message, dm):
+    global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
     AUTH_COUNTER = auth
     CHANNEL_COUNTER = channel
     MESSAGE_ID_COUNTER = message
+    DM_ID_COUNTER = dm
 
 
 def get_globals():
-    global AUTH_COUNTER, CHANNEL_COUNTER, MESSAGE_ID_COUNTER
+    global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
 
-    return AUTH_COUNTER, CHANNEL_COUNTER, MESSAGE_ID_COUNTER
+    return CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
 
