@@ -1,5 +1,7 @@
 from datetime import timezone
 import datetime
+from src.data_store import data_store
+from src.channel_helper import time_now
 from src.error import InputError, AccessError
 
 
@@ -103,3 +105,47 @@ def calculate_time_stamp():
     utc_timestamp = utc_time.timestamp()
 
     return utc_timestamp
+
+def increment_user_dms_joined(auth_user_id):
+    store = data_store.get()
+    for user in store['users']:
+        if user['auth_user_id'] == auth_user_id: 
+            user['stats']['total_dms_joined'] += 1
+            num_dms_joined = user['stats']['total_dms_joined']
+            user['stats']['user_stats']['dms_joined'].append({
+                "num_dms_joined": num_dms_joined,
+                "time_stamp": time_now()
+            })
+
+def decrement_user_dms_joined(auth_user_id):
+    store = data_store.get()
+    for user in store['users']:
+        if user['auth_user_id'] == auth_user_id: 
+            user['stats']['total_dms_joined'] -= 1
+            num_dms_joined = user['stats']['total_dms_joined']
+            user['stats']['user_stats']['dms_joined'].append({
+                "num_dms_joined": num_dms_joined,
+                "time_stamp": time_now()
+            })
+
+def increment_total_num_dms():
+    store = data_store.get()
+    store['stats']['total_num_dms'] += 1
+    num_dms_exist = store['stats']['total_num_dms']
+    store['stats']['workspace_stats']['dms_exist'].append({
+        'num_dms_exist': num_dms_exist,
+        'time_stamp': time_now()
+    })
+
+def decrement_total_num_dms():
+    store = data_store.get()
+    store['stats']['total_num_dms'] -= 1
+    num_dms_exist = store['stats']['total_num_dms']
+    store['stats']['workspace_stats']['dms_exist'].append({
+        'num_dms_exist': num_dms_exist,
+        'time_stamp': time_now()
+    })
+
+def store_message_send_dm_message(dm_index, new_message):
+    store = data_store.get()
+    store['dms'][dm_index]['messages'].append(new_message)

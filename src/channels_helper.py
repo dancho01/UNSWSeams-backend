@@ -1,5 +1,6 @@
 from src.error import InputError
 from src.data_store import data_store
+from src.channel_helper import time_now
 
 
 def search_user_channel(u_id):
@@ -59,3 +60,12 @@ def check_channel_len(name):
         raise InputError(
             'Make sure channel name no less than 1 character and no more than 20'
         )
+
+def increment_total_num_channels():
+    store = data_store.get()
+    store['stats']['total_num_channels'] += 1
+    num_channels_exist = store['stats']['total_num_channels']
+    store['stats']['workspace_stats']['channels_exist'].append({
+        'num_channels_exist': num_channels_exist,
+        'time_stamp': time_now()
+    })

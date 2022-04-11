@@ -9,13 +9,13 @@ from src import config
 from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data
-from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1
+from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1, message_sendlaterdm_v1
 from src.auth import auth_register_v1, auth_login_v1, auth_logout, auth_password_request, auth_password_reset
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1, message_pin_v1, message_unpin_v1
 from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
-from src.user import user_profile_v1, notifications_get_v1, user_profile_uploadphoto_v1
+from src.user import user_profile_v1, notifications_get_v1, user_profile_uploadphoto_v1, user_stats_v1, users_stats_v1
 from src.users import users_all_v1
 from src.message_iter3 import search_v1, message_react_v1, message_unreact_v1
 from src.standup import standup_start_v1, standup_active_v1, standup_send_v1
@@ -388,6 +388,13 @@ def message_sendlater_v1_wrapper():
     save_data()
     return dumps(result)
 
+@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+def message_sendlaterdm_v1_wrapper():
+    data = request.get_json()
+    result = message_sendlaterdm_v1(
+        data['token'], data['dm_id'], data['message'], data['time_sent'])
+    save_data()
+    return dumps(result)
 
 @APP.route("/notifications/get/v1", methods=['GET'])
 def notifications_get_wrapper():
@@ -453,6 +460,21 @@ def standup_send_wrapper():
     save_data()
     return dumps(result)
 
+
+@APP.route("/user/stats/v1", methods=['GET'])
+def user_stats_wrapper():
+    token = request.args.get('token')
+    result = user_stats_v1(token)
+
+    return dumps(result)
+
+@APP.route("/users/stats/v1", methods=['GET'])
+def users_stats_wrapper():
+    token = request.args.get('token')
+    result = users_stats_v1(token)
+
+    return dumps(result)
+
 @APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
 def upload_photo():
     data = request.get_json()
@@ -464,6 +486,7 @@ def upload_photo():
 @APP.route('/images/<path>')
 def send_js(path):
     return send_from_directory('../images', path)
+
 
 
 # NO NEED TO MODIFY BELOW THIS POINT

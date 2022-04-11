@@ -1,10 +1,18 @@
-from src.data_store import data_store
 from src.error import InputError, AccessError
+from src.data_store import data_store
+from datetime import datetime, timezone
+
 
 AUTH_COUNTER = 0
 CHANNEL_COUNTER = 0
 MESSAGE_ID_COUNTER = 0
 DM_ID_COUNTER = 0
+
+def time_now():
+    '''
+    returns the current time stamp
+    '''
+    return int(datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp())
 
 
 def check_valid_user(u_id):
@@ -128,6 +136,25 @@ def return_member_information(u_id, store):
                 'profile_img_url' : user['profile_img_url'],
             }
 
+def decrement_messages_sent(auth_user_id):
+    store = data_store.get()
+    for user in store['users']:
+        if user['auth_user_id'] == auth_user_id: 
+            user['stats']['total_messages_sent'] -= 1
+            num_messages_sent = user['stats']['total_messages_sent']
+            user['stats']['user_stats']['messages_sent'].append({
+                "num_messages_sent": num_messages_sent,
+                "time_stamp": time_now()
+            })
+
+def decrement_total_messages():
+    store = data_store.get()
+    store['stats']['total_num_messages'] -= 1
+    total_num_messages = store['stats']['total_num_messages']
+    store['stats']['workspace_stats']['channels_exist'].append({
+        'num_messages_exist': total_num_messages,
+        'time_stamp': time_now()
+    })
 
 def generate_new_message_id():
     '''
@@ -184,3 +211,4 @@ def get_globals():
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
 
     return CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
+

@@ -1,12 +1,13 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.token import check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm,\
-    generate_DM_name, calculate_time_stamp
+from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, store_message_send_dm_message, \
+    generate_DM_name, calculate_time_stamp, increment_user_dms_joined, decrement_user_dms_joined, increment_total_num_dms, decrement_total_num_dms
 from src.global_helper import generate_new_message_id, return_member_information, check_valid_user, generate_new_dm_id
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
 from src.iter3_message_helper import is_user_reacted
-from src.channel_helper import check_message, create_message
+from src.channel_helper import check_message, create_message, time_now
+import threading
 
 
 def dm_create_v1(token, u_ids):
@@ -53,9 +54,13 @@ def dm_create_v1(token, u_ids):
         return_member_information(auth_user_id, store))
     for u_id in u_ids:
         new_dm['all_members'].append(return_member_information(u_id, store))
+        increment_user_dms_joined(u_id)
 
     # only original creator of DM is added to owner
     new_dm['owner'] = return_member_information(auth_user_id, store)
+
+    increment_user_dms_joined(auth_user_id)
+    increment_total_num_dms()
 
     store['dms'].append(new_dm)
 
@@ -122,6 +127,13 @@ def dm_remove_v1(token, dm_id):
 
     store['dms'] = list(filter(lambda i: i['dm_id'] != dm_id, store['dms']))
 
+    decrement_total_num_dms()
+    for dm in store['dms']:
+        if dm['dm_id'] == dm_id:
+            for member in dm['all_members']:
+                decrement_user_dms_joined(member['u_id'])
+            decrement_user_dms_joined(dm['owner']['u_id'])
+
     data_store.set(store)
 
     return {}
@@ -175,6 +187,8 @@ def dm_leave_v1(token, dm_id):
 
     store['dms'][dm_index]['all_members'] = list(filter(
         lambda i: i['u_id'] != auth_user_id, store['dms'][dm_index]['all_members']))
+    
+    decrement_user_dms_joined(auth_user_id)
 
     return {}
 
@@ -261,6 +275,51 @@ def message_senddm_v1(token, dm_id, message):
     new_message = create_message(new_message_id, auth_user_id, message)
 
     store['dms'][dm_index]['messages'].append(new_message)
+
+    return {
+        'message_id': new_message_id
+    }
+
+def message_sendlaterdm_v1(token, dm_id, message, time_sent):
+    '''
+    Send a message from the authorised user to the DM specified by dm_id automatically at a specified time in the future. 
+    The returned message_id will only be considered valid for other actions (editing/deleting/reacting/etc) once it has been 
+    sent (i.e. after time_sent). If the DM is removed before the message has sent, the message will not be sent. 
+    You do not need to consider cases where a user's token is invalidated or a user leaves before the message is scheduled 
+    to be sent.
+    
+    Args:
+        token       str             the encoded JWT string to verify user
+        dm_id       int             the id of the DM
+        message     str             the message that the user wishes to send   
+        time_sent   int             the timestamp of the datetime the message is to be sent in the future   
+    Exceptions:
+        InputError      occurs when dm_id does not refer to a valid DM
+        InputError      occurs when length of message is less than 1 or over 1000 characters
+        InputError      occurs when time_sent is a time in the past
+        AccessError     dm_id is valid and the authorised user is not a member of the DM they are trying to post to
+    Return:
+        Returns the newly generated message id 
+    '''
+    store = data_store.get()
+
+    auth_user_id = check_valid_token(token)['u_id']
+    dm_index = check_valid_dm(dm_id, store)
+    check_user_member_dm(auth_user_id, store, dm_index)
+    check_message(message)
+
+    check_for_tags_and_send_notifications(message, auth_user_id, -1, dm_id)
+
+    new_message_id = generate_new_message_id()
+
+    new_message = create_message(new_message_id, auth_user_id, message)
+
+    time_difference = time_sent - time_now()
+    if float(time_difference) < 0:
+        raise InputError(
+            'time_sent is a time in the past')
+    t = threading.Timer(time_difference, store_message_send_dm_message, [dm_index, new_message])
+    t.start()
 
     return {
         'message_id': new_message_id
