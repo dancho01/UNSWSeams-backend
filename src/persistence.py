@@ -1,6 +1,7 @@
 import pickle
 from src.global_helper import load_globals, get_globals
 from src.data_store import data_store
+from src.user_helper import clear_profile_images
 
 
 def save_data():
@@ -25,3 +26,4 @@ def load_data():
     except Exception:
         # if file cannot be opened datastructure is returned to original state
         data_store.__init__
+        clear_profile_images()

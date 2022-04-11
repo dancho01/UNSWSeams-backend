@@ -1,7 +1,7 @@
 import sys
 import signal
 from json import dumps
-from flask import Flask, request
+from flask import Flask, request,send_from_directory
 from flask_cors import CORS
 from flask_mail import Mail
 from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1, message_share_v1, message_sendlater_v1
@@ -15,7 +15,7 @@ from src.channels import channels_list_v1, channels_listall_v1, channels_create_
 from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1, message_pin_v1, message_unpin_v1
 from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
-from src.user import user_profile_v1, notifications_get_v1
+from src.user import user_profile_v1, notifications_get_v1, user_profile_uploadphoto_v1
 from src.users import users_all_v1
 from src.message_iter3 import search_v1, message_react_v1, message_unreact_v1
 from src.standup import standup_start_v1, standup_active_v1, standup_send_v1
@@ -452,6 +452,18 @@ def standup_send_wrapper():
         data['token'], data['channel_id'], data['message'])
     save_data()
     return dumps(result)
+
+@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
+def upload_photo():
+    data = request.get_json()
+    result = user_profile_uploadphoto_v1(
+        data['token'], data['img_url'], data['x_start'], data['y_start'], data['x_end'], data['y_end'])
+    save_data()
+    return dumps(result)
+
+@APP.route('/images/<path>')
+def send_js(path):
+    return send_from_directory('../images', path)
 
 
 # NO NEED TO MODIFY BELOW THIS POINT

@@ -8,6 +8,10 @@ from src.auth_helper import generate_new_handle, check_info_syntax, \
     email_reset_code
 from src.token import hash, generate_token, check_valid_token
 from src.global_helper import generate_user_id
+from src import config
+import urllib.request
+from PIL import Image
+import os
 
 
 def auth_login_v1(email, password):
@@ -46,6 +50,8 @@ def auth_register_v1(email, password, name_first, name_last):
 
     # adding all information to dictionary
 
+    img_url = 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Cat.jpeg'
+
     store['users'].append({'auth_user_id': new_id,
                            'name_first': name_first,
                            'name_last': name_last,
@@ -54,7 +60,9 @@ def auth_register_v1(email, password, name_first, name_last):
                            'handle': final_handle,
                            'global_permissions': assign_permissions(),
                            'active': True,
-                           'notifications': []})
+                           'notifications': [],
+                           'profile_img_url' : img_url,})
+
 
     return {
         'auth_user_id': new_id,
