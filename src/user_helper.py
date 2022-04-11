@@ -1,6 +1,8 @@
-from src.data_store import data_store
+import os
+import glob
 import urllib.request
 from PIL import Image
+from src.data_store import data_store
 from src.error import InputError, AccessError
 from src import config
 
@@ -174,29 +176,13 @@ def crop(x1, y1, x2, y2, handle):
 
     return
  
-def new_photo(handle):
+def clear_profile_images():
+    removing_files_images = glob.glob('../images*.jpg')
+    for image in removing_files_images:
+        os.remove(image)
+    
+    removing_files_image = glob.glob('../image*.jpg')
+    for image in removing_files_image:
+        os.remove(image)
 
-    store = data_store.get()
-
-    # Updates users information
-    for user in store['users']:
-        if user['handle'] == handle:
-            user['profile_img_url'] = config.url + f"images/{handle}.jpg"
-
-    # Updates all owners of each channel
-    for channels in store['channels']:
-        for owner_member in channels['owner_members']:
-            if owner_member['handle_str'] == handle:
-                user['profile_img_url'] = config.url + f"images/{handle}.jpg"
-
-        for all_member in channels['all_members']:
-            if all_member['handle_str'] == handle:
-                user['profile_img_url'] = config.url +  f"images/{handle}.jpg"
-
-    for dm in store['dms']:
-        for all_member in dm['all_members']:
-            if all_member['handle_str'] == handle:
-                user['profile_img_url'] = config.url + f"images/{handle}.jpg"
-
-    return
-
+    return 

@@ -16,6 +16,7 @@ def clear_v1():
         'dms': [],
         'session_list': [],
     }
+    # clear_profile_images()
 
     data_store.set(store)
 

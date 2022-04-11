@@ -1,8 +1,9 @@
 from src.token import check_valid_token
 from src.global_helper import check_valid_user
 from src.users_helpers import return_profile
-from src.user_helper import return_notifications, return_user_handle, imgDown, crop, check_dimensions, check_image_type, check_url_status, new_photo
-
+from src.user_helper import return_notifications, return_user_handle, imgDown, crop, check_dimensions, check_image_type, check_url_status
+import urllib.request
+from PIL import Image
 
 def user_profile_v1(token, u_id):
     '''
@@ -54,5 +55,4 @@ def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
 
     crop(x_start, y_start, x_end, y_end, handle)
 
-    new_photo(handle)
     return {}
