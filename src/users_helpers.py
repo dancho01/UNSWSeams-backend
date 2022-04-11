@@ -37,5 +37,6 @@ def return_profile(u_id):
                 'email': user['email'],
                 'name_last': user['name_last'],
                 'name_first': user['name_first'],
-                'handle_str': user['handle']
+                'handle_str': user['handle'],
+                'profile_img_url' : user['profile_img_url'],
             }

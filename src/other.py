@@ -1,6 +1,8 @@
 from src.data_store import data_store
 from src.global_helper import reset_globals
 from src.channel_helper import time_now
+from src.user_helper import clear_profile_images
+
 
 def clear_v1():
     '''
@@ -43,6 +45,7 @@ def clear_v1():
         },
         'reset_codes':[]
     }
+    clear_profile_images()
 
     data_store.set(store)
 

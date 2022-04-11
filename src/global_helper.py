@@ -132,7 +132,8 @@ def return_member_information(u_id, store):
                 'email': user['email'],
                 'name_first': user['name_first'],
                 'name_last': user['name_last'],
-                'handle_str': user['handle']
+                'handle_str': user['handle'],
+                'profile_img_url' : user['profile_img_url'],
             }
 
 def decrement_messages_sent(auth_user_id):
