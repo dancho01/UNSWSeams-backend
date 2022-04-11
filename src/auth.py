@@ -100,7 +100,6 @@ def auth_password_reset(code, new_pass):
     '''
 
     store = data_store.get()
-    found = 0
 
     # iterating through a list of dicts. these dicts contain the reset code and the user_id the code belongs to
     for codes in store['reset_codes']:
@@ -118,5 +117,4 @@ def auth_password_reset(code, new_pass):
                 raise InputError(description="Invalid Password")
     raise InputError(description="Invalid Reset Code")
 
-    return
 
