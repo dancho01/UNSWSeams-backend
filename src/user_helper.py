@@ -153,9 +153,9 @@ def check_url_status(img_url):
         if urllib.request.urlopen(img_url).getcode() != 200:
             raise InputError(
                 description='URL not working!')
-    except: 
+    except Exception as e : 
         raise InputError(
-                description='URL not working!')
+                description='URL not working!') from e
     return
 
 def imgDown(img_url, handle):
