@@ -15,6 +15,7 @@ def clear_v1():
         'channels': [],
         'dms': [],
         'session_list': [],
+        'reset_codes':[]
     }
 
     data_store.set(store)
