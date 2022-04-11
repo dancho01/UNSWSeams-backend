@@ -78,6 +78,21 @@ def create_channel_invite_notification(channel_id, dm_id, inviter_id, invited_id
     attach_notification(invited_handle, notification)
 
 
+def create_message_react_notification(channel_id, dm_id, reacter_id, recipient_id):
+    reacter_handle = return_user_handle(reacter_id)
+    recipient_handle = return_user_handle(recipient_id)
+    channel_dm_name = return_channel_or_dm_name(channel_id, dm_id)
+        
+    notification_message = "{0} reacted to your message in {1}".format(reacter_handle, channel_dm_name)
+        
+    notification = {
+        'channel_id': channel_id,
+        'dm_id': dm_id, 
+        'notification_message': notification_message
+    }   
+    attach_notification(recipient_handle, notification)
+        
+
 def attach_notification(user_handle, notification):
     store = data_store.get()
     for user in store['users']:

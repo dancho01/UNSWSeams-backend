@@ -50,6 +50,138 @@ def test_search_query_success(create_first_user):
 
     assert search_response.status_code == 200
     
+''' tests for message/react/v1 '''
+def test_react_invalid_message_id(create_first_user):
+
+    user1 = create_first_user
     
+    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel = channel_data.json()
+
+    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    message = message_data.json()
+      
+    resp = requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'] + 1, 'react_id': 1})
+    
+    assert resp.status_code == 400
+
+def test_react_invalid_react_id(create_first_user):
+    
+    user1 = create_first_user
+    
+    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel = channel_data.json()
+
+    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    message = message_data.json() 
+    
+    resp = requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 2})       
+
+    assert resp.status_code == 400
+    
+def test_react_already_reacted(create_first_user):
+
+    user1 = create_first_user
+
+    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel = channel_data.json()
+
+    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    message = message_data.json()    
+    
+    requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})  
+
+    resp = requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})   
+
+    assert resp.status_code == 400
+    
+def test_react_success(create_first_user):
+    
+    user1 = create_first_user
+
+    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel = channel_data.json()
+
+    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    message = message_data.json()    
+    
+    resp = requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})
+        
+    assert resp.status_code == 200
+    
+    
+''' tests for message/unreact/v1 '''
+def test_unreact_invalid_message_id(create_first_user):
+    user1 = create_first_user
+    
+    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel = channel_data.json()
+
+    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    message = message_data.json()
+      
+    resp = requests.post(config.url + 'message/unreact/v1', json = {'token': user1['token'], 'message_id': message['message_id'] + 1, 'react_id': 1})
+    
+    assert resp.status_code == 400
+
+
+def test_unreact_invalid_react_id(create_first_user):
+    user1 = create_first_user
+    
+    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel = channel_data.json()
+
+    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    message = message_data.json() 
+    
+    resp = requests.post(config.url + 'message/unreact/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 2})       
+
+    assert resp.status_code == 400   
+    
+def test_unreact_never_reacted(create_first_user):
+    user1 = create_first_user
+
+    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel = channel_data.json()
+
+    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    message = message_data.json()    
+    
+    resp = requests.post(config.url + 'message/unreact/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})   
+
+    assert resp.status_code == 400   
+
+    
+def test_unreact_success(create_first_user):
+    user1 = create_first_user
+
+    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel = channel_data.json()
+
+    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    message = message_data.json()    
+    
+    requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})  
+
+    resp = requests.post(config.url + 'message/unreact/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})   
+
+    assert resp.status_code == 200
+  
     
     

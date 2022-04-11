@@ -16,6 +16,7 @@ def clear_v1():
         'channels': [],
         'dms': [],
         'session_list': [],
+        'reset_codes':[]
     }
     clear_profile_images()
 

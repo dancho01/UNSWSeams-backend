@@ -10,6 +10,7 @@ from datetime import datetime
 import threading
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification, \
     return_channel_or_dm_name
+from src.iter3_message_helper import is_user_reacted
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -109,7 +110,9 @@ def channel_messages_v1(token, channel_id, start):
         end_return = message_length
         end = -1
 
-    return_messages = get_messages(start, end_return, auth_list_index)
+    list_messages = get_messages(start, end_return, auth_list_index)
+    
+    return_messages = is_user_reacted(list_messages, user_info['u_id'])
 
     return {'messages': return_messages,
             'start': start,

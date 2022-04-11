@@ -52,7 +52,7 @@ def time_now():
     '''
     returns the current time stamp
     '''
-    return datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp()
+    return int(datetime.now(timezone.utc).replace(tzinfo=timezone.utc).timestamp())
 
 
 def get_messages(start, end_return, channel_index):
@@ -110,6 +110,7 @@ def create_message(new_message_id, user_id, message):
         'u_id': user_id,
         'message': message,
         'time_sent': time_now(),
+        'reacts': [],
         'is_pinned': False
     }
 

@@ -3,20 +3,21 @@ import signal
 from json import dumps
 from flask import Flask, request,send_from_directory
 from flask_cors import CORS
+from flask_mail import Mail
 from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1, message_share_v1, message_sendlater_v1
 from src import config
 from src.other import clear_v1
 from src.data_store import data_store
 from src.persistence import save_data, load_data
 from src.dm import dm_create_v1, dm_list_v1, dm_remove_v1, dm_details_v1, dm_leave_v1, dm_messages_v1, message_senddm_v1
-from src.auth import auth_register_v1, auth_login_v1, auth_logout
+from src.auth import auth_register_v1, auth_login_v1, auth_logout, auth_password_request, auth_password_reset
 from src.channels import channels_list_v1, channels_listall_v1, channels_create_v1
 from src.channel import message_send_v1, messages_edit_v1, messages_remove_v1, channel_messages_v1, channel_details_v1, channel_leave_v1, message_pin_v1, message_unpin_v1
 from src.set import set_name_v1, set_email_v1, set_handle_v1
 from src.admin import admin_user_remove_v1, admin_userpermission_change_v1
 from src.user import user_profile_v1, notifications_get_v1, user_profile_uploadphoto_v1
 from src.users import users_all_v1
-from src.message_iter3 import search_v1
+from src.message_iter3 import search_v1, message_react_v1, message_unreact_v1
 from src.standup import standup_start_v1, standup_active_v1, standup_send_v1
 
 
@@ -45,6 +46,14 @@ APP.register_error_handler(Exception, defaultHandler)
 
 # NO NEED TO MODIFY ABOVE THIS POINT, EXCEPT IMPORTS
 
+APP.config['MAIL_SERVER']='smtp.gmail.com'
+APP.config['MAIL_PORT'] = 465
+APP.config['MAIL_USERNAME'] = 'h09belephant@gmail.com'
+APP.config['MAIL_PASSWORD'] = '12345!@#$%'
+APP.config['MAIL_USE_TLS'] = False
+APP.config['MAIL_USE_SSL'] = True
+mail = Mail(APP)
+
 
 @APP.route("/auth/login/v2", methods=['POST'])
 def auth_login_v2():
@@ -69,6 +78,23 @@ def auth_register_wrapper():
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
     })
+    
+@APP.route("/auth/passwordreset/request/v1", methods=['POST'])
+def auth_password_request_v1():
+    data = request.get_json()
+    auth_password_request(mail, data['email']) # passes through the mail object instead of creating a global variable
+    save_data()         
+
+    return dumps({})
+
+@APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
+def auth_password_reset_v1():
+    data = request.get_json()
+    auth_password_reset(data['reset_code'], data['new_password'])
+    save_data() # por que?       
+
+    return dumps({})
+
 
 
 @APP.route("/dm/create/v1", methods=['POST'])
@@ -368,6 +394,20 @@ def notifications_get_wrapper():
     token = request.args.get('token')
     result = notifications_get_v1(token)
     return dumps(result)
+    
+@APP.route("/message/react/v1", methods=['POST'])    
+def message_react_wrapper():
+    data = request.get_json()
+    result = message_react_v1(data['token'], data['message_id'], data['react_id'])
+    save_data()
+    return dumps(result)
+    
+@APP.route("/message/unreact/v1", methods=['POST'])    
+def message_unreact_wrapper():
+    data = request.get_json()
+    result = message_unreact_v1(data['token'], data['message_id'], data['react_id'])
+    save_data()
+    return dumps(result)   
 
 @APP.route("/message/pin/v1", methods=['POST'])
 def message_pin():

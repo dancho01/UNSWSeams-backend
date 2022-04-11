@@ -1,10 +1,12 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.token import check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, generate_new_dm_id,\
+from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm,\
     generate_DM_name, calculate_time_stamp
-from src.global_helper import generate_new_message_id, return_member_information, check_valid_user
+from src.global_helper import generate_new_message_id, return_member_information, check_valid_user, generate_new_dm_id
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
+from src.iter3_message_helper import is_user_reacted
+from src.channel_helper import check_message, create_message
 
 
 def dm_create_v1(token, u_ids):
@@ -77,8 +79,7 @@ def dm_list_v1(token):
     Return:
         Returns a list of DMs with the id and name of the name included     
     '''
-    user_info = check_valid_token(token)
-    auth_user_id = user_info['u_id']
+    auth_user_id = check_valid_token(token)['u_id']
 
     list_dms = []
     for dm in store['dms']:
@@ -108,13 +109,8 @@ def dm_remove_v1(token, dm_id):
 
     store = data_store.get()
 
-    user_info = check_valid_token(token)
-    auth_user_id = user_info['u_id']
-
-    if check_valid_dm(dm_id, store) == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = check_valid_dm(dm_id, store)[1]
+    auth_user_id = check_valid_token(token)['u_id']
+    dm_index = check_valid_dm(dm_id, store)
 
     auth_user_member = return_member_information(auth_user_id, store)
 
@@ -145,17 +141,9 @@ def dm_details_v1(token, dm_id):
     '''
     store = data_store.get()
 
-    # checks if token is valid, verifying user
-    user_info = check_valid_token(token)
-    auth_user_id = user_info['u_id']
-
-    if check_valid_dm(dm_id, store) == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = check_valid_dm(dm_id, store)[1]
-
-    if check_user_member_dm(auth_user_id, store, dm_index) == False:
-        raise AccessError(description='authorised user is not member of DM')
+    auth_user_id = check_valid_token(token)['u_id']
+    dm_index = check_valid_dm(dm_id, store)
+    check_user_member_dm(auth_user_id, store, dm_index)
 
     dm_details = store['dms'][dm_index]
 
@@ -181,16 +169,9 @@ def dm_leave_v1(token, dm_id):
     '''
     store = data_store.get()
 
-    user_info = check_valid_token(token)
-    auth_user_id = user_info['u_id']
-
-    if check_valid_dm(dm_id, store) == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = check_valid_dm(dm_id, store)[1]
-
-    if check_user_member_dm(auth_user_id, store, dm_index) == False:
-        raise AccessError(description='authorised user is not member of DM')
+    auth_user_id = check_valid_token(token)['u_id']
+    dm_index = check_valid_dm(dm_id, store)
+    check_user_member_dm(auth_user_id, store, dm_index)
 
     store['dms'][dm_index]['all_members'] = list(filter(
         lambda i: i['u_id'] != auth_user_id, store['dms'][dm_index]['all_members']))
@@ -218,16 +199,9 @@ def dm_messages_v1(token, dm_id, start):
     '''
     store = data_store.get()
 
-    user_info = check_valid_token(token)
-    auth_user_id = user_info['u_id']
-
-    if check_valid_dm(dm_id, store) == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = check_valid_dm(dm_id, store)[1]
-
-    if check_user_member_dm(auth_user_id, store, dm_index) == False:
-        raise AccessError(description='authorised user is not member of DM')
+    auth_user_id = check_valid_token(token)['u_id']
+    dm_index = check_valid_dm(dm_id, store)
+    check_user_member_dm(auth_user_id, store, dm_index)
 
     message_length = len(store['dms'][dm_index]['messages'])
 
@@ -249,8 +223,10 @@ def dm_messages_v1(token, dm_id, start):
 
     return_messages.reverse()
 
+    list_messages = is_user_reacted(return_messages, auth_user_id)
+
     return {
-        'messages': return_messages,
+        'messages': list_messages,
         'start': start,
         'end': end,
     }
@@ -273,32 +249,16 @@ def message_senddm_v1(token, dm_id, message):
     '''
     store = data_store.get()
 
-    user_info = check_valid_token(token)
-    auth_user_id = user_info['u_id']
-
-    if check_valid_dm(dm_id, store) == False:
-        raise InputError(description='dm_id does not refer to a valid DM')
-
-    dm_index = check_valid_dm(dm_id, store)[1]
-
-    if check_user_member_dm(auth_user_id, store, dm_index) == False:
-        raise AccessError(description='authorised user is not member of DM')
-
-    if len(message) < 1 or len(message) > 1000:
-        raise InputError(
-            description='Message must be between 1 and 1000 characters inclusive')
+    auth_user_id = check_valid_token(token)['u_id']
+    dm_index = check_valid_dm(dm_id, store)
+    check_user_member_dm(auth_user_id, store, dm_index)
+    check_message(message)
 
     check_for_tags_and_send_notifications(message, auth_user_id, -1, dm_id)
 
     new_message_id = generate_new_message_id()
 
-    new_message = {
-        'message_id': new_message_id,
-        'u_id': auth_user_id,
-        'message': message,
-        'time_sent': calculate_time_stamp(),
-        'is_pinned' : False
-    }
+    new_message = create_message(new_message_id, auth_user_id, message)
 
     store['dms'][dm_index]['messages'].append(new_message)
 
