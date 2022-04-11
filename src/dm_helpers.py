@@ -1,21 +1,6 @@
 from datetime import timezone
 import datetime
 
-DM_ID_COUNTER = 0
-
-
-def generate_new_dm_id():
-    '''
-    Generates a new dm_id that is unique and sequentially increases by 1
-    Args:
-        None
-    Return:
-        Returns the next dm_id
-    '''
-    global DM_ID_COUNTER
-    DM_ID_COUNTER += 1
-    return DM_ID_COUNTER
-
 
 def check_for_duplicates_uids(u_ids):
     '''
