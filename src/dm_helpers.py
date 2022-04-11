@@ -1,5 +1,6 @@
 from datetime import timezone
 import datetime
+from src.error import InputError, AccessError
 
 
 def check_for_duplicates_uids(u_ids):
@@ -72,8 +73,8 @@ def check_valid_dm(dm_id, store):
 
     for dm_index in range(len(store['dms'])):
         if store['dms'][dm_index]['dm_id'] == dm_id:
-            return True, dm_index
-    return False
+            return dm_index
+    raise InputError(description='dm_id does not refer to a valid DM')
 
 
 def check_user_member_dm(u_id, store, dm_index):
@@ -87,11 +88,12 @@ def check_user_member_dm(u_id, store, dm_index):
         - Returns False if user is not a member of the DM
         - Returns True if user is a member of the DM
     '''
-
+    found = False
     for member in store['dms'][dm_index]['all_members']:
         if u_id == member['u_id']:
-            return True
-    return False
+            found = True
+    if found != True:
+        raise AccessError(description='authorised user is not member of DM')
 
 
 def calculate_time_stamp():
