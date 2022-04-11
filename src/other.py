@@ -1,5 +1,6 @@
 from src.data_store import data_store
 from src.global_helper import reset_globals
+from src.user_helper import clear_profile_images
 
 
 def clear_v1():
@@ -16,7 +17,7 @@ def clear_v1():
         'dms': [],
         'session_list': [],
     }
-    # clear_profile_images()
+    clear_profile_images()
 
     data_store.set(store)
 

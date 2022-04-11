@@ -25,4 +25,4 @@ def load_data():
     except Exception:
         # if file cannot be opened datastructure is returned to original state
         data_store.__init__
-        # clear_profile_images()
+        clear_profile_images()
