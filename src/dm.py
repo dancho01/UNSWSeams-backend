@@ -1,9 +1,9 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.token import check_valid_token
-from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, generate_new_dm_id,\
+from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm,\
     generate_DM_name, calculate_time_stamp
-from src.global_helper import generate_new_message_id, return_member_information, check_valid_user
+from src.global_helper import generate_new_message_id, return_member_information, check_valid_user, generate_new_dm_id
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
 from src.iter3_message_helper import is_user_reacted
 from src.channel_helper import check_message, create_message
@@ -172,7 +172,7 @@ def dm_leave_v1(token, dm_id):
     auth_user_id = check_valid_token(token)['u_id']
     dm_index = check_valid_dm(dm_id, store)
     check_user_member_dm(auth_user_id, store, dm_index)
-   
+
     store['dms'][dm_index]['all_members'] = list(filter(
         lambda i: i['u_id'] != auth_user_id, store['dms'][dm_index]['all_members']))
 
@@ -202,7 +202,7 @@ def dm_messages_v1(token, dm_id, start):
     auth_user_id = check_valid_token(token)['u_id']
     dm_index = check_valid_dm(dm_id, store)
     check_user_member_dm(auth_user_id, store, dm_index)
-     
+
     message_length = len(store['dms'][dm_index]['messages'])
 
     if start > message_length:
@@ -222,7 +222,7 @@ def dm_messages_v1(token, dm_id, start):
             store['dms'][dm_index]['messages'][i])
 
     return_messages.reverse()
-    
+
     list_messages = is_user_reacted(return_messages, auth_user_id)
 
     return {
@@ -251,13 +251,13 @@ def message_senddm_v1(token, dm_id, message):
 
     auth_user_id = check_valid_token(token)['u_id']
     dm_index = check_valid_dm(dm_id, store)
-    check_user_member_dm(auth_user_id, store, dm_index) 
+    check_user_member_dm(auth_user_id, store, dm_index)
     check_message(message)
 
     check_for_tags_and_send_notifications(message, auth_user_id, -1, dm_id)
 
     new_message_id = generate_new_message_id()
-    
+
     new_message = create_message(new_message_id, auth_user_id, message)
 
     store['dms'][dm_index]['messages'].append(new_message)
