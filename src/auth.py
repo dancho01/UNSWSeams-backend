@@ -8,6 +8,7 @@ from src.global_helper import generate_user_id
 from src import config
 import urllib.request
 from PIL import Image
+import os
 
 
 def auth_login_v1(email, password):
@@ -45,8 +46,8 @@ def auth_register_v1(email, password, name_first, name_last):
     new_id = generate_user_id()
 
     # adding all information to dictionary
+
     img_url = 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Cat.jpeg'
-    urllib.request.urlretrieve(img_url, f"images/{final_handle}.jpg")
 
     store['users'].append({'auth_user_id': new_id,
                            'name_first': name_first,
@@ -57,7 +58,7 @@ def auth_register_v1(email, password, name_first, name_last):
                            'global_permissions': assign_permissions(),
                            'active': True,
                            'notifications': [],
-                           'profile_img_url' : config.url + f"images/{final_handle}.jpg",})
+                           'profile_img_url' : img_url,})
 
 
     return {

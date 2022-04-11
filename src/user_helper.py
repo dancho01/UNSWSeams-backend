@@ -134,59 +134,79 @@ def user_in_channel(user_handle, channel_id, dm_id):
     return False
 
 def check_url_status(img_url):
-    # try: 
-    #     if urllib.request.urlopen(img_url).getcode() != 200:
-    #         raise InputError(
-    #             description='URL not working!')
-    # except: 
-    #     raise InputError(
-    #             description='URL not working!')
+    try: 
+        if urllib.request.urlopen(img_url).getcode() != 200:
+            raise InputError(
+                description='URL not working!')
+    except: 
+        raise InputError(
+                description='URL not working!')
     return
 
 def imgDown(img_url, handle):
 
-    # urllib.request.urlretrieve(img_url, f"image/{handle}.jpg")
+    urllib.request.urlretrieve(img_url, f"image/{handle}.jpg")
 
     return 
 
 def check_dimensions(x1, y1, x2, y2, handle):
-    # imageObject = Image.open(f"image/{handle}.jpg")
-    # width, height = imageObject.size
-    # if x1 < 0 or y1 < 0 or x2 > width or y2 > height:
-    #     raise InputError(
-    #         description='Dimensions not in bounds')
+    imageObject = Image.open(f"image/{handle}.jpg")
+    width, height = imageObject.size
+    if x1 < 0 or y1 < 0 or x2 > width or y2 > height:
+        raise InputError(
+            description='Dimensions not in bounds')
     
-    # if x1 >= x2 or y1 >= y2:
-    #     raise InputError(
-    #         description='x1, y1 must be smaller than x2, y2')
+    if x1 >= x2 or y1 >= y2:
+        raise InputError(
+            description='x1, y1 must be smaller than x2, y2')
 
     return 
 
 def check_image_type(handle):
-    # imageObject = Image.open(f"image/{handle}.jpg")
-    # if imageObject.format != 'JPEG':
-    #     raise InputError(
-    #         description=f'Image must be JPG, should not be {imageObject.format}')
+    imageObject = Image.open(f"image/{handle}.jpg")
+    if imageObject.format != 'JPEG':
+        raise InputError(
+            description=f'Image must be JPG, should not be {imageObject.format}')
     return 
 
 def crop(x1, y1, x2, y2, handle):
-    # imageObject = Image.open(f"image/{handle}.jpg")
-    # cropped = imageObject.crop((x1, y1, x2, y2))
-    # cropped.save(f"images/{handle}.jpg")
+    imageObject = Image.open(f"image/{handle}.jpg")
+    cropped = imageObject.crop((x1, y1, x2, y2))
+    cropped.save(f"images/{handle}.jpg")
 
     return
  
-def clear_profile_images():
-    # removing_files_images = glob.glob('/images/*.jpg')
-    # for image in removing_files_images:
-    #     os.remove(image)
-    
-    # removing_files_image = glob.glob('/image/*.jpg')
-    # for image in removing_files_image:
-    #     os.remove(image)
-    # directory = os.getcwd()
+def newphoto(handle):
 
-    # print(directory)
+    store = data_store.get()
+
+    # Updates users information
+    for user in store['users']:
+        if user['handle'] == handle:
+            user['profile_img_url'] = config.url + f"images/{handle}.jpg"
+
+    # Updates all owners of each channel
+    for channels in store['channels']:
+        for owner_member in channels['owner_members']:
+            if owner_member['handle_str'] == handle:
+                owner_member['profile_img_url'] = config.url + f"images/{handle}.jpg"
+    # Updates owner members
+    for channels in store['channels']:
+        for all_member in channels['all_members']:
+            if all_member['handle_str'] == handle:
+                all_member['profile_img_url'] = config.url + f"images/{handle}.jpg"
+
+    for dm in store['dms']:
+        dm['owner']['profile_img_url'] = config.url + f"images/{handle}.jpg"
+        
+        for all_member in dm['all_members']:
+            if all_member['handle_str'] == handle:
+                all_member['profile_img_url'] = config.url + f"images/{handle}.jpg"
+
+    return
+
+def clear_profile_images():
+
     directory = os.getcwd()
     for file in os.listdir(f'{directory}/images'):
         os.remove(f'{directory}/images/{file}')
