@@ -52,7 +52,7 @@ def users_stats_v1(token):
 
     '''
     store = data_store.get()
-    auth_user_id = check_valid_token(token)['u_id']
+    check_valid_token(token)['u_id']
     utilization_rate = 0.0  # = num_users_who_have_joined_at_least_one_channel_or_dm / num_users
 
     num_users_who_have_joined_at_least_one_channel_or_dm = 0
