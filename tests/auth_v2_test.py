@@ -236,7 +236,7 @@ def test_invalid_resetcode():
     assert response.status_code == 400
 
 
-def test_invalid_password():
+def test_invalid_password_reset():
     '''
         docstring
     '''
