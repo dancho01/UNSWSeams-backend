@@ -3,10 +3,10 @@ from src.data_store import data_store
 from src.error import InputError
 from src.token import hash, generate_token
 from src.auth_helper import generate_new_handle, check_info_syntax, \
-                            check_login, assign_permissions, \
-                            check_email_exist, generate_reset_code, \
-                            check_logged_in, set_user_inactive, \
-                            email_reset_code
+    check_login, assign_permissions, \
+    check_email_exist, generate_reset_code, \
+    check_logged_in, set_user_inactive, \
+    email_reset_code
 from src.token import hash, generate_token, check_valid_token
 from src.global_helper import generate_user_id
 
@@ -81,22 +81,20 @@ def auth_password_request(mail, email):
         takes in an email, runs through some validation checks and
         sends an email to user with the reset code
     '''
-    
+
     uid = check_email_exist(email)
 
     if uid == "":
         return {}
-    
+
     code = generate_reset_code(uid)
-    
+
     if check_logged_in(uid):
         set_user_inactive(uid)
 
     email_reset_code(email, code, mail)
-    
+
     return {}
-
-
 
 
 def auth_password_reset(code, new_pass):
@@ -107,20 +105,21 @@ def auth_password_reset(code, new_pass):
 
     store = data_store.get()
     found = 0
-    
 
-    for codes in store['reset_codes']: # iterating through a list of dicts. these dicts contain the reset code and the user_id the code belongs to
-        if codes['code'] == int(code): # checks if user inputted code is valid
+    # iterating through a list of dicts. these dicts contain the reset code and the user_id the code belongs to
+    for codes in store['reset_codes']:
+        if codes['code'] == int(code):  # checks if user inputted code is valid
             print("in")
-            if len(new_pass) >= 6: # checking if password is valid
+            if len(new_pass) >= 6:  # checking if password is valid
                 for user in store['users']:
-                    if user['auth_user_id'] == codes['uid']: # finds the user who the reset code belongs to
-                       user['password'] = hash(new_pass) # sets this users password
-                del code # removes the reset_code and uid dict from reset_codes list
+                    # finds the user who the reset code belongs to
+                    if user['auth_user_id'] == codes['uid']:
+                        # sets this users password
+                        user['password'] = hash(new_pass)
+                del code  # removes the reset_code and uid dict from reset_codes list
                 return
             else:
                 raise InputError(description="Invalid Password")
     raise InputError(description="Invalid Reset Code")
 
     return
-
