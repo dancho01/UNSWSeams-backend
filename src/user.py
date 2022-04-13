@@ -39,6 +39,7 @@ def user_stats_v1(token):
             numerator = sum([user['stats']["total_channels_joined"], user['stats']["total_dms_joined"], user['stats']["total_messages_sent"]])
             denominator = sum([store['stats']['total_num_channels'], store['stats']['total_num_dms'], store['stats']['total_num_messages']])
             involvement_rate = numerator / denominator
+            involvement_rate = min(1, involvement_rate)
             user['stats']['user_stats']['involvement_rate'] = involvement_rate
             return {'user_stats': user['stats']['user_stats']}
 

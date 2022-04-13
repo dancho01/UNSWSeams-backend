@@ -151,7 +151,7 @@ def decrement_total_messages():
     store = data_store.get()
     store['stats']['total_num_messages'] -= 1
     total_num_messages = store['stats']['total_num_messages']
-    store['stats']['workspace_stats']['channels_exist'].append({
+    store['stats']['workspace_stats']['messages_exist'].append({
         'num_messages_exist': total_num_messages,
         'time_stamp': time_now()
     })

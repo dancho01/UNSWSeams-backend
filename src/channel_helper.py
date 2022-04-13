@@ -2,7 +2,7 @@ from src.error import InputError, AccessError
 from datetime import datetime, timezone
 from src.global_helper import decrement_messages_sent, decrement_total_messages
 from src.data_store import data_store
-
+from src.persistence import save_data, load_data
 
 def remove_message(message_id):
     '''
@@ -228,7 +228,9 @@ def increment_total_messages():
     store = data_store.get()
     store['stats']['total_num_messages'] += 1
     total_num_messages = store['stats']['total_num_messages']
-    store['stats']['workspace_stats']['channels_exist'].append({
+    store['stats']['workspace_stats']['messages_exist'].append({
         'num_messages_exist': total_num_messages,
         'time_stamp': time_now()
     })
+
+    save_data()
