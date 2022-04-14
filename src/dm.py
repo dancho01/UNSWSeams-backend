@@ -125,14 +125,14 @@ def dm_remove_v1(token, dm_id):
     if store['dms'][dm_index]['owner']['u_id'] != auth_user_id:
         raise AccessError(description='authorised user is not the DM creator')
 
-    store['dms'] = list(filter(lambda i: i['dm_id'] != dm_id, store['dms']))
-
     decrement_total_num_dms()
+
     for dm in store['dms']:
         if dm['dm_id'] == dm_id:
             for member in dm['all_members']:
                 decrement_user_dms_joined(member['u_id'])
-            decrement_user_dms_joined(dm['owner']['u_id'])
+
+    store['dms'] = list(filter(lambda i: i['dm_id'] != dm_id, store['dms']))
 
     data_store.set(store)
 

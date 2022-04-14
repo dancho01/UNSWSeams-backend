@@ -202,6 +202,7 @@ def test_user_stats_base_case():
     assert type(response_data['user_stats']['channels_joined'][0]['time_stamp']) == int
     assert response_data['user_stats']['messages_sent'][0]['num_messages_sent'] == 0
     assert response_data['user_stats']['dms_joined'][0]['num_dms_joined'] == 0
+    assert response_data['user_stats']['involvement_rate'] == 0.0
 
 
 # test number of messages after removing messages
@@ -236,9 +237,119 @@ def test_user_stats_total_num_messages_after_removing_messages_in_channel():
     assert response_data['user_stats']['channels_joined'][2]['num_channels_joined'] == 2
     assert type(response_data['user_stats']['channels_joined'][2]['time_stamp']) == int
     assert response_data['user_stats']['messages_sent'][1]['num_messages_sent'] == 1
-    assert response_data['user_stats']['messages_sent'][2]['num_messages_sent'] == 0
     
-def test_user_stats_dm():
+def test_user_stats_channel_leave():
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'Alice', 'name_last': 'Yu'})
+
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+    channel_1_data = channel_1.json()                              
+    channel_2 = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
+
+    channel_2_data = channel_2.json()
+
+    requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                          'u_id': user2_data['auth_user_id']})
+    message_send1_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
+                                                                           'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+    message_send1_data = message_send1_response.json()
+    message_send2_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
+                                                                           'channel_id': channel_2_data['channel_id'], 'message': 'This is a second message'})
+    message_send2_data = message_send2_response.json()
+
+    requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user2_data['token'], 'message_id': message_send1_data['message_id']})
+
+    channel_leave = requests.post(config.url + 'channel/leave/v1', json={
+                             'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+
+    assert channel_leave.status_code == 200
+
+    response = requests.get(config.url + 'user/stats/v1', params={'token': user2_data['token']})
+    response_data = response.json()
+
+    assert response.status_code == 200
+    assert response_data['user_stats']['channels_joined'][0]['num_channels_joined'] == 0
+    assert response_data['user_stats']['channels_joined'][1]['num_channels_joined'] == 1 
+    assert response_data['user_stats']['channels_joined'][2]['num_channels_joined'] == 2
+    assert response_data['user_stats']['channels_joined'][3]['num_channels_joined'] == 1
+    assert response_data['user_stats']['dms_joined'][0]['num_dms_joined'] == 0
+    assert type(response_data['user_stats']['channels_joined'][2]['time_stamp']) == int
+    assert response_data['user_stats']['messages_sent'][0]['num_messages_sent'] == 0
+    assert response_data['user_stats']['messages_sent'][1]['num_messages_sent'] == 1
+    assert response_data['user_stats']['messages_sent'][2]['num_messages_sent'] == 2
+    assert len(response_data['user_stats']['messages_sent']) == 3
+    assert response_data['user_stats']['involvement_rate'] == 1.0
+
+def test_involvement_rate_above_1():
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'Alice', 'name_last': 'Yu'})
+
+    user2_data = user2.json()
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+    channel_1_data = channel_1.json()                              
+    channel_2 = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
+
+    channel_2_data = channel_2.json()
+
+    requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                          'u_id': user2_data['auth_user_id']})
+    message_send1_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
+                                                                           'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+    message_send1_data = message_send1_response.json()
+    message_send2_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
+                                                                           'channel_id': channel_2_data['channel_id'], 'message': 'This is a second message'})
+    message_send2_data = message_send2_response.json()
+
+    requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user2_data['token'], 'message_id': message_send1_data['message_id']})
+
+    channel_leave = requests.post(config.url + 'channel/leave/v1', json={
+                             'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
+
+    assert channel_leave.status_code == 200
+
+    requests.post(config.url + 'channel/invite/v2', json={'token': user1_data['token'], 'channel_id': channel_1_data['channel_id'],
+                                                          'u_id': user2_data['auth_user_id']})
+
+    response = requests.get(config.url + 'user/stats/v1', params={'token': user2_data['token']})
+    response_data = response.json()
+
+    assert response.status_code == 200
+    assert response_data['user_stats']['channels_joined'][0]['num_channels_joined'] == 0
+    assert response_data['user_stats']['channels_joined'][1]['num_channels_joined'] == 1 
+    assert response_data['user_stats']['channels_joined'][2]['num_channels_joined'] == 2
+    assert response_data['user_stats']['channels_joined'][3]['num_channels_joined'] == 1
+    assert response_data['user_stats']['channels_joined'][4]['num_channels_joined'] == 2
+    assert len(response_data['user_stats']['channels_joined']) == 5
+    assert response_data['user_stats']['dms_joined'][0]['num_dms_joined'] == 0
+    assert type(response_data['user_stats']['channels_joined'][2]['time_stamp']) == int
+    assert response_data['user_stats']['messages_sent'][0]['num_messages_sent'] == 0
+    assert response_data['user_stats']['messages_sent'][1]['num_messages_sent'] == 1
+    assert response_data['user_stats']['messages_sent'][2]['num_messages_sent'] == 2
+    assert len(response_data['user_stats']['messages_sent']) == 3
+    assert response_data['user_stats']['involvement_rate'] == 1.0
+
+    
+
+def test_user_stats_dm_leave():
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -247,7 +358,7 @@ def test_user_stats_dm():
     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
                                                                  'password': 'password', 'name_first': 'Alice', 'name_last': 'Yu'})
 
-    user2_data = user1.json()
+    user2_data = user2.json()
     
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
     assert dm_response.status_code == 200
@@ -261,6 +372,7 @@ def test_user_stats_dm():
     assert msg_rmv.status_code == 200
 
     dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
+    assert dm_leave.status_code == 200
 
     stats_response = requests.get(config.url + 'user/stats/v1', params={'token': user1_data['token']})
     stats_response_data = stats_response.json()
@@ -268,8 +380,109 @@ def test_user_stats_dm():
     assert stats_response_data['user_stats']['messages_sent'][1]['num_messages_sent'] == 1
     assert stats_response_data['user_stats']['dms_joined'][0]['num_dms_joined'] == 0
     assert stats_response_data['user_stats']['dms_joined'][1]['num_dms_joined'] == 1 
-    assert dm_leave.status_code == 200 
     assert stats_response_data['user_stats']['dms_joined'][2]['num_dms_joined'] == 0
+
+def test_user_stats_dm_remove():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'Alice', 'name_last': 'Yu'})
+
+    user2_data = user2.json()
+    
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    assert dm_response.status_code == 200
+    dm_data = dm_response.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a message'})
+    message_data = dm_sent.json()    
+    assert dm_sent.status_code == 200
+    msg_rmv = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user1_data['token'], 'message_id': message_data['message_id']})
+    assert msg_rmv.status_code == 200
+
+    dm_remove = requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']})
+    assert dm_remove.status_code == 200 
+
+    stats_response = requests.get(config.url + 'user/stats/v1', params={'token': user1_data['token']})
+    stats_response_data = stats_response.json()
+    assert stats_response.status_code == 200
+    assert stats_response_data['user_stats']['messages_sent'][1]['num_messages_sent'] == 1
+    assert stats_response_data['user_stats']['dms_joined'][0]['num_dms_joined'] == 0
+    assert stats_response_data['user_stats']['dms_joined'][1]['num_dms_joined'] == 1 
+    assert stats_response_data['user_stats']['dms_joined'][2]['num_dms_joined'] == 0
+
+def test_user_stats_dm_leave_then_remove():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'Alice', 'name_last': 'Yu'})
+
+    user2_data = user2.json()
+    
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    assert dm_response.status_code == 200
+    dm_data = dm_response.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a message'})
+    message_data = dm_sent.json()    
+    assert dm_sent.status_code == 200
+    msg_rmv = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user1_data['token'], 'message_id': message_data['message_id']})
+    assert msg_rmv.status_code == 200
+
+    dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
+    assert dm_leave.status_code == 200
+
+    dm_remove = requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
+
+    stats_response = requests.get(config.url + 'user/stats/v1', params={'token': user1_data['token']})
+    stats_response_data = stats_response.json()
+    assert stats_response.status_code == 200
+    assert stats_response_data['user_stats']['messages_sent'][1]['num_messages_sent'] == 1
+    assert stats_response_data['user_stats']['dms_joined'][0]['num_dms_joined'] == 0
+    assert stats_response_data['user_stats']['dms_joined'][1]['num_dms_joined'] == 1 
+    assert stats_response_data['user_stats']['dms_joined'][2]['num_dms_joined'] == 0
+
+def test_user_stats_second_user():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'Alice', 'name_last': 'Yu'})
+
+    user2_data = user2.json()
+    
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    assert dm_response.status_code == 200
+    dm_data = dm_response.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a message'})
+    message_data = dm_sent.json()    
+    assert dm_sent.status_code == 200
+    msg_rmv = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user1_data['token'], 'message_id': message_data['message_id']})
+    assert msg_rmv.status_code == 200
+
+    dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
+    assert dm_leave.status_code == 200
+
+    dm_remove = requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
+
+    stats_response = requests.get(config.url + 'user/stats/v1', params={'token': user2_data['token']})
+    stats_response_data = stats_response.json()
+    assert stats_response.status_code == 200
+    assert stats_response_data['user_stats']['messages_sent'][0]['num_messages_sent'] == 0
+    assert stats_response_data['user_stats']['dms_joined'][0]['num_dms_joined'] == 0
+    assert stats_response_data['user_stats']['dms_joined'][1]['num_dms_joined'] == 1 
 
 def test_user_stats_return_types():
     requests.delete(config.url + 'clear/v1')
@@ -327,80 +540,158 @@ users/stats test
 
 '''
 
-# # test number of messages after removing messages
-# def test_users_stats_total_num_messages_after_removing_messages():
-#     requests.delete(config.url + 'clear/v1')
+# test number of messages after removing messages
+def test_users_stats_total_num_messages_after_removing_messages():
+    requests.delete(config.url + 'clear/v1')
 
-#     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
-#                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
 
-#     user1_data = user1.json()
+    user1_data = user1.json()
     
-#     user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
-#                                                                  'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
 
-#     user2_data = user2.json()
+    user2_data = user2.json()
 
-#     requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
-#                                                            'name': 'First Channel', 'is_public': True})
-#     channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
-#                                                                               'name': 'Second Channel', 'is_public': True})
+    requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
 
-#     channel_data = channel_response.json()
+    channel_data = channel_response.json()
 
-#     message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
-#                                                                            'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
     
-#     message_data = message_response.json()
+    message_data = message_response.json()
 
-#     requests.post(config.url + 'channel/join/v2',
-#                   json={'token': user2_data['token'], 'channel_id': channel_data['channel_id']})
+    requests.post(config.url + 'channel/join/v2',
+                  json={'token': user2_data['token'], 'channel_id': channel_data['channel_id']})
 
-#     remove_response = requests.delete(config.url + 'message/remove/v1', json={
-#                                        'token': user1_data['token'], 'message_id': message_data['message_id']})
-#     assert remove_response.status_code == 200
+    remove_response = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user1_data['token'], 'message_id': message_data['message_id']})
+    assert remove_response.status_code == 200
 
-#     response = requests.get(config.url + 'users/stats/v1', params={'token': user1_data['token']})
+    response = requests.get(config.url + 'users/stats/v1', params={'token': user1_data['token']})
 
-#     response_data = response.json()
+    response_data = response.json()
 
-#     assert response.status_code == 200
-#     assert response_data['workspace_stats']['messages_exist'][0]['num_messages_exist'] == 0
-#     assert response_data['workspace_stats']['messages_exist'][1]['num_messages_exist'] == 1
-#     assert response_data['workspace_stats']['messages_exist'][2]['num_messages_exist'] == 0
-
-# '''
-#     test for notifications
-# '''
+    assert response.status_code == 200
+    assert response_data['workspace_stats']['messages_exist'][0]['num_messages_exist'] == 0
+    assert response_data['workspace_stats']['messages_exist'][1]['num_messages_exist'] == 1
+    assert response_data['workspace_stats']['messages_exist'][2]['num_messages_exist'] == 0
 
 
-# def test_valid_notification(create_first_user, create_second_user):
-#     '''
-#     Error raised:
-#         None
-#     ExplanationL
-#         User 1 invites user 2, expects a notification for user 2
-#     '''
 
-#     user1 = create_first_user
-#     user2 = create_second_user
+def test_users_stats_dm_leave():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
 
-#     channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
-#                                                                        'is_public': True})
-#     channel_1_data = channel_1.json()
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'Alice', 'name_last': 'Yu'})
 
-#     requests.post(config.url + 'channel/invite/v2', json={'token': user1['token'], 'channel_id': channel_1_data['channel_id'],
-#                                                           'u_id': user2['auth_user_id']})
+    user2_data = user2.json()
+    
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    assert dm_response.status_code == 200
+    dm_data = dm_response.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a message'})
+    message_data = dm_sent.json()    
+    assert dm_sent.status_code == 200
+    msg_rmv = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user1_data['token'], 'message_id': message_data['message_id']})
+    assert msg_rmv.status_code == 200
 
-#     response_receiver = requests.get(config.url + 'notifications/get/v1',
-#                                      params={'token': user2['token']})
-#     response_sender = requests.get(config.url + 'notifications/get/v1',
-#                                    params={'token': user1['token']})
-#     response_receiver_data = response_receiver.json()
-#     response_sender_data = response_sender.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a second message'})
+    message_data = dm_sent.json()   
+    dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
+    assert dm_leave.status_code == 200
 
-#     assert len(response_receiver_data['notifications']) == 1
-#     assert len(response_sender_data['notifications']) == 0
-#     assert response_receiver.status_code == 200
-#     assert response_sender.status_code == 200
+    stats_response = requests.get(config.url + 'users/stats/v1', params={'token': user1_data['token']})
+    stats_response_data = stats_response.json()
+    assert stats_response.status_code == 200
+    assert stats_response_data['workspace_stats']['messages_exist'][0]['num_messages_exist'] == 0
+    assert stats_response_data['workspace_stats']['messages_exist'][1]['num_messages_exist'] == 1
+    assert stats_response_data['workspace_stats']['messages_exist'][2]['num_messages_exist'] == 0
+    assert stats_response_data['workspace_stats']['messages_exist'][3]['num_messages_exist'] == 1
+    assert len(stats_response_data['workspace_stats']['messages_exist']) == 4
+    assert stats_response_data['workspace_stats']['dms_exist'][0]['num_dms_exist'] == 0
+    assert stats_response_data['workspace_stats']['dms_exist'][1]['num_dms_exist'] == 1 
+    assert len(stats_response_data['workspace_stats']['dms_exist']) == 2
+
+def test_users_stats_dm_remove():
+    requests.delete(config.url + 'clear/v1')
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'email2@gmail.com',
+                                                                 'password': 'password', 'name_first': 'Alice', 'name_last': 'Yu'})
+
+    user2_data = user2.json()
+    
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    assert dm_response.status_code == 200
+    dm_data = dm_response.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a message'})
+    message_data = dm_sent.json()    
+    assert dm_sent.status_code == 200
+    msg_rmv = requests.delete(config.url + 'message/remove/v1', json={
+                                       'token': user1_data['token'], 'message_id': message_data['message_id']})
+    assert msg_rmv.status_code == 200
+
+    dm_remove = requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']})
+    assert dm_remove.status_code == 200 
+
+    stats_response = requests.get(config.url + 'users/stats/v1', params={'token': user1_data['token']})
+    stats_response_data = stats_response.json()
+    assert stats_response.status_code == 200
+    assert stats_response_data['workspace_stats']['messages_exist'][0]['num_messages_exist'] == 0
+    assert stats_response_data['workspace_stats']['messages_exist'][1]['num_messages_exist'] == 1
+    assert stats_response_data['workspace_stats']['messages_exist'][2]['num_messages_exist'] == 0
+    assert len(stats_response_data['workspace_stats']['messages_exist']) == 3
+    assert stats_response_data['workspace_stats']['dms_exist'][0]['num_dms_exist'] == 0
+    assert stats_response_data['workspace_stats']['dms_exist'][1]['num_dms_exist'] == 1 
+    assert stats_response_data['workspace_stats']['dms_exist'][2]['num_dms_exist'] == 0
+
+'''
+    test for notifications
+'''
+
+
+def test_valid_notification(create_first_user, create_second_user):
+    '''
+    Error raised:
+        None
+    ExplanationL
+        User 1 invites user 2, expects a notification for user 2
+    '''
+
+    user1 = create_first_user
+    user2 = create_second_user
+
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
+                                                                       'is_public': True})
+    channel_1_data = channel_1.json()
+
+    requests.post(config.url + 'channel/invite/v2', json={'token': user1['token'], 'channel_id': channel_1_data['channel_id'],
+                                                          'u_id': user2['auth_user_id']})
+
+    response_receiver = requests.get(config.url + 'notifications/get/v1',
+                                     params={'token': user2['token']})
+    response_sender = requests.get(config.url + 'notifications/get/v1',
+                                   params={'token': user1['token']})
+    response_receiver_data = response_receiver.json()
+    response_sender_data = response_sender.json()
+
+    assert len(response_receiver_data['notifications']) == 1
+    assert len(response_sender_data['notifications']) == 0
+    assert response_receiver.status_code == 200
+    assert response_sender.status_code == 200
 
