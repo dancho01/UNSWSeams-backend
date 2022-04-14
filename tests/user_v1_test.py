@@ -262,10 +262,8 @@ def test_user_stats_channel_leave():
     message_send1_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
                                                                            'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
     message_send1_data = message_send1_response.json()
-    message_send2_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
+    requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
                                                                            'channel_id': channel_2_data['channel_id'], 'message': 'This is a second message'})
-    message_send2_data = message_send2_response.json()
-
     requests.delete(config.url + 'message/remove/v1', json={
                                        'token': user2_data['token'], 'message_id': message_send1_data['message_id']})
 
@@ -314,10 +312,8 @@ def test_involvement_rate_above_1():
     message_send1_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
                                                                            'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
     message_send1_data = message_send1_response.json()
-    message_send2_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
+    requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
                                                                            'channel_id': channel_2_data['channel_id'], 'message': 'This is a second message'})
-    message_send2_data = message_send2_response.json()
-
     requests.delete(config.url + 'message/remove/v1', json={
                                        'token': user2_data['token'], 'message_id': message_send1_data['message_id']})
 
@@ -440,7 +436,7 @@ def test_user_stats_dm_leave_then_remove():
     dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
     assert dm_leave.status_code == 200
 
-    dm_remove = requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
+    requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
 
     stats_response = requests.get(config.url + 'user/stats/v1', params={'token': user1_data['token']})
     stats_response_data = stats_response.json()
@@ -475,7 +471,7 @@ def test_user_stats_second_user():
     dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
     assert dm_leave.status_code == 200
 
-    dm_remove = requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
+    requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
 
     stats_response = requests.get(config.url + 'user/stats/v1', params={'token': user2_data['token']})
     stats_response_data = stats_response.json()
