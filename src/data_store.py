@@ -27,7 +27,6 @@ Example usage:
     data_store.set(store)
 '''
 
-
 def time_now():
     '''
     returns the current time stamp
@@ -36,50 +35,13 @@ def time_now():
 
 # YOU SHOULD MODIFY THIS OBJECT BELOW
 
-
 initial_object = {
-    'users': [{'auth_user_id': - 1,
-               'name_first': 'Seams',
-               'name_last': 'Robot',
-               'email': 'seams_admin@gmail.com',
-               'password': hash('iamrobot'),
-               'handle': 'seamsbot',
-               'global_permissions': - 1,
-               'active': True,
-               'notifications': [],
-
-               'stats': {
-                   'user_stats': {
-                       "channels_joined": [
-                           {
-                               "num_channels_joined": 0,
-                               "time_stamp": time_now()
-                           }
-                       ],
-                       "dms_joined": [
-                           {
-                               "num_dms_joined": 0,
-                               "time_stamp": time_now()
-                           }
-                       ],
-                       "messages_sent": [
-                           {
-                               "num_messages_sent": 0,
-                               "time_stamp": time_now()
-                           }
-                       ],
-                       "involvement_rate": 0.0
-                   },
-                   "total_channels_joined": 0,
-                   "total_dms_joined": 0,
-                   "total_messages_sent": 0
-               },
-               'profile_img_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/1024px-Cute_dog.jpg'}],
+    'users': [],
     'channels': [],
     'dms': [],
     'session_list': [],
     'stats': {
-        'workspace_stats': {
+        'workspace_stats':{
             'channels_exist': [
                 {
                     'num_channels_exist': 0,
@@ -104,7 +66,7 @@ initial_object = {
         'total_num_dms': 0,
         'total_num_messages': 0
     },
-    'reset_codes': []
+    'reset_codes':[]
 }
 # YOU SHOULD MODIFY THIS OBJECT ABOVE
 

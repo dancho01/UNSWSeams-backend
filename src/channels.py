@@ -53,15 +53,10 @@ def channels_create_v1(token, name, is_public):
     # new dictionary is created to store channel details
     new_channel = create_new_channel(new_channel_id, name, is_public)
 
-    returned = return_member_information(auth_user_id, store)
-    returned['info'] = {
-        'timed_out_status': False,
-        'time_out_end': -1,
-        'warnings': 0
-    }
-
-    new_channel['owner_members'].append(returned)
-    new_channel['all_members'].append(returned)
+    new_channel['owner_members'].append(
+        return_member_information(auth_user_id, store))
+    new_channel['all_members'].append(
+        return_member_information(auth_user_id, store))
     # new_channel is then added to list of channels
     store['channels'].append(new_channel)
 

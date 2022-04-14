@@ -8,7 +8,6 @@ CHANNEL_COUNTER = 0
 MESSAGE_ID_COUNTER = 0
 DM_ID_COUNTER = 0
 
-
 def time_now():
     '''
     returns the current time stamp
@@ -134,21 +133,19 @@ def return_member_information(u_id, store):
                 'name_first': user['name_first'],
                 'name_last': user['name_last'],
                 'handle_str': user['handle'],
-                'profile_img_url': user['profile_img_url'],
+                'profile_img_url' : user['profile_img_url'],
             }
-
 
 def decrement_messages_sent(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['auth_user_id'] == auth_user_id:
+        if user['auth_user_id'] == auth_user_id: 
             user['stats']['total_messages_sent'] -= 1
             num_messages_sent = user['stats']['total_messages_sent']
             user['stats']['user_stats']['messages_sent'].append({
                 "num_messages_sent": num_messages_sent,
                 "time_stamp": time_now()
             })
-
 
 def decrement_total_messages():
     store = data_store.get()
@@ -158,7 +155,6 @@ def decrement_total_messages():
         'num_messages_exist': total_num_messages,
         'time_stamp': time_now()
     })
-
 
 def generate_new_message_id():
     '''
@@ -215,3 +211,4 @@ def get_globals():
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
 
     return CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
+

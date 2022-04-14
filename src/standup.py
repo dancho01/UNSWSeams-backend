@@ -21,6 +21,7 @@ def standup_start_v1(token, channel_id, length):
 
     t = threading.Timer(length, end_standup, [channel_id, token])
     t.start()
+    print(data_store.get())
 
     return {'time_finish': end_time}
 
@@ -31,6 +32,7 @@ def standup_active_v1(token, channel_id):
     check_authorized_user(user_id, channel_index)
 
     active_status = check_active(channel_id)
+    print(data_store.get())
     return active_status
 
 

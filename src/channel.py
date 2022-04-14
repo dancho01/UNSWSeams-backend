@@ -2,7 +2,7 @@ from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, increment_messages_sent, decrement_messages_sent, \
     check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now, increment_user_channels_joined, decrement_user_channels_joined, \
-    increment_total_messages, decrement_total_messages, check_timed_out
+    increment_total_messages, decrement_total_messages
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
@@ -12,7 +12,6 @@ import threading
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification, \
     return_channel_or_dm_name
 from src.iter3_message_helper import is_user_reacted
-from src.commands import recognise_commands, filter_language
 
 
 def channel_invite_v1(token, channel_id, u_id):
@@ -43,16 +42,8 @@ def channel_invite_v1(token, channel_id, u_id):
     check_already_auth(u_id, channel_index)
     check_authorized_user(auth_user_id, channel_index)
 
-    returned = return_member_information(u_id, store)
-
-    returned['info'] = {
-        'timed_out_status': False,
-        'time_out_end': -1,
-        'warnings': 0
-    }
-
     store['channels'][channel_index]['all_members'].append(
-        returned)
+        return_member_information(u_id, store))
 
     # update data store to reflect increased number of channels this user is a part of
     increment_user_channels_joined(u_id)
@@ -124,7 +115,7 @@ def channel_messages_v1(token, channel_id, start):
         end = -1
 
     list_messages = get_messages(start, end_return, auth_list_index)
-
+    
     return_messages = is_user_reacted(list_messages, user_info['u_id'])
 
     return {'messages': return_messages,
@@ -151,13 +142,6 @@ def message_send_v1(token, channel_id, message):
     check_message(message)
     channel_index = check_valid_channel(channel_id)
     check_authorized_user(user_id, channel_index)
-
-    check_timed_out(channel_index, user_id)
-    if filter_language(user_id, channel_index, message):
-        return
-
-    if message[0] == "/" and recognise_commands(token, channel_id, message):
-        return
 
     # -1 is passed in for dm_id as all tags originate from a channel
     check_for_tags_and_send_notifications(message, user_id, channel_id, -1)
@@ -305,18 +289,12 @@ def channel_join_v1(token, channel_id):
         raise AccessError(
             'Cannot join a private channel as you are not a global owner')
 
-    returned = return_member_information(auth_user_id, store)
-
-    returned['info'] = {
-        'timed_out_status': False,
-        'time_out_end': -1,
-        'warnings': 0
-    }
-
     store['channels'][channel_index]['all_members'].append(
-        returned)
+        return_member_information(auth_user_id, store))
 
     increment_user_channels_joined(auth_user_id)
+
+    data_store.set(store)
 
     return {}
 
@@ -360,6 +338,8 @@ def channel_addowner_v1(token, channel_id, u_id):
     store['channels'][channel_index]['owner_members'].append(
         return_member_information(u_id, store))
 
+    data_store.set(store)
+
     return {
     }
 
@@ -401,9 +381,10 @@ def channel_removeowner_v1(token, channel_id, u_id):
     store['channels'][channel_index]['owner_members'].remove(
         return_member_information(u_id, store))
 
+    data_store.set(store)
+
     return {
     }
-
 
 def message_sendlater_v1(token, channel_id, message, time_sent):
     '''
@@ -412,7 +393,7 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     once it has been sent (i.e. after time_sent). 
     You do not need to consider cases where a user's token is invalidated or a user leaves before the message is 
     scheduled to be sent.
-
+    
     Return Type:    dictionary containing int     { message_id }
     '''
 
@@ -421,8 +402,7 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     check_authorized_user(auth_user_id, channel_index)
     check_message(message)
 
-    check_for_tags_and_send_notifications(
-        message, auth_user_id, channel_id, -1)
+    check_for_tags_and_send_notifications(message, auth_user_id, channel_id, -1)
 
     new_message_id = generate_new_message_id()
 
@@ -432,23 +412,21 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     if float(time_difference) < 0:
         raise InputError(
             'time_sent is a time in the past')
-    t = threading.Timer(time_difference, send_message,
-                        [new_message, channel_id])
+    t = threading.Timer(time_difference, send_message, [new_message, channel_id])
     t.start()
 
     return {
         'message_id': new_message_id
     }
 
-
 def message_pin_v1(token, message_id):
-
+    
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
     check_valid_user(auth_user_id)
 
-    message_pair = find_channel_or_dm(store, message_id)
+    message_pair = find_channel_or_dm(store, message_id) 
 
     check_if_pinned_v2(message_pair[1])
 
@@ -458,15 +436,14 @@ def message_pin_v1(token, message_id):
 
     return {}
 
-
 def message_unpin_v1(token, message_id):
-
+    
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
 
     check_valid_user(auth_user_id)
 
-    message_pair = find_channel_or_dm(store, message_id)
+    message_pair = find_channel_or_dm(store, message_id) 
 
     check_if_unpinned_v2(message_pair[1])
 
