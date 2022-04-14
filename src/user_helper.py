@@ -150,70 +150,45 @@ def user_in_channel(user_handle, channel_id, dm_id):
 
 
 
-# total channel counter
-def total_channel_count():
-    store = data_store.get()
-    channel_counter = len(store['channels'])
+# # user dms counter
+# def user_dms_count(u_id):
+#     store = data_store.get()
+#     user_dms = 0
+#     for dm in store['dms']:
+#         for member in dm['all_members']:
+#             if member['u_id'] == u_id:
+#                 user_dms += 1
     
-    return channel_counter
+#     return user_dms
 
-# user channels counter
-def user_channels_count(u_id):
-    store = data_store.get()
-    user_channels = 0
-    for channel in store['channels']:
-        for member in channel['all_members']:
-            if member['u_id'] == u_id:
-                user_channels += 1
+# # total messages sent
+# def total_messages_count():
+#     store = data_store.get()
+#     message_count = 0
+#     for channel in store['channels']:
+#         message_count += len(channel['messages'])
     
-    return user_channels
+#     for dm in store['dms']:
+#         message_count += len(dm['messages'])
 
-# total dm counter
-def total_dms_count():
-    store = data_store.get()
-    dm_counter = len(store['dms'])
+#     return message_count
 
-    return dm_counter
+# # user messages sent
+# def user_messages_count(u_id):
+#     store = data_store.get()
+#     user_messages_count = 0
 
-# user dms counter
-def user_dms_count(u_id):
-    store = data_store.get()
-    user_dms = 0
-    for dm in store['dms']:
-        for member in dm['all_members']:
-            if member['u_id'] == u_id:
-                user_dms += 1
+#     for channel in store['channels']:
+#         for message in channel['messages']:
+#             if message['u_id'] == u_id:
+#                 user_messages_count += 1
     
-    return user_dms
+#     for dm in store['dms']:
+#         for message in dm['messages']:
+#             if message['u_id'] == u_id:
+#                 user_messages_count += 1
 
-# total messages sent
-def total_messages_count():
-    store = data_store.get()
-    message_count = 0
-    for channel in store['channels']:
-        message_count += len(channel['messages'])
-    
-    for dm in store['dms']:
-        message_count += len(dm['messages'])
-
-    return message_count
-
-# user messages sent
-def user_messages_count(u_id):
-    store = data_store.get()
-    user_messages_count = 0
-
-    for channel in store['channels']:
-        for message in channel['messages']:
-            if message['u_id'] == u_id:
-                user_messages_count += 1
-    
-    for dm in store['dms']:
-        for message in dm['messages']:
-            if message['u_id'] == u_id:
-                user_messages_count += 1
-
-    return user_messages_count
+#     return user_messages_count
 
 def check_url_status(img_url):
     try: 

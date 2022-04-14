@@ -14,7 +14,6 @@ def remove_message(message_id):
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 decrement_total_messages()
-                decrement_messages_sent(message['u_id'])
                 channel['messages'].remove(message)
                 data_store.set(store)
                 return
@@ -23,7 +22,6 @@ def remove_message(message_id):
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 decrement_total_messages()
-                decrement_messages_sent(message['u_id'])
                 dm['messages'].remove(message)
                 data_store.set(store)
                 return
@@ -233,4 +231,3 @@ def increment_total_messages():
         'time_stamp': time_now()
     })
 
-    save_data()

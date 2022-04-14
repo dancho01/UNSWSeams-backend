@@ -465,14 +465,14 @@ def standup_send_wrapper():
 def user_stats_wrapper():
     token = request.args.get('token')
     result = user_stats_v1(token)
-
+    print(data_store.get())
     return dumps(result)
 
 @APP.route("/users/stats/v1", methods=['GET'])
 def users_stats_wrapper():
     token = request.args.get('token')
     result = users_stats_v1(token)
-
+    print(data_store.get())
     return dumps(result)
 
 @APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
@@ -493,4 +493,4 @@ def send_js(path):
 if __name__ == "__main__":
     load_data()
     signal.signal(signal.SIGINT, quit_gracefully)  # For coverage
-    APP.run(port=config.port, debug=True)  # Do not edit this port
+    APP.run(port=config.port)  # Do not edit this port
