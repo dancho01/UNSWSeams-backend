@@ -150,6 +150,7 @@ def user_in_channel(user_handle, channel_id, dm_id):
     return False
 
 
+<<<<<<< HEAD
 # total channel counter
 def total_channel_count():
     store = data_store.get()
@@ -203,9 +204,33 @@ def total_messages_count():
 
     for dm in store['dms']:
         message_count += len(dm['messages'])
+=======
 
-    return message_count
+# # user dms counter
+# def user_dms_count(u_id):
+#     store = data_store.get()
+#     user_dms = 0
+#     for dm in store['dms']:
+#         for member in dm['all_members']:
+#             if member['u_id'] == u_id:
+#                 user_dms += 1
+    
+#     return user_dms
 
+# # total messages sent
+# def total_messages_count():
+#     store = data_store.get()
+#     message_count = 0
+#     for channel in store['channels']:
+#         message_count += len(channel['messages'])
+    
+#     for dm in store['dms']:
+#         message_count += len(dm['messages'])
+>>>>>>> 1854f540d85ed3d2eca4d0e195ea94367e7c2be1
+
+#     return message_count
+
+<<<<<<< HEAD
 # user messages sent
 
 
@@ -222,8 +247,24 @@ def user_messages_count(u_id):
         for message in dm['messages']:
             if message['u_id'] == u_id:
                 user_messages_count += 1
+=======
+# # user messages sent
+# def user_messages_count(u_id):
+#     store = data_store.get()
+#     user_messages_count = 0
 
-    return user_messages_count
+#     for channel in store['channels']:
+#         for message in channel['messages']:
+#             if message['u_id'] == u_id:
+#                 user_messages_count += 1
+    
+#     for dm in store['dms']:
+#         for message in dm['messages']:
+#             if message['u_id'] == u_id:
+#                 user_messages_count += 1
+>>>>>>> 1854f540d85ed3d2eca4d0e195ea94367e7c2be1
+
+#     return user_messages_count
 
 
 def check_url_status(img_url):

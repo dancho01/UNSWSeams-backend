@@ -55,7 +55,7 @@ def channel_invite_v1(token, channel_id, u_id):
         returned)
 
     # update data store to reflect increased number of channels this user is a part of
-    increment_user_channels_joined(auth_user_id)
+    increment_user_channels_joined(u_id)
 
     channel_name = return_channel_or_dm_name(channel_id, -1)
     create_channel_invite_notification(
