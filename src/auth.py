@@ -54,43 +54,7 @@ def auth_register_v1(email, password, name_first, name_last):
 
     img_url = 'https://upload.wikimedia.org/wikipedia/commons/c/c9/Cat.jpeg'
 
-    store['users'].append({'auth_user_id': new_id,
-                           'name_first': name_first,
-                           'name_last': name_last,
-                           'email': email,
-                           'password': hash(password),
-                           'handle': final_handle,
-                           'global_permissions': assign_permissions(),
-                           'active': True,
-                           'notifications': [],
-
-                           'stats': {
-                               'user_stats': {
-                                    "channels_joined": [
-                                        {
-                                            "num_channels_joined": 0,
-                                            "time_stamp": time_now()
-                                        }
-                                    ],
-                                    "dms_joined": [
-                                        {
-                                            "num_dms_joined": 0,
-                                            "time_stamp": time_now()
-                                        }
-                                    ],
-                                    "messages_sent": [
-                                        {
-                                            "num_messages_sent": 0,
-                                            "time_stamp": time_now()
-                                        }
-                                    ],
-                                    "involvement_rate": 0.0
-                               },
-                               "total_channels_joined": 0,
-                               "total_dms_joined": 0,
-                               "total_messages_sent": 0
-                            },
-                            'profile_img_url': img_url})
+    store['users'].append( )
 
 
 
