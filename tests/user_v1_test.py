@@ -376,7 +376,7 @@ def test_valid_notification_channel_message(create_first_user, create_second_use
     assert response_receiver.status_code == 200
     assert response_sender.status_code == 200
 
-def test_valid_notification_dm_message(create_first_user, create_second_user):
+def test_valid_notification_dm_invite(create_first_user, create_second_user):
     '''
     Error raised:
         None
@@ -387,10 +387,8 @@ def test_valid_notification_dm_message(create_first_user, create_second_user):
     user1 = create_first_user
     user2 = create_second_user
 
-    user2_profile = requests.get(config.url + 'user/profile/v1', params={
-                            'token': user2['token'], 'u_id': user2['auth_user_id']})
     
-    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': [user2['auth_user_id']]})  
+    requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': [user2['auth_user_id']]})  
 
     response_receiver = requests.get(config.url + 'notifications/get/v1',
                                      params={'token': user2['token']})
@@ -457,8 +455,7 @@ def test_valid_notification_react(create_first_user, create_second_user):
 
     requests.post(config.url + 'channel/invite/v2', json={'token': user1['token'], 'channel_id': channel_1_data['channel_id'],
                                                           'u_id': user2['auth_user_id']})
-    user2_profile = requests.get(config.url + 'user/profile/v1', params={
-                            'token': user2['token'], 'u_id': user2['auth_user_id']})
+
 
     message_reponse = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
                                                         'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
@@ -495,8 +492,6 @@ def test_invalid_notification_react_no_longer_in_channel(create_first_user, crea
 
     requests.post(config.url + 'channel/invite/v2', json={'token': user1['token'], 'channel_id': channel_1_data['channel_id'],
                                                           'u_id': user2['auth_user_id']})
-    user2_profile = requests.get(config.url + 'user/profile/v1', params={
-                            'token': user2['token'], 'u_id': user2['auth_user_id']})
 
     message_reponse = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
                                                         'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
