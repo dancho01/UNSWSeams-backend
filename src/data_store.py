@@ -40,14 +40,13 @@ def time_now():
 initial_object = {
     'users': [{'auth_user_id': - 1,
                'name_first': 'Seams',
-               'name_last': 'Robot',
+               'name_last': 'Bot',
                'email': 'seams_admin@gmail.com',
                'password': hash('iamrobot'),
                'handle': 'seamsbot',
-               'global_permissions': - 1,
+               'global_permissions': 2,
                'active': True,
                'notifications': [],
-
                'stats': {
                    'user_stats': {
                        "channels_joined": [
@@ -74,7 +73,7 @@ initial_object = {
                    "total_dms_joined": 0,
                    "total_messages_sent": 0
                },
-               'profile_img_url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Cute_dog.jpg/1024px-Cute_dog.jpg'}],
+               'profile_img_url': 'https://pacetoday.com.au/wp-content/uploads/2016/02/Applications-robot.jpg'}],
     'channels': [],
     'dms': [],
     'session_list': [],

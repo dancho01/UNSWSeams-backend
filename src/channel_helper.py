@@ -2,7 +2,6 @@ from src.error import InputError, AccessError
 from datetime import datetime, timezone
 from src.global_helper import decrement_total_messages, increment_total_messages, increment_messages_sent
 from src.data_store import data_store
-from src.persistence import save_data, load_data
 
 
 def check_timed_out(c_dex, user_id):
@@ -110,6 +109,7 @@ def send_message(new_message, channel_id, user_id):
     increment_messages_sent(user_id)
     increment_total_messages()
 
+
 def send_dm(new_message, dm_id, user_id):
     store = data_store.get()
     for dm in store['dms']:
@@ -117,6 +117,7 @@ def send_dm(new_message, dm_id, user_id):
             dm['messages'].append(new_message)
     increment_messages_sent(user_id)
     increment_total_messages()
+
 
 def create_message(new_message_id, user_id, message):
     new_message = {
@@ -223,4 +224,3 @@ def decrement_user_channels_joined(auth_user_id):
                 "num_channels_joined": num_channels_joined,
                 "time_stamp": time_now()
             })
-

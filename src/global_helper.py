@@ -20,6 +20,9 @@ def check_valid_user(u_id):
     '''
         Checks if user's id is valid
     '''
+    if u_id == - 1:
+        return
+
     store = data_store.get()
 
     for user in store['users']:

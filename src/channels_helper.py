@@ -37,18 +37,25 @@ def create_new_channel(new_channel_id, name, is_public):
         Returns a dictionary which contains channel_id, name, is_public filled in 
     '''
 
-    new_channel = {'channel_id': new_channel_id,
-                   'name': name,
-                   'is_public': is_public,
-                   'owner_members': [],
-                   'all_members': [],
-                   'messages': [],
-                   'standup': {
-                       'active': False,
-                       'finish_time': -1,
-                       'standup_cache': []
-                   }
-                   }
+    new_channel = {
+        'channel_id': new_channel_id,
+        'name': name,
+        'is_public': is_public,
+        'owner_members': [],
+        'all_members': [],
+        'messages': [],
+        'standup': {
+            'active': False,
+            'finish_time': -1,
+            'standup_cache': []
+        },
+        'poll': {
+            'start_id': -1,
+            'poll_status': False,
+            'poll_info': {}
+        },
+        'bot_status': True
+    }
     return new_channel
 
 

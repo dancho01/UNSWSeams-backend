@@ -150,6 +150,7 @@ def user_in_channel(user_handle, channel_id, dm_id):
 
     return False
 
+
 def check_url_status(img_url):
     try:
         if urllib.request.urlopen(img_url).getcode() != 200:
@@ -180,6 +181,7 @@ def check_dimensions(x1, y1, x2, y2, handle):
             description='x1, y1 must be smaller than x2, y2')
 
     return
+
 
 def check_image_type(handle):
     imageObject = Image.open(f"image/{handle}.jpg")

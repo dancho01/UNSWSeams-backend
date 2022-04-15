@@ -102,11 +102,12 @@ def assign_permissions():
     '''
     store = data_store.get()
 
-    if len(store['users']) == 0:
+    if len(store['users']) == 1:
         return 1
     else:
         return 2
-    
+
+
 def check_email_exist(email):
     ''' 
         iterates through data store and returns the UID corresponding to
@@ -121,6 +122,7 @@ def check_email_exist(email):
 
     return ""
 
+
 def generate_reset_code(uid):
     '''
         appends a dictionary containing a reset code and the user which
@@ -130,18 +132,46 @@ def generate_reset_code(uid):
 
     store = data_store.get()
 
-    code = random.randint(1000,9999)
-    
+    code = random.randint(1000, 9999)
+
     # case: code already exists
-    if store['reset_codes']: # so that we don't iterate through an empty list
+    if store['reset_codes']:  # so that we don't iterate through an empty list
         for codes in store['reset_codes']:
             if codes['code'] == code:
                 generate_reset_code(uid)
-            
+
     store['reset_codes'].append({'uid': uid,
                                  'code': code})
-    
-    return code 
+
+    return code
+
+
+def check_logged_in(uid):
+    '''
+        takes in a uid and checks whether the user is currently logged in
+    '''
+
+    store = data_store.get()
+
+    for user in store['users']:
+        if user['auth_user_id'] == uid and user['active']:
+            return True
+
+    return False
+
+
+def set_user_inactive(uid):
+    '''
+        takes in a uid and sets that user to inactive
+    '''
+
+    store = data_store.get()
+
+    for user in store['users']:
+        if user['auth_user_id'] == uid:
+            user['active'] = False
+            return
+    return
 
 
 def email_reset_code(email, code, mail):
@@ -149,9 +179,8 @@ def email_reset_code(email, code, mail):
         takes in an email, the pin code and mail object created in server.py
         sends the reset email to user
     '''
-    msg = Message('Your Seams Reset Code', sender = 'h09belephant@gmail.com', recipients = [email])
+    msg = Message('Your Seams Reset Code',
+                  sender='h09belephant@gmail.com', recipients=[email])
     msg.body = str(code)
-    mail.send(msg) 
+    mail.send(msg)
     return
-    
-
