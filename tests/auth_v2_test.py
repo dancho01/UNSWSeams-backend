@@ -252,7 +252,7 @@ def test_invalid_resetcode():
     assert response.status_code == 400
 
 
-# have tried running the passwordreset_request 9999 times so that all the codes are filled out. this way I can test the code '1234' against the reset function. 
+# have tried running the passwordreset_request 9999 times so that all the codes are filled out. this way I can test the code '1234' against the reset function but this takes too long 
 #def test_valid_reset():
 #    requests.delete(config.url + 'clear/v1')
 #    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com', \
