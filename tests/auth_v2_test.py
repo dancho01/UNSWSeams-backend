@@ -224,7 +224,7 @@ def test_invalid_session_id():
     
 ''' tests for auth/passwordreset/reset '''    
 
-def test_invalid_password():
+def test_invalid_passwordreset_pass():
     '''
         docstring
     '''
