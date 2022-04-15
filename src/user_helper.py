@@ -1,6 +1,7 @@
 import os
 import glob
 import urllib.request
+import requests
 from PIL import Image
 from src.data_store import data_store
 from src.error import InputError, AccessError

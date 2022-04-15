@@ -1,10 +1,10 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
-from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, increment_messages_sent, decrement_messages_sent, \
+from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, \
     check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now, increment_user_channels_joined, decrement_user_channels_joined, \
-    increment_total_messages, decrement_total_messages, check_timed_out
+    decrement_total_messages, check_timed_out
 from src.token import check_valid_token
-from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
+from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, increment_messages_sent, \
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
 from src.message_helper import check_valid_message, find_channel_or_dm, check_if_pinned_v2, check_if_unpinned_v2, check_part_of_message_group_v2, check_owner_dm_channel
 from datetime import datetime
@@ -166,10 +166,7 @@ def message_send_v1(token, channel_id, message):
 
     new_message = create_message(new_message_id, user_id, message)
 
-    send_message(new_message, channel_id)
-
-    increment_messages_sent(user_id)
-    increment_total_messages()
+    send_message(new_message, channel_id, user_id)
 
     return {
         'message_id': new_message_id
@@ -237,9 +234,9 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         new_message_id, user_id, format_message_share)
 
     if channel_id == -1:
-        send_dm(message_ready, dm_id)
+        send_dm(message_ready, dm_id, user_id)
     else:
-        send_message(message_ready, channel_id)
+        send_message(message_ready, channel_id, user_id)
 
     return new_message_id
 

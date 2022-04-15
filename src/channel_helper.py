@@ -1,6 +1,6 @@
 from src.error import InputError, AccessError
 from datetime import datetime, timezone
-from src.global_helper import decrement_messages_sent, decrement_total_messages
+from src.global_helper import decrement_total_messages, increment_total_messages, increment_messages_sent
 from src.data_store import data_store
 
 
@@ -101,18 +101,22 @@ def edit_message(message_id, message):
 '''
 
 
-def send_message(new_message, channel_id):
+def send_message(new_message, channel_id, user_id):
     store = data_store.get()
     for channel in store['channels']:
         if channel['channel_id'] == channel_id:
             channel['messages'].append(new_message)
+    increment_messages_sent(user_id)
+    increment_total_messages()
 
 
-def send_dm(new_message, dm_id):
+def send_dm(new_message, dm_id, user_id):
     store = data_store.get()
     for dm in store['dms']:
-        if dm['channel_id'] == dm_id:
+        if dm['dm_id'] == dm_id:
             dm['messages'].append(new_message)
+    increment_messages_sent(user_id)
+    increment_total_messages()
 
 
 def create_message(new_message_id, user_id, message):
@@ -171,7 +175,7 @@ def check_message_in_dms(og, u_id, store):
     for dms in store['dms']:
         for message in dms['messages']:
             if message['message_id'] == og and member_check(u_id, dms):
-                return message['messages']
+                return message['message']
 
     raise InputError(description='This message is not found in dms')
 

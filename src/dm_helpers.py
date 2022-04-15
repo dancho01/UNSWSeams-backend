@@ -3,6 +3,7 @@ import datetime
 from src.data_store import data_store
 from src.channel_helper import time_now
 from src.error import InputError, AccessError
+from src.global_helper import increment_total_messages, increment_messages_sent
 
 
 def check_for_duplicates_uids(u_ids):
@@ -151,12 +152,7 @@ def decrement_total_num_dms():
     })
 
 
-def store_message_send_dm_message(dm_index, new_message):
-    store = data_store.get()
-    store['dms'][dm_index]['messages'].append(new_message)
-
-
-def decrement_total_num_messages_after_dm_remove(num_msgs_in_dm):
+def decrement_total_num_messages_in_channel_dm(num_msgs_in_dm):
     store = data_store.get()
     store['stats']['total_num_messages'] -= num_msgs_in_dm
     if num_msgs_in_dm != 0:
@@ -165,3 +161,9 @@ def decrement_total_num_messages_after_dm_remove(num_msgs_in_dm):
             'num_messages_exist': total_num_messages,
             'time_stamp': time_now()
         })
+
+def store_message_send_dm_message(dm_index, new_message, auth_user_id):
+    store = data_store.get()
+    store['dms'][dm_index]['messages'].append(new_message)
+    increment_messages_sent(auth_user_id)
+    increment_total_messages()
