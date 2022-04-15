@@ -466,7 +466,6 @@ def test_user_stats_users_stats_dm_leave():
     dm_data = dm_response.json()
     dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
                                         'message': 'this is a message'})
-    message_data = dm_sent.json()    
     assert dm_sent.status_code == 200
 
     dm_leave = requests.post(config.url + 'dm/leave/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']}) 
@@ -522,7 +521,6 @@ def test_user_stats_dm_remove():
     dm_data = dm_response.json()
     dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
                                         'message': 'this is a message'})
-    message_data = dm_sent.json()    
     assert dm_sent.status_code == 200
 
     dm_remove = requests.delete(config.url + 'dm/remove/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id']})
@@ -625,10 +623,8 @@ def test_user_stats_users_stats_channel_join():
     channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
                                                            'name': 'First Channel', 'is_public': True})
     channel_1_data = channel_1.json()                              
-    channel_2 = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
+    requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
                                                                               'name': 'Second Channel', 'is_public': True})
-
-    channel_2_data = channel_2.json()
     channel_1_join = requests.post(config.url + 'channel/join/v2',
                   json={'token': user2_data['token'], 'channel_id': channel_1_data['channel_id']})
     assert channel_1_join.status_code == 200
@@ -801,10 +797,8 @@ def test_user_stats_users_stats_message_share():
 
     user1_data = user1.json()
     
-    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+    requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
                                                                  'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
-
-    user2_data = user2.json()
 
     requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
                                                            'name': 'First Channel', 'is_public': True})
@@ -817,9 +811,8 @@ def test_user_stats_users_stats_message_share():
                                                                            'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
     
     message_data = message_response.json()
-    sm = requests.post(config.url + 'message/send/v1', json={
+    requests.post(config.url + 'message/send/v1', json={
         'token': user1_data['token'], 'channel_id': channel_data['channel_id'], 'message': "hello"})
-    second_message = sm.json()
     msg_share = requests.post(config.url + 'message/share/v1', json={
         'token': user1_data['token'], 'og_message_id': message_data['message_id'], 'message': "checkout this other message",
         'channel_id': channel_data['channel_id'], 'dm_id': -1})
@@ -881,9 +874,8 @@ def test_user_stats_users_stats_message_edit():
     message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
                                                                            'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
     message_data = message_response.json()
-    sm = requests.post(config.url + 'message/send/v1', json={
+    requests.post(config.url + 'message/send/v1', json={
         'token': user1_data['token'], 'channel_id': channel_data['channel_id'], 'message': "hello"})
-    second_message = sm.json()
     edit_response = requests.put(config.url + 'message/edit/v1', json={'token': user1_data['token'],
                                                                        'message_id': message_data['message_id'], 'message': ''})
     assert edit_response.status_code == 200
@@ -937,12 +929,10 @@ def test_user_stats_users_stats_message_send_later():
                                                            'name': 'First Channel', 'is_public': True})
     channel_data = channel_response.json()
 
-    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+    requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
                                                                            'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
-    message_data = message_response.json()
-    sm = requests.post(config.url + 'message/send/v1', json={
+    requests.post(config.url + 'message/send/v1', json={
         'token': user1_data['token'], 'channel_id': channel_data['channel_id'], 'message': "hello"})
-    second_message = sm.json()
 
     future_timestamp = time_now() + 30
     assert type(future_timestamp) == int
