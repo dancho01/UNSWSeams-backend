@@ -4,6 +4,17 @@ from src.global_helper import decrement_messages_sent, decrement_total_messages
 from src.data_store import data_store
 from src.persistence import save_data, load_data
 
+
+def check_timed_out(c_dex, user_id):
+    store = data_store.get()
+
+    for user in store['channels'][c_dex]['all_members']:
+        if user['u_id'] == user_id and user['info']['timed_out_status']:
+            time_left = user['info']['time_out_end'] - time_now()
+            raise AccessError(
+                description=f"You have been timed out, there is {time_left} seconds left")
+
+
 def remove_message(message_id):
     '''
     removes the message referred to by message_id
@@ -15,7 +26,6 @@ def remove_message(message_id):
             if message['message_id'] == message_id:
                 decrement_total_messages()
                 channel['messages'].remove(message)
-                data_store.set(store)
                 return
 
     for dm in store['dms']:
@@ -23,7 +33,6 @@ def remove_message(message_id):
             if message['message_id'] == message_id:
                 decrement_total_messages()
                 dm['messages'].remove(message)
-                data_store.set(store)
                 return
 
     raise InputError(description="message_id does not exist")
@@ -189,10 +198,11 @@ def share_message_format(to_share, message):
 
     return formatted
 
+
 def increment_user_channels_joined(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['auth_user_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id:
             user['stats']['total_channels_joined'] += 1
             num_channels_joined = user['stats']['total_channels_joined']
             user['stats']['user_stats']['channels_joined'].append({
@@ -200,10 +210,11 @@ def increment_user_channels_joined(auth_user_id):
                 "time_stamp": time_now()
             })
 
+
 def decrement_user_channels_joined(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['auth_user_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id:
             user['stats']['total_channels_joined'] -= 1
             num_channels_joined = user['stats']['total_channels_joined']
             user['stats']['user_stats']['channels_joined'].append({
@@ -211,16 +222,18 @@ def decrement_user_channels_joined(auth_user_id):
                 "time_stamp": time_now()
             })
 
+
 def increment_messages_sent(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['auth_user_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id:
             user['stats']['total_messages_sent'] += 1
             num_messages_sent = user['stats']['total_messages_sent']
             user['stats']['user_stats']['messages_sent'].append({
                 "num_messages_sent": num_messages_sent,
                 "time_stamp": time_now()
             })
+
 
 def increment_total_messages():
     store = data_store.get()

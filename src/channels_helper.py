@@ -61,6 +61,7 @@ def check_channel_len(name):
             'Make sure channel name no less than 1 character and no more than 20'
         )
 
+
 def increment_total_num_channels():
     store = data_store.get()
     store['stats']['total_num_channels'] += 1

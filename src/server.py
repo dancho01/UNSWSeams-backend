@@ -1,7 +1,7 @@
 import sys
 import signal
 from json import dumps
-from flask import Flask, request,send_from_directory
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from flask_mail import Mail
 from src.channel import channel_invite_v1, channel_join_v1, channel_addowner_v1, channel_removeowner_v1, message_share_v1, message_sendlater_v1
@@ -46,7 +46,7 @@ APP.register_error_handler(Exception, defaultHandler)
 
 # NO NEED TO MODIFY ABOVE THIS POINT, EXCEPT IMPORTS
 
-APP.config['MAIL_SERVER']='smtp.gmail.com'
+APP.config['MAIL_SERVER'] = 'smtp.gmail.com'
 APP.config['MAIL_PORT'] = 465
 APP.config['MAIL_USERNAME'] = 'h09belephant@gmail.com'
 APP.config['MAIL_PASSWORD'] = '12345!@#$%'
@@ -78,23 +78,25 @@ def auth_register_wrapper():
         'token': result['token'],
         'auth_user_id': result['auth_user_id']
     })
-    
+
+
 @APP.route("/auth/passwordreset/request/v1", methods=['POST'])
 def auth_password_request_v1():
     data = request.get_json()
-    auth_password_request(mail, data['email']) # passes through the mail object instead of creating a global variable
-    save_data()         
+    # passes through the mail object instead of creating a global variable
+    auth_password_request(mail, data['email'])
+    save_data()
 
     return dumps({})
+
 
 @APP.route("/auth/passwordreset/reset/v1", methods=['POST'])
 def auth_password_reset_v1():
     data = request.get_json()
     auth_password_reset(data['reset_code'], data['new_password'])
-    save_data() # por que?       
+    save_data()  # por que?
 
     return dumps({})
-
 
 
 @APP.route("/dm/create/v1", methods=['POST'])
@@ -209,11 +211,12 @@ def clear_flask_v1():
 def channel_invite_v2():
     data = request.get_json()
     result = channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
+    print(data_store.get())
     save_data()
     return dumps(result)
 
 
-@APP.route("/channel/leave/v1", methods=['POST'])
+@ APP.route("/channel/leave/v1", methods=['POST'])
 def channel_leave():
     data = request.get_json()
     result = channel_leave_v1(data['token'], data['channel_id'])
@@ -221,16 +224,16 @@ def channel_leave():
     return dumps(result)
 
 
-@APP.route("/channel/join/v2", methods=['POST'])
+@ APP.route("/channel/join/v2", methods=['POST'])
 def channel_join_v2():
     data = request.get_json()
     result = channel_join_v1(data['token'], data['channel_id'])
-
+    print(data_store.get)
     save_data()
     return dumps(result)
 
 
-@APP.route("/channel/addowner/v1", methods=['POST'])
+@ APP.route("/channel/addowner/v1", methods=['POST'])
 def channel_addowner_v1_wrapper():
     data = request.get_json()
     result = channel_addowner_v1(
@@ -239,7 +242,7 @@ def channel_addowner_v1_wrapper():
     return dumps(result)
 
 
-@APP.route("/channel/removeowner/v1", methods=['POST'])
+@ APP.route("/channel/removeowner/v1", methods=['POST'])
 def channel_removeowner_v1_wrapper():
     data = request.get_json()
     result = channel_removeowner_v1(
@@ -249,7 +252,7 @@ def channel_removeowner_v1_wrapper():
     return dumps(result)
 
 
-@APP.route("/channel/messages/v2", methods=['GET'])
+@ APP.route("/channel/messages/v2", methods=['GET'])
 def channel_messages_v2():
     token = request.args.get('token')
     channel_id = int(request.args.get('channel_id'))
@@ -258,7 +261,7 @@ def channel_messages_v2():
     return dumps(result)
 
 
-@APP.route("/message/send/v1", methods=['POST'])
+@ APP.route("/message/send/v1", methods=['POST'])
 def messages_send_v1():
     data = request.get_json()
     result = message_send_v1(
@@ -267,7 +270,7 @@ def messages_send_v1():
     return dumps(result)
 
 
-@APP.route("/channels/create/v2", methods=['POST'])
+@ APP.route("/channels/create/v2", methods=['POST'])
 def channels_create_v2():
     data = request.get_json()
     result = channels_create_v1(data['token'], data['name'], data['is_public'])
@@ -275,7 +278,7 @@ def channels_create_v2():
     return dumps(result)
 
 
-@APP.route("/message/edit/v1", methods=['PUT'])
+@ APP.route("/message/edit/v1", methods=['PUT'])
 def messages_edits_v1():
     data = request.get_json()
     result = messages_edit_v1(
@@ -285,7 +288,7 @@ def messages_edits_v1():
     return dumps(result)
 
 
-@APP.route("/message/remove/v1", methods=['DELETE'])
+@ APP.route("/message/remove/v1", methods=['DELETE'])
 def messages_delete_v1():
     data = request.get_json()
     result = messages_remove_v1(data['token'], data['message_id'])
@@ -294,21 +297,21 @@ def messages_delete_v1():
     return dumps(result)
 
 
-@APP.route("/channels/list/v2", methods=['GET'])
+@ APP.route("/channels/list/v2", methods=['GET'])
 def channels_list_v2():
     token = request.args.get('token')
     result = channels_list_v1(token)
     return dumps(result)
 
 
-@APP.route("/channels/listall/v2", methods=['GET'])
+@ APP.route("/channels/listall/v2", methods=['GET'])
 def channels_listall_v2():
     token = request.args.get('token')
     result = channels_listall_v1(token)
     return dumps(result)
 
 
-@APP.route("/user/profile/setname/v1", methods=['PUT'])
+@ APP.route("/user/profile/setname/v1", methods=['PUT'])
 def set_name():
     data = request.get_json()
     result = set_name_v1(data['token'], data['name_first'], data['name_last'])
@@ -316,7 +319,7 @@ def set_name():
     return dumps(result)
 
 
-@APP.route("/user/profile/setemail/v1", methods=['PUT'])
+@ APP.route("/user/profile/setemail/v1", methods=['PUT'])
 def set_email():
     data = request.get_json()
     result = set_email_v1(data['token'], data['email'])
@@ -332,7 +335,7 @@ def set_handle():
     return dumps(result)
 
 
-@APP.route("/user/profile/v1", methods=['GET'])
+@ APP.route("/user/profile/v1", methods=['GET'])
 def get_profile():
     token = request.args.get('token')
     u_id = int(request.args.get('u_id'))
@@ -340,7 +343,7 @@ def get_profile():
     return dumps(result)
 
 
-@APP.route("/channel/details/v2", methods=['GET'])
+@ APP.route("/channel/details/v2", methods=['GET'])
 def get_channel_details_v2():
     token = request.args.get('token')
     channel_id = int(request.args.get('channel_id'))
@@ -348,7 +351,7 @@ def get_channel_details_v2():
     return dumps(result)
 
 
-@APP.route("/admin/user/remove/v1", methods=['DELETE'])
+@ APP.route("/admin/user/remove/v1", methods=['DELETE'])
 def admin_user_remove_v1_wrapper():
     data = request.get_json()
     result = admin_user_remove_v1(data['token'], data['u_id'])
@@ -356,7 +359,7 @@ def admin_user_remove_v1_wrapper():
     return dumps(result)
 
 
-@APP.route("/admin/userpermission/change/v1", methods=['POST'])
+@ APP.route("/admin/userpermission/change/v1", methods=['POST'])
 def admin_userpermission_change_v1_wrapper():
     data = request.get_json()
     result = admin_userpermission_change_v1(
@@ -365,14 +368,14 @@ def admin_userpermission_change_v1_wrapper():
     return dumps(result)
 
 
-@APP.route("/users/all/v1", methods=['GET'])
+@ APP.route("/users/all/v1", methods=['GET'])
 def users_all():
     token = request.args.get('token')
     result = users_all_v1(token)
     return dumps(result)
 
 
-@APP.route("/search/v1", methods=['GET'])
+@ APP.route("/search/v1", methods=['GET'])
 def search_v1_wrapper():
     token = request.args.get('token')
     query_str = request.args.get('query_str')
@@ -380,7 +383,7 @@ def search_v1_wrapper():
     return dumps(result)
 
 
-@APP.route("/message/sendlater/v1", methods=['POST'])
+@ APP.route("/message/sendlater/v1", methods=['POST'])
 def message_sendlater_v1_wrapper():
     data = request.get_json()
     result = message_sendlater_v1(
@@ -388,7 +391,8 @@ def message_sendlater_v1_wrapper():
     save_data()
     return dumps(result)
 
-@APP.route("/message/sendlaterdm/v1", methods=['POST'])
+
+@ APP.route("/message/sendlaterdm/v1", methods=['POST'])
 def message_sendlaterdm_v1_wrapper():
     data = request.get_json()
     result = message_sendlaterdm_v1(
@@ -396,27 +400,33 @@ def message_sendlaterdm_v1_wrapper():
     save_data()
     return dumps(result)
 
-@APP.route("/notifications/get/v1", methods=['GET'])
+
+@ APP.route("/notifications/get/v1", methods=['GET'])
 def notifications_get_wrapper():
     token = request.args.get('token')
     result = notifications_get_v1(token)
     return dumps(result)
-    
-@APP.route("/message/react/v1", methods=['POST'])    
+
+
+@ APP.route("/message/react/v1", methods=['POST'])
 def message_react_wrapper():
     data = request.get_json()
-    result = message_react_v1(data['token'], data['message_id'], data['react_id'])
+    result = message_react_v1(
+        data['token'], data['message_id'], data['react_id'])
     save_data()
     return dumps(result)
-    
-@APP.route("/message/unreact/v1", methods=['POST'])    
+
+
+@ APP.route("/message/unreact/v1", methods=['POST'])
 def message_unreact_wrapper():
     data = request.get_json()
-    result = message_unreact_v1(data['token'], data['message_id'], data['react_id'])
+    result = message_unreact_v1(
+        data['token'], data['message_id'], data['react_id'])
     save_data()
-    return dumps(result)   
+    return dumps(result)
 
-@APP.route("/message/pin/v1", methods=['POST'])
+
+@ APP.route("/message/pin/v1", methods=['POST'])
 def message_pin():
     data = request.get_json()
     result = message_pin_v1(
@@ -424,7 +434,8 @@ def message_pin():
     save_data()
     return dumps(result)
 
-@APP.route("/message/unpin/v1", methods=['POST'])
+
+@ APP.route("/message/unpin/v1", methods=['POST'])
 def message_unpin():
     data = request.get_json()
     result = message_unpin_v1(
@@ -432,7 +443,8 @@ def message_unpin():
     save_data()
     return dumps(result)
 
-@APP.route("/standup/start/v1", methods=['POST'])
+
+@ APP.route("/standup/start/v1", methods=['POST'])
 def standup_start_wrapper():
     data = request.get_json()
     result = standup_start_v1(
@@ -442,7 +454,7 @@ def standup_start_wrapper():
     return dumps(result)
 
 
-@APP.route("/standup/active/v1", methods=['GET'])
+@ APP.route("/standup/active/v1", methods=['GET'])
 def standup_active_wrapper():
     token = request.args.get('token')
     channel_id = int(request.args.get('channel_id'))
@@ -452,7 +464,7 @@ def standup_active_wrapper():
     return dumps(result)
 
 
-@APP.route("/standup/send/v1", methods=['POST'])
+@ APP.route("/standup/send/v1", methods=['POST'])
 def standup_send_wrapper():
     data = request.get_json()
     result = standup_send_v1(
@@ -461,21 +473,23 @@ def standup_send_wrapper():
     return dumps(result)
 
 
-@APP.route("/user/stats/v1", methods=['GET'])
+@ APP.route("/user/stats/v1", methods=['GET'])
 def user_stats_wrapper():
     token = request.args.get('token')
     result = user_stats_v1(token)
     print(data_store.get())
     return dumps(result)
 
-@APP.route("/users/stats/v1", methods=['GET'])
+
+@ APP.route("/users/stats/v1", methods=['GET'])
 def users_stats_wrapper():
     token = request.args.get('token')
     result = users_stats_v1(token)
     print(data_store.get())
     return dumps(result)
 
-@APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
+
+@ APP.route("/user/profile/uploadphoto/v1", methods=['POST'])
 def upload_photo():
     data = request.get_json()
     result = user_profile_uploadphoto_v1(
@@ -483,10 +497,10 @@ def upload_photo():
     save_data()
     return dumps(result)
 
-@APP.route('/images/<path>')
+
+@ APP.route('/images/<path>')
 def send_js(path):
     return send_from_directory('../images', path)
-
 
 
 # NO NEED TO MODIFY BELOW THIS POINT

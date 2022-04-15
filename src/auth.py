@@ -15,7 +15,6 @@ from PIL import Image
 import os
 
 
-
 def auth_login_v1(email, password):
     '''
         Checks login information to first see if the email exists
@@ -66,33 +65,31 @@ def auth_register_v1(email, password, name_first, name_last):
 
                            'stats': {
                                'user_stats': {
-                                    "channels_joined": [
-                                        {
-                                            "num_channels_joined": 0,
-                                            "time_stamp": time_now()
-                                        }
-                                    ],
-                                    "dms_joined": [
-                                        {
-                                            "num_dms_joined": 0,
-                                            "time_stamp": time_now()
-                                        }
-                                    ],
-                                    "messages_sent": [
-                                        {
-                                            "num_messages_sent": 0,
-                                            "time_stamp": time_now()
-                                        }
-                                    ],
-                                    "involvement_rate": 0.0
+                                   "channels_joined": [
+                                       {
+                                           "num_channels_joined": 0,
+                                           "time_stamp": time_now()
+                                       }
+                                   ],
+                                   "dms_joined": [
+                                       {
+                                           "num_dms_joined": 0,
+                                           "time_stamp": time_now()
+                                       }
+                                   ],
+                                   "messages_sent": [
+                                       {
+                                           "num_messages_sent": 0,
+                                           "time_stamp": time_now()
+                                       }
+                                   ],
+                                   "involvement_rate": 0.0
                                },
                                "total_channels_joined": 0,
                                "total_dms_joined": 0,
                                "total_messages_sent": 0
-                            },
-                            'profile_img_url': img_url})
-
-
+                           },
+                           'profile_img_url': img_url})
 
     return {
         'auth_user_id': new_id,
@@ -154,5 +151,3 @@ def auth_password_reset(code, new_pass):
             else:
                 raise InputError(description="Invalid Password")
     raise InputError(description="Invalid Reset Code")
-
-
