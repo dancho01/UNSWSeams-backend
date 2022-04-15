@@ -115,11 +115,14 @@ def auth_password_request(mail, email):
         takes in an email, runs through some validation checks and
         sends an email to user with the reset code
     '''
+    
 
     uid = check_email_exist(email)
 
     if uid == "":
         return {}
+    
+
 
     code = generate_reset_code(uid)
 

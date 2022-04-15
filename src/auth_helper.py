@@ -132,6 +132,8 @@ def generate_reset_code(uid):
 
     code = random.randint(1000,9999)
     
+    print("in generate function")
+    
     # case: code already exists
     #if store['reset_codes']: # so that we don't iterate through an empty list
     for codes in store['reset_codes']:

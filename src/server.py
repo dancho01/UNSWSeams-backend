@@ -211,7 +211,6 @@ def clear_flask_v1():
 def channel_invite_v2():
     data = request.get_json()
     result = channel_invite_v1(data['token'], data['channel_id'], data['u_id'])
-    print(data_store.get())
     save_data()
     return dumps(result)
 
