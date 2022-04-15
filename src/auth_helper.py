@@ -112,7 +112,6 @@ def check_email_exist(email):
         iterates through data store and returns the UID corresponding to
         the users email
     '''
-    print(email)
 
     store = data_store.get()
 
@@ -133,43 +132,17 @@ def generate_reset_code(uid):
 
     code = random.randint(1000,9999)
     
-    print(store)
     # case: code already exists
-    if store['reset_codes']: # so that we don't iterate through an empty list
-        for codes in store['reset_codes']:
-            if codes['code'] == code:
-                generate_reset_code(uid)
+    #if store['reset_codes']: # so that we don't iterate through an empty list
+    for codes in store['reset_codes']:
+        if codes['code'] == code: # if the code already exists in the datastore, create a different one
+            generate_reset_code(uid)
             
     store['reset_codes'].append({'uid': uid,
                                  'code': code})
     
     return code 
 
-def check_logged_in(uid):
-    '''
-        takes in a uid and checks whether the user is currently logged in
-    '''
-
-    store = data_store.get()
-
-    for user in store['users']:
-        if user['auth_user_id'] == uid and user['active']:
-            return True
-        
-    return False
-
-def set_user_inactive(uid):
-    '''
-        takes in a uid and sets that user to inactive
-    '''
-
-    store = data_store.get()
-
-    for user in store['users']:
-        if user['auth_user_id'] == uid:
-            user['active'] = False 
-            return
-    return
 
 def email_reset_code(email, code, mail):
     '''
