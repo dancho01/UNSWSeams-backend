@@ -19,7 +19,6 @@ def recognise_commands(token, channel_id, message):
     c_info = get_user_channel_index(c_handle, channel_id)
 
     # /abot activates bot, /dbot deactivates bot
-    bot_status = store['channels'][c_info['c_dex']]['bot_status']
     channel_members = store['channels'][c_info['c_dex']]['owner_members']
 
     if command == "abot":
