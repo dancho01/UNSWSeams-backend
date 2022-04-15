@@ -835,14 +835,14 @@ def test_global_owner_success_channel_pin():
 
     requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
                                                            'name': 'First Channel', 'is_public': True})
-                                                       
-    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
-                                                                              'name': 'Second Channel', 'is_public': True})
 
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
+                                                           'name': 'Second Channel', 'is_public': True})
+                                                       
     channel_data = channel_response.json()
 
     requests.post(config.url + 'channel/join/v2', json={'token': user1_data['token'],
-                                                                              'channel_id' : 1})
+                                                                              'channel_id' : channel_data['channel_id']})
 
     message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
                                                                            'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
