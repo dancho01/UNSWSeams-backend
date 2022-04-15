@@ -3,7 +3,7 @@ from src.data_store import data_store
 from src.user_helper import attach_notification
 from src.channel_helper import time_now
 from src.user_helper import attach_notification
-from src.dm_helpers import decrement_total_num_messages_after_dm_remove
+from src.dm_helpers import decrement_total_num_messages_in_channel_dm
 
 
 '''

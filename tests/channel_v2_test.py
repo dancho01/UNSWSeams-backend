@@ -127,6 +127,52 @@ def test_valid_share_message(create_public_channel):
 
     assert response.status_code == 200
 
+def test_message_share_dm(create_public_channel, create_second_user):
+    user1_data = create_public_channel[1]
+    user2_data = create_second_user
+    requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    assert dm_response.status_code == 200
+    dm_data = dm_response.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a message'})
+    dm_message_data = dm_sent.json()    
+    response = requests.post(config.url + 'message/share/v1', json={
+        'token': user1_data['token'], 'og_message_id': dm_message_data['message_id'], 'message': "hello",
+        'channel_id': -1, 'dm_id': dm_message_data['message_id']})
+    assert response.status_code == 200
+
+def test_message_share_both_invalid_ch_and_dm_ids(create_public_channel, create_second_user):
+    user1_data = create_public_channel[1]
+    channel1 = create_public_channel[0]
+    user2_data = create_second_user
+    requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    assert dm_response.status_code == 200
+    dm_data = dm_response.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a message'})
+    dm_message_data = dm_sent.json()    
+    response = requests.post(config.url + 'message/share/v1', json={
+        'token': user1_data['token'], 'og_message_id': dm_message_data['message_id'], 'message': "hello",
+        'channel_id': -1, 'dm_id': -1})
+    assert response.status_code == 400
+
+def test_message_share_both_invalid_ch_and_dm_ids(create_public_channel, create_second_user):
+    user1_data = create_public_channel[1]
+    channel1 = create_public_channel[0]
+    user2_data = create_second_user
+    requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
+    assert dm_response.status_code == 200
+    dm_data = dm_response.json()
+    dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1_data['token'] , 'dm_id': dm_data['dm_id'], 
+                                        'message': 'this is a message'})
+    dm_message_data = dm_sent.json()    
+    response = requests.post(config.url + 'message/share/v1', json={
+        'token': user1_data['token'], 'og_message_id': dm_message_data['message_id'], 'message': "hello",
+        'channel_id': channel1['channel_id'], 'dm_id': dm_message_data['message_id']})
+    assert response.status_code == 400
 
 '''
  messages v2

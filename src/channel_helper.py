@@ -1,6 +1,6 @@
 from src.error import InputError, AccessError
 from datetime import datetime, timezone
-from src.global_helper import decrement_total_messages
+from src.global_helper import decrement_total_messages, increment_total_messages, increment_messages_sent
 from src.data_store import data_store
 from src.persistence import save_data, load_data
 
@@ -113,7 +113,7 @@ def send_message(new_message, channel_id, user_id):
 def send_dm(new_message, dm_id, user_id):
     store = data_store.get()
     for dm in store['dms']:
-        if dm['channel_id'] == dm_id:
+        if dm['dm_id'] == dm_id:
             dm['messages'].append(new_message)
     increment_messages_sent(user_id)
     increment_total_messages()
@@ -174,7 +174,7 @@ def check_message_in_dms(og, u_id, store):
     for dms in store['dms']:
         for message in dms['messages']:
             if message['message_id'] == og and member_check(u_id, dms):
-                return message['messages']
+                return message['message']
 
     raise InputError(description='This message is not found in dms')
 
@@ -223,26 +223,4 @@ def decrement_user_channels_joined(auth_user_id):
                 "num_channels_joined": num_channels_joined,
                 "time_stamp": time_now()
             })
-
-
-def increment_messages_sent(auth_user_id):
-    store = data_store.get()
-    for user in store['users']:
-        if user['auth_user_id'] == auth_user_id:
-            user['stats']['total_messages_sent'] += 1
-            num_messages_sent = user['stats']['total_messages_sent']
-            user['stats']['user_stats']['messages_sent'].append({
-                "num_messages_sent": num_messages_sent,
-                "time_stamp": time_now()
-            })
-
-
-def increment_total_messages():
-    store = data_store.get()
-    store['stats']['total_num_messages'] += 1
-    total_num_messages = store['stats']['total_num_messages']
-    store['stats']['workspace_stats']['messages_exist'].append({
-        'num_messages_exist': total_num_messages,
-        'time_stamp': time_now()
-    })
 

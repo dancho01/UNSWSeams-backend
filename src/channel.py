@@ -1,10 +1,10 @@
 from src.error import InputError, AccessError
 from src.data_store import data_store
-from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, increment_messages_sent, \
+from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, \
     check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now, increment_user_channels_joined, decrement_user_channels_joined, \
-    increment_total_messages, decrement_total_messages, check_timed_out
+    decrement_total_messages, check_timed_out
 from src.token import check_valid_token
-from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user,\
+from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, increment_messages_sent, \
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
 from src.message_helper import check_valid_message, find_channel_or_dm, check_if_pinned_v2, check_if_unpinned_v2, check_part_of_message_group_v2, check_owner_dm_channel
 from datetime import datetime

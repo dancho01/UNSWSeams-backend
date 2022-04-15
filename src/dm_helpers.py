@@ -3,6 +3,7 @@ import datetime
 from src.data_store import data_store
 from src.channel_helper import time_now
 from src.error import InputError, AccessError
+from src.global_helper import increment_total_messages, increment_messages_sent
 
 
 def check_for_duplicates_uids(u_ids):
