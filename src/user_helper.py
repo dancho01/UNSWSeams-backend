@@ -257,7 +257,6 @@ def check_dimensions(x1, y1, x2, y2, handle):
 
     return
 
-
 def check_image_type(handle):
     imageObject = Image.open(f"image/{handle}.jpg")
     if imageObject.format != 'JPEG':
