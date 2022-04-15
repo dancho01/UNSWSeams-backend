@@ -242,7 +242,7 @@ def check_dimensions(x1, y1, x2, y2, handle):
         raise InputError(
             description='x1, y1 must be smaller than x2, y2')
 
-    return 
+    return width, height
 
 def check_image_type(handle):
     imageObject = Image.open(f"image/{handle}.jpg")
