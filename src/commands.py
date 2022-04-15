@@ -25,15 +25,15 @@ def recognise_commands(token, channel_id, message):
     if command == "abot":
         if len(channel_members) != 0:
             check_owner(c_info['c_dex'], c_id)
-        bot_status = True
+        store['channels'][c_info['c_dex']]['bot_status'] = True
         return True
     elif command == "dbot":
         if len(channel_members) != 0:
             check_owner(c_info['c_dex'], c_id)
-        bot_status = False
+        store['channels'][c_info['c_dex']]['bot_status'] = False
         return True
 
-    if bot_status == False:
+    if store['channels'][c_info['c_dex']]['bot_status'] == False:
         raise InputError(
             description="Bot is inactive, please use /abot to activate bot")
 
