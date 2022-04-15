@@ -572,7 +572,7 @@ def test_valid_notification_only_20(create_first_user, create_second_user):
     user2_profile_response = user2_profile.json()
     user2_handle = user2_profile_response['user']['handle_str']
 
-    for i in range(21):
+    for _ in range(21):
             requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
                                                         'channel_id': channel_1_data['channel_id'], 'message': f'@{user2_handle} This is a message'})
 
