@@ -49,9 +49,6 @@ def create_tag_notification(channel_id, dm_id, tagger_id, message):
     tagger_handle = return_user_handle(tagger_id)
     channel_name = return_channel_or_dm_name(channel_id, dm_id)
 
-    print(message)
-    print(type(message))
-
     notification_message = "{0} tagged you in {1}: {2}".format(
         tagger_handle, channel_name, message[:20])
 
@@ -83,15 +80,34 @@ def create_message_react_notification(channel_id, dm_id, reacter_id, recipient_i
     recipient_handle = return_user_handle(recipient_id)
     channel_dm_name = return_channel_or_dm_name(channel_id, dm_id)
 
-    notification_message = "{0} reacted to your message in {1}".format(
-        reacter_handle, channel_dm_name)
+    if user_in_channel(recipient_id, channel_id, dm_id):
+        notification_message = "{0} reacted to your message in {1}".format(
+            reacter_handle, channel_dm_name)
 
-    notification = {
-        'channel_id': channel_id,
-        'dm_id': dm_id,
-        'notification_message': notification_message
-    }
-    attach_notification(recipient_handle, notification)
+        notification = {
+            'channel_id': channel_id,
+            'dm_id': dm_id,
+            'notification_message': notification_message
+        }
+        attach_notification(recipient_handle, notification)
+
+    return
+
+
+def user_in_channel(u_id, c_id, dm_id):
+    store = data_store.get()
+
+    if dm_id == - 1:
+        for channel in store['channels']:
+            for user in channel['all_members']:
+                if channel['channel_id'] == c_id and user['u_id'] == u_id:
+                    return True
+    else:
+        for dm in store['dms']:
+            for user in dm['all_members']:
+                if dm['channel_id'] == dm_id and user['u_id'] == u_id:
+                    return True
+    return False
 
 
 def attach_notification(user_handle, notification):
