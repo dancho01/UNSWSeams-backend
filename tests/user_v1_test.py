@@ -236,7 +236,7 @@ def test_valid_image_multiple_users_in_dm():
                                                                  'password': 'randomPassword', 'name_first': 'First', 'name_last': 'Last'})
     user2_data = user2.json()
 
-    dm_response = requests.post(
+    requests.post(
         config.url + 'dm/create/v1', json={'token': user1_data['token'], 'u_ids': [user2_data['auth_user_id']]})
 
     response1 = requests.post(config.url + 'user/profile/uploadphoto/v1', json={
