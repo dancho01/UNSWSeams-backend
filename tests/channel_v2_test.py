@@ -819,6 +819,44 @@ def test_not_owner_channel_message_pin():
 
     assert pin_response.status_code == 403
 
+def test_global_owner_success_channel_pin():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+
+    user2_data = user2.json()
+
+    requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
+                                                           'name': 'Second Channel', 'is_public': True})
+                                                       
+    channel_data = channel_response.json()
+
+    requests.post(config.url + 'channel/join/v2', json={'token': user1_data['token'],
+                                                                              'channel_id' : channel_data['channel_id']})
+
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    pin_response = requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    pin_data = pin_response.json()
+    assert pin_data == {}
+
+    assert pin_response.status_code == 200
+
 def test_not_valid_channel_message_pin():
     
     requests.delete(config.url + 'clear/v1')
@@ -958,6 +996,7 @@ def test_not_dm_owner_pin():
 
     assert pin_response.status_code == 403
 
+
 def test_not_valid_dm_pin():
 
     requests.delete(config.url + 'clear/v1')
@@ -991,7 +1030,7 @@ def test_not_valid_dm_pin():
 
     assert pin_response.status_code == 400
 
-'''Test for pin'''
+'''Test for unpin'''
 
 def test_success_with_unpin_channel_message():
 
@@ -1095,6 +1134,47 @@ def test_not_owner_channel_message_unpin():
                                                                        'message_id': message_data['message_id']})
 
     assert unpin_response.status_code == 403
+
+def test_global_owner_success_channel_unpin():
+
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    user2 = requests.post(config.url + 'auth/register/v2', json={'email': 'EMAIL@gmail.com',
+                                                                 'password': 'password1', 'name_first': 'FIRST', 'name_last': 'LAST'})
+
+    user2_data = user2.json()
+
+    requests.post(config.url + 'channels/create/v2', json={'token': user2_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+                                                       
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
+
+    channel_data = channel_response.json()
+
+    requests.post(config.url + 'channel/join/v2', json={'token': user1_data['token'],
+                                                                              'channel_id' : 1})
+
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
+
+    message_data = message_response.json()
+
+    requests.post(config.url + 'message/pin/v1', json={'token': user2_data['token'],
+                                                                    'message_id': message_data['message_id']})
+
+    pin_response = requests.post(config.url + 'message/unpin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
+
+    pin_data = pin_response.json()
+    assert pin_data == {}
+
+    assert pin_response.status_code == 200
 
 def test_not_valid_channel_message_unpin():
     

@@ -1,6 +1,7 @@
 import os
 import glob
 import urllib.request
+import requests
 from PIL import Image
 from src.data_store import data_store
 from src.error import InputError, AccessError
@@ -49,9 +50,6 @@ def create_tag_notification(channel_id, dm_id, tagger_id, message):
     tagger_handle = return_user_handle(tagger_id)
     channel_name = return_channel_or_dm_name(channel_id, dm_id)
 
-    print(message)
-    print(type(message))
-
     notification_message = "{0} tagged you in {1}: {2}".format(
         tagger_handle, channel_name, message[:20])
 
@@ -82,16 +80,20 @@ def create_message_react_notification(channel_id, dm_id, reacter_id, recipient_i
     reacter_handle = return_user_handle(reacter_id)
     recipient_handle = return_user_handle(recipient_id)
     channel_dm_name = return_channel_or_dm_name(channel_id, dm_id)
-        
-    notification_message = "{0} reacted to your message in {1}".format(reacter_handle, channel_dm_name)
-        
-    notification = {
-        'channel_id': channel_id,
-        'dm_id': dm_id, 
-        'notification_message': notification_message
-    }   
-    attach_notification(recipient_handle, notification)
-        
+
+    if user_in_channel(recipient_handle, channel_id, dm_id):
+        notification_message = "{0} reacted to your message in {1}".format(
+            reacter_handle, channel_dm_name)
+
+        notification = {
+            'channel_id': channel_id,
+            'dm_id': dm_id,
+            'notification_message': notification_message
+        }
+        attach_notification(recipient_handle, notification)
+
+    return
+
 
 def attach_notification(user_handle, notification):
     store = data_store.get()
@@ -148,22 +150,23 @@ def user_in_channel(user_handle, channel_id, dm_id):
 
     return False
 
-
 def check_url_status(img_url):
-    try: 
+    try:
         if urllib.request.urlopen(img_url).getcode() != 200:
             raise InputError(
                 description='URL not working!')
-    except Exception as e : 
+    except Exception as e:
         raise InputError(
-                description='URL not working!') from e
+            description='URL not working!') from e
     return
+
 
 def imgDown(img_url, handle):
 
     urllib.request.urlretrieve(img_url, f"image/{handle}.jpg")
 
-    return 
+    return
+
 
 def check_dimensions(x1, y1, x2, y2, handle):
     imageObject = Image.open(f"image/{handle}.jpg")
@@ -171,19 +174,20 @@ def check_dimensions(x1, y1, x2, y2, handle):
     if x1 < 0 or y1 < 0 or x2 > width or y2 > height:
         raise InputError(
             description='Dimensions not in bounds')
-    
+
     if x1 >= x2 or y1 >= y2:
         raise InputError(
             description='x1, y1 must be smaller than x2, y2')
 
-    return 
+    return
 
 def check_image_type(handle):
     imageObject = Image.open(f"image/{handle}.jpg")
     if imageObject.format != 'JPEG':
         raise InputError(
             description=f'Image must be JPG, should not be {imageObject.format}')
-    return 
+    return
+
 
 def crop(x1, y1, x2, y2, handle):
     imageObject = Image.open(f"image/{handle}.jpg")
@@ -191,7 +195,8 @@ def crop(x1, y1, x2, y2, handle):
     cropped.save(f"images/{handle}.jpg")
 
     return
- 
+
+
 def newphoto(handle):
 
     store = data_store.get()
@@ -205,21 +210,25 @@ def newphoto(handle):
     for channels in store['channels']:
         for owner_member in channels['owner_members']:
             if owner_member['handle_str'] == handle:
-                owner_member['profile_img_url'] = config.url + f"images/{handle}.jpg"
+                owner_member['profile_img_url'] = config.url + \
+                    f"images/{handle}.jpg"
     # Updates owner members
     for channels in store['channels']:
         for all_member in channels['all_members']:
             if all_member['handle_str'] == handle:
-                all_member['profile_img_url'] = config.url + f"images/{handle}.jpg"
+                all_member['profile_img_url'] = config.url + \
+                    f"images/{handle}.jpg"
 
     for dm in store['dms']:
         dm['owner']['profile_img_url'] = config.url + f"images/{handle}.jpg"
-        
+
         for all_member in dm['all_members']:
             if all_member['handle_str'] == handle:
-                all_member['profile_img_url'] = config.url + f"images/{handle}.jpg"
+                all_member['profile_img_url'] = config.url + \
+                    f"images/{handle}.jpg"
 
     return
+
 
 def clear_profile_images():
 
@@ -229,5 +238,4 @@ def clear_profile_images():
     for file in os.listdir(f'{directory}/image'):
         os.remove(f'{directory}/image/{file}')
 
-    return 
-
+    return
