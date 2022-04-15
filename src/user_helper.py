@@ -149,7 +149,7 @@ def user_in_channel(user_handle, channel_id, dm_id):
                         return True
 
     return False
-    
+
 def check_url_status(img_url):
     try:
         if urllib.request.urlopen(img_url).getcode() != 200:
