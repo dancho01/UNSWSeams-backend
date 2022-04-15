@@ -28,7 +28,7 @@ def command_clear_chat(channel_id):
 
     for channel in store['channels']:
         if channel['channel_id'] == channel_id:
-            decrement_total_num_messages_after_dm_remove(
+            decrement_total_num_messages_in_channel_dm(
                 len(channel['messages']))
             channel['messages'] = []
 

@@ -144,7 +144,6 @@ def test_message_share_dm(create_public_channel, create_second_user):
 
 def test_message_share_both_invalid_ch_and_dm_ids(create_public_channel, create_second_user):
     user1_data = create_public_channel[1]
-    channel1 = create_public_channel[0]
     user2_data = create_second_user
     requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [user2_data['auth_user_id']]})  
@@ -158,7 +157,7 @@ def test_message_share_both_invalid_ch_and_dm_ids(create_public_channel, create_
         'channel_id': -1, 'dm_id': -1})
     assert response.status_code == 400
 
-def test_message_share_both_invalid_ch_and_dm_ids(create_public_channel, create_second_user):
+def test_message_share_both_ch_and_dm_ids(create_public_channel, create_second_user):
     user1_data = create_public_channel[1]
     channel1 = create_public_channel[0]
     user2_data = create_second_user

@@ -85,7 +85,7 @@ def test_search_is_user_reacted(create_first_user):
                                                         'channel_id': channel['channel_id'], 'message': 'This is a message'})
     message = message_data.json()    
     
-    resp = requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})
+    requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})
     search_response = requests.get(config.url + 'search/v1', params = {'token': user1['token'], 'query_str': 'message'})
 
     assert search_response.status_code == 200
