@@ -204,7 +204,7 @@ def total_messages_count():
     for dm in store['dms']:
         message_count += len(dm['messages'])
 
-    return message_count
+#     return message_count
 
 # user messages sent
 
@@ -223,7 +223,7 @@ def user_messages_count(u_id):
             if message['u_id'] == u_id:
                 user_messages_count += 1
 
-    return user_messages_count
+#     return user_messages_count
 
 
 def check_url_status(img_url):
