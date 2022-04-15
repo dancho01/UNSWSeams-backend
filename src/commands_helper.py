@@ -46,7 +46,7 @@ def warn_user(c_dex, u_id):
             user['info']['warnings'] += 1
             handle = user['handle_str']
             warn_count = user['info']['warnings']
-            timeout_len = user['info']['warnings'] * 1
+            timeout_len = user['info']['warnings'] * 20
         if user['info']['warnings'] % 3 == 0:
             # bot times them out for x amount of time
             warning = format_bot_timeout_warning(
