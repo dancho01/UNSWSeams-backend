@@ -154,7 +154,7 @@ def message_send_v1(token, channel_id, message):
 
     check_timed_out(channel_index, user_id)
     if filter_language(user_id, channel_index, message):
-        return
+        message = "This message has been removed due to profanity"
 
     if message[0] == "/" and recognise_commands(token, channel_id, message):
         return

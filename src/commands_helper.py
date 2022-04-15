@@ -3,6 +3,7 @@ from src.data_store import data_store
 from src.user_helper import attach_notification
 from src.channel_helper import time_now
 from src.user_helper import attach_notification
+from src.dm_helpers import decrement_total_num_messages_after_dm_remove
 
 
 '''
@@ -20,6 +21,16 @@ def get_user_channel_index(handle, channel_id):
                         'c_dex': c_dex,
                         'u_dex': u_dex
                     }
+
+
+def command_clear_chat(channel_id):
+    store = data_store.get()
+
+    for channel in store['channels']:
+        if channel['channel_id'] == channel_id:
+            decrement_total_num_messages_after_dm_remove(
+                len(channel['messages']))
+            channel['messages'] = []
 
 
 def do_timeout(c_dex, u_dex, time_end):
@@ -49,12 +60,16 @@ def warn_user(c_dex, u_id):
             timeout_len = user['info']['warnings'] * 20
         if user['info']['warnings'] % 3 == 0:
             # bot times them out for x amount of time
-            warning = format_bot_timeout_warning(
-                handle, timeout_len)
+            warning_message = format_bot_timeout_warning(handle, timeout_len)
+            warning = {
+                'channel_id': store['channels'][c_dex]['channel_id'],
+                'dm_id': -1,
+                'notification_message': warning_message
+            }
             message = {
                 'message_id': - 1,
                 'u_id': - 1,
-                'message': warning,
+                'message': warning_message,
                 'time_sent': time_now(),
                 'reacts': [],
                 'is_pinned': False
@@ -70,11 +85,16 @@ def warn_user(c_dex, u_id):
 
             return True
 
-        warning = format_bot_warning(warn_count, handle)
+        warning_message = format_bot_warning(warn_count, handle)
+        warning = {
+            'channel_id': store['channels'][c_dex]['channel_id'],
+            'dm_id': -1,
+            'notification_message': warning_message
+        }
         message = {
             'message_id': - 1,
             'u_id': - 1,
-            'message': warning,
+            'message': warning_message,
             'time_sent': time_now(),
             'reacts': [],
             'is_pinned': False
@@ -89,9 +109,7 @@ def warn_user(c_dex, u_id):
 
 def format_bot_warning(warnings, handle):
     warning_message = """
-    |--------------------------------------------------------------------------------|
-    |Stop swearing @{0}! {1} more warning before timeout!!! |
-    |--------------------------------------------------------------------------------|
+    Stop swearing @{0}! {1} more warning before timeout!!!
     """.format(
         handle, 3 - (warnings % 3))
 

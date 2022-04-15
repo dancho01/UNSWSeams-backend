@@ -106,10 +106,11 @@ def calculate_time_stamp():
 
     return utc_timestamp
 
+
 def increment_user_dms_joined(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['auth_user_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id:
             user['stats']['total_dms_joined'] += 1
             num_dms_joined = user['stats']['total_dms_joined']
             user['stats']['user_stats']['dms_joined'].append({
@@ -117,16 +118,18 @@ def increment_user_dms_joined(auth_user_id):
                 "time_stamp": time_now()
             })
 
+
 def decrement_user_dms_joined(auth_user_id):
     store = data_store.get()
     for user in store['users']:
-        if user['auth_user_id'] == auth_user_id: 
+        if user['auth_user_id'] == auth_user_id:
             user['stats']['total_dms_joined'] -= 1
             num_dms_joined = user['stats']['total_dms_joined']
             user['stats']['user_stats']['dms_joined'].append({
                 "num_dms_joined": num_dms_joined,
                 "time_stamp": time_now()
             })
+
 
 def increment_total_num_dms():
     store = data_store.get()
@@ -137,6 +140,7 @@ def increment_total_num_dms():
         'time_stamp': time_now()
     })
 
+
 def decrement_total_num_dms():
     store = data_store.get()
     store['stats']['total_num_dms'] -= 1
@@ -146,6 +150,18 @@ def decrement_total_num_dms():
         'time_stamp': time_now()
     })
 
+
 def store_message_send_dm_message(dm_index, new_message):
     store = data_store.get()
     store['dms'][dm_index]['messages'].append(new_message)
+
+
+def decrement_total_num_messages_after_dm_remove(num_msgs_in_dm):
+    store = data_store.get()
+    store['stats']['total_num_messages'] -= num_msgs_in_dm
+    if num_msgs_in_dm != 0:
+        total_num_messages = store['stats']['total_num_messages']
+        store['stats']['workspace_stats']['messages_exist'].append({
+            'num_messages_exist': total_num_messages,
+            'time_stamp': time_now()
+        })
