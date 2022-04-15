@@ -222,6 +222,22 @@ def test_invalid_session_id():
     assert response.status_code == 403 # AccessError
     
     
+''' tests for auth/passwordreset/reset '''    
+
+def test_invalid_passwordreset_pass():
+    '''
+        docstring
+    '''
+    requests.delete(config.url + 'clear/v1')
+    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com', \
+                                                         'password': 'password', \
+                                                         'name_first': 'First2', \
+                                                         'name_last': 'Last'})
+    requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
+    response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': 1234, 'new_password': 'pass'})
+    assert response.status_code == 400
+    
+
 def test_invalid_resetcode():
     '''
         docstring
@@ -236,18 +252,20 @@ def test_invalid_resetcode():
     assert response.status_code == 400
 
 
-def test_invalid_password_reset():
-    '''
-        docstring
-    '''
-    requests.delete(config.url + 'clear/v1')
-    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com', \
-                                                         'password': 'password', \
-                                                         'name_first': 'First2', \
-                                                         'name_last': 'Last'})
-    requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
-    response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': 1234, 'new_password': 'pass'})
-    assert response.status_code == 400
+# have tried running the passwordreset_request 9999 times so that all the codes are filled out. this way I can test the code '1234' against the reset function but this takes too long 
+#def test_valid_reset():
+#    requests.delete(config.url + 'clear/v1')
+#    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com', \
+#                                                         'password': 'password', \
+#                                                         'name_first': 'First2', \
+#                                                         'name_last': 'Last'})
+#    for i in range(2000):
+#        requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
+#        
+#    response = requests.post(config.url + 'auth/passwordreset/reset/v1', json={'reset_code': 1234, 'new_password': 'password123'})
+#    login_response = requests.post(config.url + 'auth/login/v2', json={'email': 'email@gmail.com',
+#                                                                       'password': 'password123'})
+#    assert login_response.status_code == 200
 
     
 ''' tests for password /auth/passwordreset/request/v1  '''
@@ -260,7 +278,10 @@ def test_invalid_email():
 
 def test_valid_email():
     requests.delete(config.url + 'clear/v1')
+    requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com', \
+                                                         'password': 'password', \
+                                                         'name_first': 'First', \
+                                                         'name_last': 'Last'})
+    requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
     response = requests.post(config.url + 'auth/passwordreset/request/v1', json={'email': 'email@gmail.com'})
     assert response.status_code == 200
-   
-    
