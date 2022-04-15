@@ -41,7 +41,6 @@ def find_channel_or_dm(store, message_id):
         for message in channel['messages']:
             if message_id == message['message_id']:
                 return channel, message 
-    return
 
 def check_if_pinned_v2(message):
     if message['is_pinned'] == False:
