@@ -2,7 +2,6 @@ from src.error import InputError, AccessError
 from datetime import datetime, timezone
 from src.global_helper import decrement_messages_sent, decrement_total_messages
 from src.data_store import data_store
-from src.persistence import save_data, load_data
 
 
 def check_timed_out(c_dex, user_id):
@@ -243,4 +242,3 @@ def increment_total_messages():
         'num_messages_exist': total_num_messages,
         'time_stamp': time_now()
     })
-
