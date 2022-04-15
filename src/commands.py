@@ -4,14 +4,14 @@ from src.error import InputError
 from src.token import check_valid_token
 from src.channel_helper import time_now
 from src.global_helper import check_owner
-from src.commands_helper import get_user_channel_index, do_timeout, do_untimeout, warn_user
+from src.other import clear_v1
+from src.commands_helper import get_user_channel_index, do_timeout, do_untimeout, warn_user, \
+    command_clear_chat
 
 
 def recognise_commands(token, channel_id, message):
 
     params = message.split()
-    print("--------------")
-    print(params)
     command = message.split()[0].replace("/", "")
     commander_id = check_valid_token(token)['u_id']
 
@@ -30,8 +30,18 @@ def recognise_commands(token, channel_id, message):
         t.start()
 
         return True
+    elif command == "clearchat":
 
-    raise InputError(description="Invalid command")
+        command_clear_chat(channel_id)
+
+        return True
+
+    elif command == "reset":
+        clear_v1()
+
+        return
+    else:
+        raise InputError(description="Invalid command")
 
 
 def filter_language(u_id, c_index, message):
@@ -52,3 +62,6 @@ def filter_language(u_id, c_index, message):
 
     if (any(ele in message.lower() for ele in swear_words)):
         warn_user(c_index, u_id)
+        return True
+
+    return False
