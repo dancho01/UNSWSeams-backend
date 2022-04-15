@@ -40,7 +40,7 @@ def user_stats_v1(token):
             denominator = sum([store['stats']['total_num_channels'], store['stats']['total_num_dms'], store['stats']['total_num_messages']])
             if denominator != 0:
                 involvement_rate = numerator / denominator
-            involvement_rate = min(1, involvement_rate)
+            involvement_rate = min(1.0, involvement_rate)
             user['stats']['user_stats']['involvement_rate'] = involvement_rate
             return {'user_stats': user['stats']['user_stats']}
 

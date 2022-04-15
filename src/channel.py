@@ -150,10 +150,7 @@ def message_send_v1(token, channel_id, message):
 
     new_message = create_message(new_message_id, user_id, message)
 
-    send_message(new_message, channel_id)
-
-    increment_messages_sent(user_id)
-    increment_total_messages()
+    send_message(new_message, channel_id, user_id)
 
     return {
         'message_id': new_message_id
@@ -221,9 +218,9 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
         new_message_id, user_id, format_message_share)
 
     if channel_id == -1:
-        send_dm(message_ready, dm_id)
+        send_dm(message_ready, dm_id, user_id)
     else:
-        send_message(message_ready, channel_id)
+        send_message(message_ready, channel_id, user_id)
 
     return new_message_id
 

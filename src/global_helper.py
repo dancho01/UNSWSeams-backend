@@ -136,16 +136,6 @@ def return_member_information(u_id, store):
                 'profile_img_url' : user['profile_img_url'],
             }
 
-def decrement_messages_sent(auth_user_id):
-    store = data_store.get()
-    for user in store['users']:
-        if user['auth_user_id'] == auth_user_id: 
-            user['stats']['total_messages_sent'] -= 1
-            num_messages_sent = user['stats']['total_messages_sent']
-            user['stats']['user_stats']['messages_sent'].append({
-                "num_messages_sent": num_messages_sent,
-                "time_stamp": time_now()
-            })
 
 def decrement_total_messages():
     store = data_store.get()

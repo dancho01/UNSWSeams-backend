@@ -93,19 +93,21 @@ def edit_message(message_id, message):
 '''
 
 
-def send_message(new_message, channel_id):
+def send_message(new_message, channel_id, user_id):
     store = data_store.get()
     for channel in store['channels']:
         if channel['channel_id'] == channel_id:
             channel['messages'].append(new_message)
+    increment_messages_sent(user_id)
+    increment_total_messages()
 
-
-def send_dm(new_message, dm_id):
+def send_dm(new_message, dm_id, user_id):
     store = data_store.get()
     for dm in store['dms']:
         if dm['channel_id'] == dm_id:
             dm['messages'].append(new_message)
-
+    increment_messages_sent(user_id)
+    increment_total_messages()
 
 def create_message(new_message_id, user_id, message):
     new_message = {

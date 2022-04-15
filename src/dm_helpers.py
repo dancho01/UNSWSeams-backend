@@ -146,6 +146,18 @@ def decrement_total_num_dms():
         'time_stamp': time_now()
     })
 
-def store_message_send_dm_message(dm_index, new_message):
+def decrement_total_num_messages_in_channel_dm(num_msgs_in_dm):
+    store = data_store.get()
+    store['stats']['total_num_messages'] -= num_msgs_in_dm
+    if num_msgs_in_dm != 0:
+        total_num_messages = store['stats']['total_num_messages']
+        store['stats']['workspace_stats']['messages_exist'].append({
+            'num_messages_exist': total_num_messages,
+            'time_stamp': time_now()
+        })
+
+def store_message_send_dm_message(dm_index, new_message, auth_user_id):
     store = data_store.get()
     store['dms'][dm_index]['messages'].append(new_message)
+    increment_messages_sent(auth_user_id)
+    increment_total_messages()
