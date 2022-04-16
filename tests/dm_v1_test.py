@@ -392,7 +392,7 @@ def test_dm_return_messages_success_over_fifty(create_first_user):
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
     dm_data = dm_response.json()
     
-    for i in range(55):
+    for _ in range(55):
         requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is random'})
            
     dm_messages = requests.get(config.url + 'dm/messages/v1', params = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'start': 1})
