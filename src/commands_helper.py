@@ -167,10 +167,12 @@ def get_help(c_dex):
     Args
         None
     
-    /create_poll <option1> <option2> ...
+    /startpoll <question> <option1> <option2> ...
     Description
-        Initiates a poll in the specified server, will read as many options as inputted
+        Initiates a poll in the specified server, will read as many options as inputted.
+        First argument will be considered the question
     Args
+        - question 
         - option (as many as needed)
     
     /addpolloption <option1> <option2> ...
@@ -186,7 +188,7 @@ def get_help(c_dex):
     Args
         - option
         
-    /end_poll
+    /endpoll
     Description
         Ends existing poll.
     Args
@@ -208,7 +210,7 @@ def add_poll_option(c_dex, options):
     store['channels'][c_dex]['messages'].append(bot_message)
 
 
-def create_poll(c_dex, options, c_id):
+def create_poll(c_dex, question, options, c_id):
     store = data_store.get()
 
     if len(options) < 1:
@@ -218,6 +220,8 @@ def create_poll(c_dex, options, c_id):
 
     store['channels'][c_dex]['poll']['poll_status'] = True
     store['channels'][c_dex]['poll']['start_id'] = c_id
+    store['channels'][c_dex]['poll']['poll_question'] = question
+
     for choice in options:
         store['channels'][c_dex]['poll']['poll_info'][choice] = []
 
@@ -249,9 +253,7 @@ def format_no_start():
 
 
 def format_bot_warning(warnings, handle):
-    warning_message = """
-    Stop swearing @{0}! {1} more warning before timeout!!!
-    """.format(
+    warning_message = "Stop swearing @{0}! {1} more warning before timeout!!".format(
         handle, 3 - (warnings % 3))
 
     return warning_message
@@ -265,7 +267,7 @@ def format_bot_timeout_warning(handle, length):
 
 
 def format_no_vote():
-    message = "There is no active poll, please do /startpoll <vote1> <vote2> ..."
+    message = "There is no active poll, please do /startpoll <question> <vote1> <vote2> ..."
 
     return message
 
@@ -273,7 +275,8 @@ def format_no_vote():
 def format_bot_poll(c_dex, stage):
     store = data_store.get()
 
-    poll_votes = store['channels'][c_dex]['poll']['poll_info']
+    poll_stats = store['channels'][c_dex]['poll']
+    poll_votes = poll_stats['poll_info']
 
     vote_len = largest_vote_name(poll_votes)
 
@@ -283,6 +286,8 @@ def format_bot_poll(c_dex, stage):
         poll_message = "Poll in progress...\n"
     elif stage == 2:
         poll_message = "Poll has ended, these were the results\n"
+
+    poll_message += poll_stats['poll_question'] + ":" + "\n"
 
     for key in poll_votes.items():
         graphics = make_vote_graphics(len(key[1]))

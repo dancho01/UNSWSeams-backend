@@ -58,7 +58,7 @@ def recognise_commands(token, channel_id, message):
         clear_v1()
         return True
     elif command == "startpoll":
-        create_poll(c_info['c_dex'], params[1:], c_id)
+        create_poll(c_info['c_dex'], params[1], params[2:], c_id)
         return True
     elif command == "vote":
         vote(c_id, c_info['c_dex'], params[1])
