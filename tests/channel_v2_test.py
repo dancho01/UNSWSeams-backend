@@ -1223,7 +1223,7 @@ def test_global_owner_success_channel_unpin():
 
     message_data = message_response.json()
 
-    pin = requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
+    requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
                                                        'message_id': message_data['message_id']})
 
 
