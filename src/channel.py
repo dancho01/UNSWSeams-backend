@@ -355,7 +355,6 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
-    print("after data_store.get")
     check_valid_user(u_id)
 
     channel_index = check_valid_channel(channel_id)
@@ -365,7 +364,6 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     is_user_member(u_id, channel_index)
 
-    print("before checking owner")
     check_already_owner(channel_index, u_id)
 
     store['channels'][channel_index]['owner_members'].append(

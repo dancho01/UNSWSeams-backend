@@ -84,8 +84,6 @@ def check_login(email, password):
     for user in store['users']:
         if user['email'] == email:
             if user['password'] == hash(password):
-                print(user['password'])
-                print(hash(password))
                 return {'u_id': user['auth_user_id'],
                         'handle': user['handle']}
             else:

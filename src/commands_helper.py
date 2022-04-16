@@ -261,7 +261,6 @@ def vote(u_id, c_dex, vote_choice):
     poll_info = store['channels'][c_dex]['poll']['poll_info']
 
     if has_user_voted(poll_info, u_id):
-        print("True")
         for voters in poll_info.items():
             if u_id in voters[1]:
                 voters[1].remove(u_id)
@@ -269,7 +268,6 @@ def vote(u_id, c_dex, vote_choice):
             if voters[0] == vote_choice:
                 voters[1].append(u_id)
     else:
-        print("False")
         for voters in poll_info.items():
             if voters[0] == vote_choice:
                 voters[1].append(u_id)
