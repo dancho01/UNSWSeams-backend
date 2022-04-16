@@ -144,33 +144,6 @@ def generate_reset_code(uid):
     return code
 
 
-def check_logged_in(uid):
-    '''
-        takes in a uid and checks whether the user is currently logged in
-    '''
-
-    store = data_store.get()
-
-    for user in store['users']:
-        if user['auth_user_id'] == uid and user['active']:
-            return True
-
-    return False
-
-
-def set_user_inactive(uid):
-    '''
-        takes in a uid and sets that user to inactive
-    '''
-
-    store = data_store.get()
-
-    for user in store['users']:
-        if user['auth_user_id'] == uid:
-            user['active'] = False
-            return
-    return
-
 
 def email_reset_code(email, code, mail):
     '''
