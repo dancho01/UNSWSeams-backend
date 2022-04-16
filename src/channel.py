@@ -442,7 +442,7 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
         raise InputError(
             'time_sent is a time in the past')
     t = threading.Timer(time_difference, send_message,
-                        [new_message, channel_id])
+                        [new_message, channel_id, auth_user_id])
     t.start()
 
     return {

@@ -74,9 +74,10 @@ def check_valid_dm(dm_id, store):
         for easier lookup in the future    
     '''
 
-    for dm_index in range(len(store['dms'])):
-        if store['dms'][dm_index]['dm_id'] == dm_id:
-            return dm_index
+    for dm_dex, dm in enumerate(store['dms']):
+        if dm['dm_id'] == dm_id:
+            return dm_dex
+
     raise InputError(description='dm_id does not refer to a valid DM')
 
 
@@ -161,6 +162,7 @@ def decrement_total_num_messages_in_channel_dm(num_msgs_in_dm):
             'num_messages_exist': total_num_messages,
             'time_stamp': time_now()
         })
+
 
 def store_message_send_dm_message(dm_index, new_message, auth_user_id):
     store = data_store.get()
