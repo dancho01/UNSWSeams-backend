@@ -107,28 +107,37 @@ def return_notifications(user_id):
 
     for user in store['users']:
         if user['auth_user_id'] == user_id:
-            return user['notifications'][:20]
+            to_return = user['notifications'][:20]
+    
+    return to_return
+
 
 
 def return_channel_or_dm_name(channel_id, dm_id):
+
     store = data_store.get()
 
     if dm_id == -1:
         for channel in store['channels']:
             if channel['channel_id'] == channel_id:
-                return channel['name']
+                to_return = channel['name']
     else:
         for dm in store['dms']:
             if dm['dm_id'] == dm_id:
-                return dm['name']
+                to_return = dm['name']
+
+    return to_return
 
 
 def return_user_handle(user_id):
+
     store = data_store.get()
 
     for user in store['users']:
         if user['auth_user_id'] == user_id:
-            return user['handle']
+            to_return = user['handle']
+    
+    return to_return
 
 
 def user_in_channel(user_handle, channel_id, dm_id):
