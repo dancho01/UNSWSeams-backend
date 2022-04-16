@@ -35,16 +35,27 @@ def test_search_query_invalid_length(create_first_user):
     assert search_response.status_code == 400
 
 
-def test_search_query_success(create_first_user):
+def test_search_query_success(create_first_user, create_second_user):
 
     user1 = create_first_user
+    user2 = create_second_user
     
-    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
+    requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+                                                               
+    requests.post(config.url + 'channels/create/v2', json={'token': user2['token'],
+                                                                       'name': 'First Channel', 'is_public': True})  
+                                                                       
+    requests.post(config.url + 'dm/create/v1', json = {'token': user2['token'] , 'u_ids': []}) 
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': [user2['auth_user_id']]}) 
     dm_data = dm_response.json()
     
     requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is random'})  
     requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is a message 1'})    
-    requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is a message 2'})  
+    message_data = requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is a message 2'})  
+    message = message_data.json()
+    
+    requests.post(config.url + 'message/react/v1', json = {'token': user2['token'], 'message_id': message['message_id'], 'react_id': 1})
     
     search_response = requests.get(config.url + 'search/v1', params = {'token': user1['token'], 'query_str': 'message'})
 
@@ -91,16 +102,22 @@ def test_search_is_user_reacted(create_first_user):
     assert search_response.status_code == 200
 
 ''' tests for message/react/v1 '''
-def test_react_invalid_message_id(create_first_user):
+def test_react_invalid_message_id(create_first_user, create_second_user):
 
     user1 = create_first_user
+    user2 = create_second_user
     
-    channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+    requests.post(config.url + 'channels/create/v2', json={'token': user2['token'],
                                                                        'name': 'First Channel', 'is_public': True})
-    channel = channel_data.json()
-
-    message_data = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
-                                                        'channel_id': channel['channel_id'], 'message': 'This is a message'})
+    requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+                      
+                      
+    requests.post(config.url + 'dm/create/v1', json = {'token': user2['token'] , 'u_ids': []}) 
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
+    dm_data = dm_response.json()                                                  
+                                           
+    message_data = requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is message 1'})
     message = message_data.json()
       
     resp = requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'] + 1, 'react_id': 1})
@@ -222,6 +239,5 @@ def test_unreact_success(create_first_user):
     resp = requests.post(config.url + 'message/unreact/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})   
 
     assert resp.status_code == 200
-  
-    
+
     

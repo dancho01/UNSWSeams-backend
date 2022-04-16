@@ -172,7 +172,8 @@ def test_dm_remove_success_case(create_first_user):
         User 1 is able to succesfully remove the DM as he is the original creator
     '''   
     user1 = create_first_user
-
+    
+    requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
     dm = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
     dm_data = dm.json()  
     
@@ -352,7 +353,33 @@ def test_dm_messages_user_not_member(create_first_user, create_second_user):
     
 
     
-def test_dm_return_messages_success(create_first_user):
+def test_dm_return_messages_success(create_first_user, create_second_user):
+    '''
+    Error raised:
+        None
+    Explanation:
+        Succesfully returns up to 50 messages between the "start" index and "start + 50"
+        In this case, returns the messages with index 1 and 2
+    '''  
+    user1 = create_first_user
+    user2 = create_second_user
+    
+    dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': [user2['auth_user_id']]}) 
+    dm_data = dm_response.json()
+    
+    requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is message 1'})
+    message_data = requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is message 2'})
+    message = message_data.json()
+    
+    requests.post(config.url + 'message/react/v1', json = {'token': user2['token'], 'message_id': message['message_id'], 'react_id': 1})
+    requests.post(config.url + 'message/react/v1', json = {'token': user1['token'], 'message_id': message['message_id'], 'react_id': 1})
+        
+    dm_messages = requests.get(config.url + 'dm/messages/v1', params = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'start': 1})
+    
+    assert dm_messages.status_code == 200    
+    
+    
+def test_dm_return_messages_success_over_fifty(create_first_user):
     '''
     Error raised:
         None
@@ -365,10 +392,9 @@ def test_dm_return_messages_success(create_first_user):
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
     dm_data = dm_response.json()
     
-    requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is message 1'})
-    requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is message 2'})        
-    requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is message 3'})
-        
+    for _ in range(55):
+        requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is random'})
+           
     dm_messages = requests.get(config.url + 'dm/messages/v1', params = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'start': 1})
     
     assert dm_messages.status_code == 200    
@@ -411,7 +437,6 @@ def test_dm_send_message_invalid_length(create_first_user):
     assert dm_sent.status_code == 400   
     
     
-    
 def test_dm_send_message_user_not_member(create_first_user, create_second_user):
     '''
     Error raised:
@@ -447,7 +472,6 @@ def test_dm_send_message_success(create_first_user):
     dm_sent = requests.post(config.url + 'message/senddm/v1', json = {'token': user1['token'] , 'dm_id': dm_data['dm_id'], 'message': 'this is a message'})    
 
     assert dm_sent.status_code == 200
-
 
 
 
