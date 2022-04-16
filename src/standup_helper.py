@@ -20,11 +20,10 @@ def end_standup(channel_id, token):
         if channel['channel_id'] == channel_id:
             combined = combine_standup_cache(
                 channel['standup']['standup_cache'])
-            message_send_v1(token, channel_id, combined)
             channel['standup']['active'] = False
             channel['standup']['finish_time'] = -1
-            channel['standup']['standup_cache'] = []
-
+            channel['standup']['standup_cache'] = []                
+            message_send_v1(token, channel_id, combined)
 
 def combine_standup_cache(cache):
     combined_cache = '\n'.join(cache)

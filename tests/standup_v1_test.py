@@ -2,6 +2,7 @@ import pytest
 import requests
 import random
 import string
+import time
 from src import config
 
 ''' fixtures '''
@@ -43,7 +44,7 @@ def test_standup_start_invalid_channel(create_first_user):
     channel_id = channel_id_resp.json()
 
     response = requests.post(config.url + 'standup/start/v1', json={
-                             'token': user['token'], 'channel_id': channel_id['channel_id'] + 1, 'length': 60})
+                             'token': user['token'], 'channel_id': channel_id['channel_id'] + 1, 'length': 2})
 
     assert response.status_code == 400
 
@@ -95,13 +96,19 @@ def test_standup_start_unauthorised_user(create_first_user, create_second_user):
 
 def test_standup_start_success(create_first_user):
     user = create_first_user
-
+    
+    requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
+                                                                             'name': 'First Channel', 'is_public': True})    
     channel_id_resp = requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
-                                                                             'name': 'First Channel', 'is_public': True})
+                                                                             'name': 'Second Channel', 'is_public': True})
     channel_id = channel_id_resp.json()
+    
+    requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
+                                                                             'name': 'Third Channel', 'is_public': True}) 
 
     response = requests.post(config.url + 'standup/start/v1', json={'token': user['token'],
                                                                     'channel_id': channel_id['channel_id'], 'length': 1})
+    time.sleep(3)
 
     assert response.status_code == 200
 
@@ -153,6 +160,20 @@ def test_standup_active_success(create_first_user):
 
     requests.post(config.url + 'standup/start/v1', json={'token': user['token'],
                                                          'channel_id': channel_id['channel_id'], 'length': 5})
+
+    response = requests.get(config.url + 'standup/active/v1', params={'token': user['token'],
+                                                                      'channel_id': channel_id['channel_id']})
+    assert response.status_code == 200
+    
+def test_standup_not_active_success(create_first_user):
+    user = create_first_user
+
+    requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
+                                                                             'name': 'First Channel', 'is_public': True})
+
+    channel_id_resp = requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
+                                                                             'name': 'Second Channel', 'is_public': True})
+    channel_id = channel_id_resp.json()
 
     response = requests.get(config.url + 'standup/active/v1', params={'token': user['token'],
                                                                       'channel_id': channel_id['channel_id']})
@@ -229,8 +250,11 @@ def test_standup_send_unauthorised_user(create_first_user, create_second_user):
 def test_standup_send_success(create_first_user):
     user1 = create_first_user
 
-    channel_id_resp = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+    requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
                                                                              'name': 'First Channel', 'is_public': True})
+
+    channel_id_resp = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                             'name': 'Second Channel', 'is_public': True})
     channel_id = channel_id_resp.json()
 
     requests.post(config.url + 'standup/start/v1', json={'token': user1['token'],

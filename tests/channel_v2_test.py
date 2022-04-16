@@ -224,6 +224,24 @@ def test_unauthorised_user(create_public_channel, create_second_user):
         'token': create_second_user['token'], 'channel_id': create_public_channel[0]['channel_id'], 'start': 0})
 
     assert message_response.status_code == 403
+    
+    
+def test_channel_messages_over_fifty(create_first_user):
+    user1 = create_first_user
+
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                       'name': 'First Channel', 'is_public': True})
+    channel_1_data = channel_1.json()
+    
+    for _ in range(55):
+        requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+
+    message_response = requests.get(config.url + 'channel/messages/v2', params={
+        'token': user1['token'], 'channel_id': channel_1_data['channel_id'], 'start': 0})
+
+    assert message_response.status_code == 200
+
 
 
 '''
