@@ -1147,7 +1147,10 @@ def test_valid_notification_channel_message(create_first_user, create_second_use
     user1 = create_first_user
     user2 = create_second_user
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
+    requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
+                                                                       'is_public': True})
+
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'Second Channel',
                                                                        'is_public': True})
     channel_1_data = channel_1.json()
 
@@ -1209,6 +1212,39 @@ def test_invalid_notification_channel_message(create_first_user, create_second_u
     assert len(response_sender_data['notifications']) == 0
     assert response_receiver.status_code == 200
     assert response_sender.status_code == 200
+
+def test_channel_message_invalid_tag(create_first_user, create_second_user):
+    '''
+    Error raised:
+        None
+    ExplanationL
+        User 1 messages user 2 on a channel, expects a notification for user 2
+    '''
+
+    user1 = create_first_user
+    user2 = create_second_user
+
+    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
+                                                                       'is_public': True})
+    channel_1_data = channel_1.json()
+
+    requests.post(config.url + 'channel/invite/v2', json={'token': user1['token'], 'channel_id': channel_1_data['channel_id'],
+                                                          'u_id': user2['auth_user_id']})
+
+    requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': channel_1_data['channel_id'], 'message': f'z@'})
+
+    response_receiver = requests.get(config.url + 'notifications/get/v1',
+                                     params={'token': user2['token']})
+    response_sender = requests.get(config.url + 'notifications/get/v1',
+                                   params={'token': user1['token']})
+    response_receiver_data = response_receiver.json()
+    response_sender_data = response_sender.json()
+    assert len(response_receiver_data['notifications']) == 1
+    assert len(response_sender_data['notifications']) == 0
+    assert response_receiver.status_code == 200
+    assert response_sender.status_code == 200
+
 
 def test_valid_notification_dm_invite(create_first_user, create_second_user):
     '''
