@@ -137,9 +137,28 @@ def warn_user(c_dex, u_id):
             handle = user['handle_str']
             warn_count = user['info']['warnings']
             timeout_len = user['info']['warnings'] * 20
-        if user['info']['warnings'] % 3 == 0:
-            # bot times them out for x amount of time
-            warning_message = format_bot_timeout_warning(handle, timeout_len)
+            if user['info']['warnings'] % 3 == 0:
+                # bot times them out for x amount of time
+                warning_message = format_bot_timeout_warning(
+                    handle, timeout_len)
+                warning = {
+                    'channel_id': store['channels'][c_dex]['channel_id'],
+                    'dm_id': -1,
+                    'notification_message': warning_message
+                }
+                message = create_bot_message(warning_message)
+                store['channels'][c_dex]['messages'].append(message)
+                attach_notification(handle, warning)
+
+                do_timeout(c_dex, u_dex, time_now() + timeout_len)
+
+                t = threading.Timer(timeout_len, do_untimeout,
+                                    [c_dex, u_dex])
+                t.start()
+
+                return True
+
+            warning_message = format_bot_warning(warn_count, handle)
             warning = {
                 'channel_id': store['channels'][c_dex]['channel_id'],
                 'dm_id': -1,
@@ -147,27 +166,9 @@ def warn_user(c_dex, u_id):
             }
             message = create_bot_message(warning_message)
             store['channels'][c_dex]['messages'].append(message)
-            attach_notification(handle, warning)
-
-            do_timeout(c_dex, u_dex, time_now() + timeout_len)
-
-            t = threading.Timer(timeout_len, do_untimeout,
-                                [c_dex, u_dex])
-            t.start()
+            attach_notification(user['handle_str'], warning)
 
             return True
-
-        warning_message = format_bot_warning(warn_count, handle)
-        warning = {
-            'channel_id': store['channels'][c_dex]['channel_id'],
-            'dm_id': -1,
-            'notification_message': warning_message
-        }
-        message = create_bot_message(warning_message)
-        store['channels'][c_dex]['messages'].append(message)
-        attach_notification(user['handle_str'], warning)
-
-        return True
 
     return False
 

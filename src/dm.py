@@ -191,7 +191,7 @@ def dm_leave_v1(token, dm_id):
 
     store['dms'][dm_index]['all_members'] = list(filter(
         lambda i: i['u_id'] != auth_user_id, store['dms'][dm_index]['all_members']))
-    
+
     decrement_user_dms_joined(auth_user_id)
 
     return {}
@@ -287,6 +287,7 @@ def message_senddm_v1(token, dm_id, message):
         'message_id': new_message_id
     }
 
+
 def message_sendlaterdm_v1(token, dm_id, message, time_sent):
     '''
     Send a message from the authorised user to the DM specified by dm_id automatically at a specified time in the future. 
@@ -294,7 +295,7 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
     sent (i.e. after time_sent). If the DM is removed before the message has sent, the message will not be sent. 
     You do not need to consider cases where a user's token is invalidated or a user leaves before the message is scheduled 
     to be sent.
-    
+
     Args:
         token       str             the encoded JWT string to verify user
         dm_id       int             the id of the DM
@@ -325,7 +326,8 @@ def message_sendlaterdm_v1(token, dm_id, message, time_sent):
     if float(time_difference) < 0:
         raise InputError(
             'time_sent is a time in the past')
-    t = threading.Timer(time_difference, store_message_send_dm_message, [dm_index, new_message, auth_user_id])
+    t = threading.Timer(time_difference, store_message_send_dm_message, [
+                        dm_index, new_message, auth_user_id])
     t.start()
 
     return {
