@@ -1233,9 +1233,6 @@ def test_channel_message_invalid_tag(create_first_user, create_second_user):
     user2_profile = requests.get(config.url + 'user/profile/v1', params={
                             'token': user2['token'], 'u_id': user2['auth_user_id']})
 
-    user2_profile_response = user2_profile.json()
-    user2_handle = user2_profile_response['user']['handle_str']
-
     requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
                                                         'channel_id': channel_1_data['channel_id'], 'message': f'z@'})
 
