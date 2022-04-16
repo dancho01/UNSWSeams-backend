@@ -355,7 +355,7 @@ def test_endpoll(create_public_channel):
     assert response.status_code == 200
 
 
-def test_endpoll(create_public_channel):
+def test_endpoll_no_poll(create_public_channel):
     command = "/endpoll"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
