@@ -2,7 +2,7 @@ from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, \
     check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now, increment_user_channels_joined, decrement_user_channels_joined, \
-    decrement_total_messages, check_timed_out, find_message_channel_index
+    decrement_total_messages, check_timed_out, find_message_channel_index, message_in_channels
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, increment_messages_sent, \
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
@@ -193,10 +193,11 @@ def messages_edit_v1(token, message_id, message):
     store = data_store.get()
     user_id = check_valid_token(token)['u_id']
 
-    channel_index = find_message_channel_index(message_id)
-    check_timed_out(channel_index, user_id)
-    if filter_language(user_id, channel_index, message):
-        message = "This message has been removed due to profanity"
+    if message_in_channels(message_id):
+        channel_index = find_message_channel_index(message_id)
+        check_timed_out(channel_index, user_id)
+        if filter_language(user_id, channel_index, message):
+            message = "This message has been removed due to profanity"
 
     if len(message) == 0:
         remove_message(message_id)

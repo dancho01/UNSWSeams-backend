@@ -5,6 +5,9 @@ from src.data_store import data_store
 
 
 def find_message_channel_index(message_id):
+    '''
+    Gets message id and returns the index of the channel it is in
+    '''
     store = data_store.get()
 
     for c_dex, channel in enumerate(store['channels']):
@@ -15,7 +18,23 @@ def find_message_channel_index(message_id):
     raise InputError(description="Message does not exist in channels")
 
 
+def message_in_channels(message_id):
+    '''
+    Checks if the message that is being request resides within channels and not dms
+    '''
+    store = data_store.get()
+    for c_dex, channel in enumerate(store['channels']):
+        for message in channel['messages']:
+            if message['message_id'] == message_id:
+                return True
+
+    return False
+
+
 def check_timed_out(c_dex, user_id):
+    '''
+    Checks if a user is currently timed out in a channel
+    '''
     store = data_store.get()
 
     for user in store['channels'][c_dex]['all_members']:
