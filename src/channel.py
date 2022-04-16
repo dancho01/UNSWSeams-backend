@@ -2,7 +2,7 @@ from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, \
     check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now, increment_user_channels_joined, decrement_user_channels_joined, \
-    decrement_total_messages, check_timed_out
+    decrement_total_messages, check_timed_out, find_message_channel_index, message_in_channels
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, increment_messages_sent, \
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
@@ -157,7 +157,9 @@ def message_send_v1(token, channel_id, message):
         message = "This message has been removed due to profanity"
 
     if message[0] == "/" and recognise_commands(token, channel_id, message):
-        return
+        return {
+            'message_id': - 1
+        }
 
     # -1 is passed in for dm_id as all tags originate from a channel
     check_for_tags_and_send_notifications(message, user_id, channel_id, -1)
@@ -185,8 +187,17 @@ def messages_edit_v1(token, message_id, message):
         Returns an empty dictionary {}. 
 
     """
+    if message_id < 0:
+        raise AccessError(description="You cannot edit bot messages")
+
     store = data_store.get()
     user_id = check_valid_token(token)['u_id']
+
+    if message_in_channels(message_id):
+        channel_index = find_message_channel_index(message_id)
+        check_timed_out(channel_index, user_id)
+        if filter_language(user_id, channel_index, message):
+            message = "This message has been removed due to profanity"
 
     if len(message) == 0:
         remove_message(message_id)
@@ -211,6 +222,9 @@ def messages_remove_v1(token, message_id):
         Returns an empty dictionary {}. 
 
     """
+    if message_id < 0:
+        raise AccessError(description="You cannot delete bot messages")
+
     user_id = check_valid_token(token)['u_id']
     store = data_store.get()
     check_valid_message(message_id, user_id, store)
@@ -341,7 +355,6 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
-    print("after data_store.get")
     check_valid_user(u_id)
 
     channel_index = check_valid_channel(channel_id)
@@ -351,7 +364,6 @@ def channel_addowner_v1(token, channel_id, u_id):
 
     is_user_member(u_id, channel_index)
 
-    print("before checking owner")
     check_already_owner(channel_index, u_id)
 
     store['channels'][channel_index]['owner_members'].append(

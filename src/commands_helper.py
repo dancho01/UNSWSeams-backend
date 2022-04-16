@@ -6,12 +6,87 @@ from src.user_helper import attach_notification
 from src.dm_helpers import decrement_total_num_messages_in_channel_dm
 
 
+def get_help(c_dex):
+    '''
+        List of commands the bot sends
+    '''
+    help_message = """
+    Here is a list of commands available:
+    
+    /abot
+    Description
+        Activates the bot, if channel has no owners then bot can be activated by anyone
+    Args
+        - None
+
+    /dbot
+    Description
+        Deactivates the bot
+    Args
+        - None
+    
+    /timeout <targethandle> <length>
+    Description
+        Times out the user whos handle is specified for an specified length.
+    Args
+        - targethandle is the handle of the user you want to time out
+        - length is the time of the timeout in seconds
+    
+    /clearchat
+    Description
+        Clears the chat of the server it is used in.
+    Args
+        None
+        
+    /reset
+    Description
+        THIS IS ONLY TO  BE USED BY GLOBAL OWNERS, it serves as a hard reset.
+    Args
+        None
+    
+    /startpoll <question> <option1> <option2> ...
+    Description
+        Initiates a poll in the specified server, will read as many options as inputted.
+        First argument will be considered the question
+    Args
+        - question 
+        - option (as many as needed)
+    
+    /addpolloption <option1> <option2> ...
+    Description
+        Adds options to existing poll, will read as many options as inputted
+    Args
+        - option (as many as needed) 
+        
+    /vote <option>
+    Description
+        Reads one option, considering that the option inputted is valid (case sensitive).
+        A user can only choose 1 option.
+    Args
+        - option
+        
+    /endpoll
+    Description
+        Ends existing poll.
+    Args
+        - None
+    """
+    store = data_store.get()
+
+    bot_message = create_bot_message(help_message)
+    store['channels'][c_dex]['messages'].append(bot_message)
+
+
 '''
 timeout_helper
 '''
 
 
 def get_user_channel_index(handle, channel_id):
+    '''
+        Finds the channel index and user index of a certain user within a certain
+        channel_id.
+    '''
     store = data_store.get()
     for c_dex, channel in enumerate(store['channels']):
         if channel['channel_id'] == channel_id:
@@ -23,17 +98,11 @@ def get_user_channel_index(handle, channel_id):
                     }
 
 
-def command_clear_chat(channel_id):
-    store = data_store.get()
-
-    for channel in store['channels']:
-        if channel['channel_id'] == channel_id:
-            decrement_total_num_messages_in_channel_dm(
-                len(channel['messages']))
-            channel['messages'] = []
-
-
 def do_timeout(c_dex, u_dex, time_end):
+    '''
+        Sets a users 'time_out_status' to True, which means they cannot edit,
+        delete or send messages
+    '''
     store = data_store.get()
 
     timed_out = store['channels'][c_dex]['all_members'][u_dex]['info']
@@ -42,6 +111,10 @@ def do_timeout(c_dex, u_dex, time_end):
 
 
 def do_untimeout(c_dex, u_dex):
+    '''
+        Sets a users 'time_out_status' to False, meaning they are able to edit, delete
+        and send messages.
+    '''
     store = data_store.get()
 
     timed_out = store['channels'][c_dex]['all_members'][u_dex]['info']
@@ -50,6 +123,12 @@ def do_untimeout(c_dex, u_dex):
 
 
 def warn_user(c_dex, u_id):
+    '''
+        Prompts the bot to send out a tag and also a notification is sent to the user
+        that is using expletives. Every 3 warnings, the user is timed out for 
+        number of warnings * 20 seconds, where they will also be prompted of this 
+        action by the SEAMS bot.
+    '''
     store = data_store.get()
 
     for u_dex, user in enumerate(store['channels'][c_dex]['all_members']):
@@ -93,6 +172,112 @@ def warn_user(c_dex, u_id):
     return False
 
 
+'''
+clear chat command
+'''
+
+
+def command_clear_chat(channel_id):
+    '''
+        Clears the chat of the specified channel.
+    '''
+    store = data_store.get()
+
+    for channel in store['channels']:
+        if channel['channel_id'] == channel_id:
+            decrement_total_num_messages_in_channel_dm(
+                count_not_bot_messages(channel['messages']))
+            channel['messages'] = []
+
+
+def count_not_bot_messages(messages):
+    '''
+        Counts non bot messages in the channel['messages']
+    '''
+    counter = 0
+    for message in messages:
+        if message['message_id'] > 0:
+            counter += 1
+
+    return counter
+
+
+'''
+    voting
+'''
+
+
+def create_poll(c_dex, question, options, c_id):
+    '''
+        Creates a poll, includes the question, options and is attached to the
+        specified channel
+    '''
+    store = data_store.get()
+
+    if len(options) < 1:
+        return False
+    elif store['channels'][c_dex]['poll']['poll_status']:
+        return False
+
+    # Activates the voting dict in the channel
+    store['channels'][c_dex]['poll']['poll_status'] = True
+    store['channels'][c_dex]['poll']['start_id'] = c_id
+    store['channels'][c_dex]['poll']['poll_question'] = question
+
+    for choice in options:
+        store['channels'][c_dex]['poll']['poll_info'][choice] = []
+
+    bot_message = create_bot_message(format_bot_poll(c_dex, 0))
+    store['channels'][c_dex]['messages'].append(bot_message)
+
+
+def add_poll_option(c_dex, options):
+    '''
+        Expand the range of options available for voting
+    '''
+    store = data_store.get()
+
+    for choice in options:
+        store['channels'][c_dex]['poll']['poll_info'][choice] = []
+
+    bot_message = create_bot_message(format_bot_poll(c_dex, 0))
+    store['channels'][c_dex]['messages'].append(bot_message)
+
+
+def vote(u_id, c_dex, vote_choice):
+    '''
+        Allows a user to vote for 1 option only, if you vote for another option
+        after you have already voted, your vote will be changed.
+    '''
+    store = data_store.get()
+
+    poll_status = store['channels'][c_dex]['poll']['poll_status']
+
+    if poll_status == False:
+        warning_message = create_bot_message(format_no_vote())
+        store['channels'][c_dex]['messages'].append(warning_message)
+        return
+
+    poll_info = store['channels'][c_dex]['poll']['poll_info']
+
+    if has_user_voted(poll_info, u_id):
+        for voters in poll_info.items():
+            if u_id in voters[1]:
+                voters[1].remove(u_id)
+
+            if voters[0] == vote_choice:
+                voters[1].append(u_id)
+    else:
+        for voters in poll_info.items():
+            if voters[0] == vote_choice:
+                voters[1].append(u_id)
+
+    bot_message = create_bot_message(format_bot_poll(c_dex, 1))
+    store['channels'][c_dex]['messages'].append(bot_message)
+
+    return
+
+
 def end_poll(c_dex, c_id):
     store = data_store.get()
 
@@ -109,10 +294,15 @@ def end_poll(c_dex, c_id):
         store['channels'][c_dex]['messages'].append(warning_message)
         return
 
-    most_popular = get_best_poll(poll_info['poll_info'])
+    results = get_best_poll(poll_info['poll_info'])
 
-    result = format_bot_poll(c_dex, 2) + "\n" + \
-        f"The most popular choice is {most_popular}"
+    if len(results['most_popular']) == 1:
+        result = format_bot_poll(c_dex, 2) + "\n" + \
+            f"The most popular choice is {results['return_str']}"
+    else:
+        result = format_bot_poll(c_dex, 2) + "\n" + \
+            f"The most popular choices are tied, they are:{results['return_str']}"
+
     bot_message = create_bot_message(result)
     store['channels'][c_dex]['messages'].append(bot_message)
 
@@ -123,106 +313,36 @@ def end_poll(c_dex, c_id):
 
 def get_best_poll(poll_info):
     largest = 0
-    largest_name = ""
-    for keypair in poll_info.items():
-        if len(keypair[1]) > largest:
-            largest = len(keypair[1])
-            largest_name = keypair[0]
+    most_popular_options = []
+    return_str = ""
 
-    return largest_name
+    for key in poll_info.items():
+        if len(key[1]) > largest:
+            largest = len(key[1])
+            most_popular_options = [key[0]]
+        elif len(key[1]) == largest:
+            most_popular_options.append(key[0])
 
+    for option in most_popular_options:
+        return_str += "\n" + option
 
-def get_help(c_dex):
-    help_message = """
-    Here is a list of commands available:
-    
-    /abot
-    Description
-        Activates the bot, if channel has no owners then bot can be activated by anyone
-    Args
-        - None
-
-    /dbot
-    Description
-        Deactivates the bot
-    Args
-        - None
-    
-    /timeout <targethandle> <length>
-    Description
-        Times out the user whos handle is specified for an specified length.
-    Args
-        - targethandle is the handle of the user you want to time out
-        - length is the time of the timeout in seconds
-    
-    /clearchat
-    Description
-        Clears the chat of the server it is used in.
-    Args
-        None
-        
-    /reset
-    Description
-        THIS IS ONLY TO  BE USED BY GLOBAL OWNERS, it serves as a hard reset.
-    Args
-        None
-    
-    /create_poll <option1> <option2> ...
-    Description
-        Initiates a poll in the specified server, will read as many options as inputted
-    Args
-        - option (as many as needed)
-    
-    /addpolloption <option1> <option2> ...
-    Description
-        Adds options to existing poll, will read as many options as inputted
-    Args
-        - option (as many as needed) 
-        
-    /vote <option>
-    Description
-        Reads one option, considering that the option inputted is valid (not case sensitive).
-        A user can only choose 1 option.
-    Args
-        - option
-        
-    /end_poll
-    Description
-        Ends existing poll.
-    Args
-        - None
-    """
-    store = data_store.get()
-
-    bot_message = create_bot_message(help_message)
-    store['channels'][c_dex]['messages'].append(bot_message)
+    return {
+        'most_popular': most_popular_options,
+        'return_str': return_str
+    }
 
 
-def add_poll_option(c_dex, options):
-    store = data_store.get()
+def has_user_voted(poll_info, u_id):
+    for voters in poll_info.values():
+        if u_id in voters:
+            return True
 
-    for choice in options:
-        store['channels'][c_dex]['poll']['poll_info'][choice] = []
-
-    bot_message = create_bot_message(format_bot_poll(c_dex, 0))
-    store['channels'][c_dex]['messages'].append(bot_message)
+    return False
 
 
-def create_poll(c_dex, options, c_id):
-    store = data_store.get()
-
-    if len(options) < 1:
-        return False
-    elif store['channels'][c_dex]['poll']['poll_status']:
-        return False
-
-    store['channels'][c_dex]['poll']['poll_status'] = True
-    store['channels'][c_dex]['poll']['start_id'] = c_id
-    for choice in options:
-        store['channels'][c_dex]['poll']['poll_info'][choice] = []
-
-    bot_message = create_bot_message(format_bot_poll(c_dex, 0))
-    store['channels'][c_dex]['messages'].append(bot_message)
+'''
+    bot message formats
+'''
 
 
 def create_bot_message(warning_message):
@@ -238,20 +358,13 @@ def create_bot_message(warning_message):
     return message
 
 
-'''
-    bot message formats
-'''
-
-
 def format_no_start():
     warning_message = "You did not start the vote!"
     return warning_message
 
 
 def format_bot_warning(warnings, handle):
-    warning_message = """
-    Stop swearing @{0}! {1} more warning before timeout!!!
-    """.format(
+    warning_message = "Stop swearing @{0}! {1} more warning before timeout!!".format(
         handle, 3 - (warnings % 3))
 
     return warning_message
@@ -265,7 +378,7 @@ def format_bot_timeout_warning(handle, length):
 
 
 def format_no_vote():
-    message = "There is no active poll, please do /startpoll <vote1> <vote2> ..."
+    message = "There is no active poll, please do /startpoll <question> <vote1> <vote2> ..."
 
     return message
 
@@ -273,7 +386,8 @@ def format_no_vote():
 def format_bot_poll(c_dex, stage):
     store = data_store.get()
 
-    poll_votes = store['channels'][c_dex]['poll']['poll_info']
+    poll_stats = store['channels'][c_dex]['poll']
+    poll_votes = poll_stats['poll_info']
 
     vote_len = largest_vote_name(poll_votes)
 
@@ -284,6 +398,8 @@ def format_bot_poll(c_dex, stage):
     elif stage == 2:
         poll_message = "Poll has ended, these were the results\n"
 
+    poll_message += poll_stats['poll_question'] + ":" + "\n"
+
     for key in poll_votes.items():
         graphics = make_vote_graphics(len(key[1]))
         poll_message += ("\t" + key[0].ljust(vote_len + 5) +
@@ -293,60 +409,21 @@ def format_bot_poll(c_dex, stage):
 
 
 def make_vote_graphics(len):
+    '''
+        Makes voting graphics
+    '''
     graphic = "👩 " * len
 
     return graphic
 
 
 def largest_vote_name(poll_info):
+    '''
+        Chooses which
+    '''
     largest = 0
     for key in poll_info:
         if len(key) > largest:
             largest = len(key)
 
     return largest
-
-
-'''
-    voting
-'''
-
-
-def vote(u_id, c_dex, vote_choice):
-    store = data_store.get()
-
-    poll_status = store['channels'][c_dex]['poll']['poll_status']
-
-    if poll_status == False:
-        warning_message = create_bot_message(format_no_vote())
-        store['channels'][c_dex]['messages'].append(warning_message)
-        return
-
-    poll_info = store['channels'][c_dex]['poll']['poll_info']
-
-    if has_user_voted(poll_info, u_id):
-        print("True")
-        for voters in poll_info.items():
-            if u_id in voters[1]:
-                voters[1].remove(u_id)
-
-            if voters[0].lower() == vote_choice.lower():
-                voters[1].append(u_id)
-    else:
-        print("False")
-        for voters in poll_info.items():
-            if voters[0].lower() == vote_choice.lower():
-                voters[1].append(u_id)
-
-    bot_message = create_bot_message(format_bot_poll(c_dex, 1))
-    store['channels'][c_dex]['messages'].append(bot_message)
-
-    return
-
-
-def has_user_voted(poll_info, u_id):
-    for voters in poll_info.values():
-        if u_id in voters:
-            return True
-
-    return False

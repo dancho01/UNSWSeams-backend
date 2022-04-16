@@ -39,7 +39,6 @@ def check_for_tags_and_send_notifications(message, u_id, c_id, dm_id):
 
     if len(to_return) > 0:
         for tagged_user in set(to_return):
-            print(user_in_channel(tagged_user, c_id, dm_id))
             if user_in_channel(tagged_user, c_id, dm_id):
                 notification = create_tag_notification(
                     c_id, dm_id, u_id, sent_message)

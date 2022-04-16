@@ -50,8 +50,9 @@ def create_new_channel(new_channel_id, name, is_public):
             'standup_cache': []
         },
         'poll': {
-            'start_id': -1,
             'poll_status': False,
+            'poll_question': "",
+            'start_id': -1,
             'poll_info': {}
         },
         'bot_status': True

@@ -46,6 +46,4 @@ def standup_send_v1(token, channel_id, message):
     formatted_message = format_message(user_handle, message)
 
     add_to_standup_cache(channel_id, formatted_message)
-    print(data_store.get())
-
     return {}
