@@ -133,8 +133,7 @@ def dm_remove_v1(token, dm_id):
             for member in dm['all_members']:
                 decrement_user_dms_joined(member['u_id'])
             num_msgs_in_dm = len(dm['messages'])
-            decrement_total_num_messages_in_channel_dm(num_msgs_in_dm)
-            break
+            decrement_total_num_messages_in_channel_dm(num_msgs_in_dm)        
 
     store['dms'] = list(filter(lambda i: i['dm_id'] != dm_id, store['dms']))
 
