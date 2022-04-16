@@ -4,6 +4,17 @@ from src.global_helper import decrement_total_messages, increment_total_messages
 from src.data_store import data_store
 
 
+def find_message_channel_index(message_id):
+    store = data_store.get()
+
+    for c_dex, channel in enumerate(store['channels']):
+        for message in channel['messages']:
+            if message['message_id'] == message_id:
+                return c_dex
+
+    raise InputError(description="Message does not exist in channels")
+
+
 def check_timed_out(c_dex, user_id):
     store = data_store.get()
 

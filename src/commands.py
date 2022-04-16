@@ -11,6 +11,69 @@ from src.commands_helper import get_user_channel_index, do_timeout, do_untimeout
 
 
 def recognise_commands(token, channel_id, message):
+    """
+        Recognises that the user is implementing a command, there are a range of commands:
+
+        Here is a list of commands available:
+
+    /abot
+    Description
+        Activates the bot, if channel has no owners then bot can be activated by anyone
+    Args
+        - None
+
+    /dbot
+    Description
+        Deactivates the bot
+    Args
+        - None
+
+    /timeout <targethandle> <length>
+    Description
+        Times out the user whos handle is specified for an specified length.
+    Args
+        - targethandle is the handle of the user you want to time out
+        - length is the time of the timeout in seconds
+
+    /clearchat
+    Description
+        Clears the chat of the server it is used in.
+    Args
+        None
+
+    /reset
+    Description
+        THIS IS ONLY TO  BE USED BY GLOBAL OWNERS, it serves as a hard reset.
+    Args
+        None
+
+    /startpoll <question> <option1> <option2> ...
+    Description
+        Initiates a poll in the specified server, will read as many options as inputted.
+        First argument will be considered the question
+    Args
+        - question 
+        - option (as many as needed)
+
+    /addpolloption <option1> <option2> ...
+    Description
+        Adds options to existing poll, will read as many options as inputted
+    Args
+        - option (as many as needed) 
+
+    /vote <option>
+    Description
+        Reads one option, considering that the option inputted is valid (case sensitive).
+        A user can only choose 1 option.
+    Args
+        - option
+
+    /endpoll
+    Description
+        Ends existing poll.
+    Args
+        - None
+    """
     store = data_store.get()
     params = message.split()
     command = message.split()[0].replace("/", "").lower()
@@ -77,6 +140,10 @@ def recognise_commands(token, channel_id, message):
 
 
 def filter_language(u_id, c_dex, message):
+    '''
+        Checks for any swear words listed in swear_words list,
+        return True means a swear word exists, otherwise False.
+    '''
     store = data_store.get()
 
     if store['channels'][c_dex]['bot_status'] == False:
@@ -105,6 +172,10 @@ def filter_language(u_id, c_dex, message):
 
 
 def is_global_owner(auth_user_id):
+    '''
+        Different variation of check_global_owner, instead of returning bool
+        it simply raises an error if requirements are not met
+    '''
     store = data_store.get()
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
