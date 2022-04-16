@@ -2,7 +2,7 @@ from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.token import check_valid_token
 from src.dm_helpers import check_for_duplicates_uids, check_valid_dm, check_user_member_dm, store_message_send_dm_message, \
-    generate_DM_name, calculate_time_stamp, increment_user_dms_joined, decrement_user_dms_joined, increment_total_num_dms, \
+    generate_DM_name, increment_user_dms_joined, decrement_user_dms_joined, increment_total_num_dms, \
     decrement_total_num_dms, decrement_total_num_messages_in_channel_dm
 from src.global_helper import generate_new_message_id, return_member_information, check_valid_user, generate_new_dm_id, increment_total_messages, increment_messages_sent
 from src.user_helper import check_for_tags_and_send_notifications, create_channel_invite_notification
