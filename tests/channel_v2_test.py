@@ -803,15 +803,6 @@ def test_success_with_pin_channel_message():
     pin_data = pin_response.json()
     assert pin_data == {}
 
-    # data = data.store
-
-    # channel_search = data['channels'][channel_data['channel_id']]
-
-    # for messages in channel_search['messages']:
-    #     if message['message_id'] = message_data['message_id']:
-    #         assert message['is_pinned'] == True
-    #         break
-
     assert pin_response.status_code == 200
 
 
@@ -987,16 +978,6 @@ def test_success_with_pin_dm_message():
     assert pin_data == {}
 
     assert pin_response.status_code == 200
-    # assert pin_data == {}
-
-    # data = data.store
-
-    # channel_search = data['channels'][channel_data['channel_id']]
-
-    # for messages in channel_search['messages']:
-    #     if message['message_id'] = message_data['message_id']:
-    #         assert message['is_pinned'] == True
-    #         break
 
 
 def test_already_pinned_dm():
@@ -1126,15 +1107,6 @@ def test_success_with_unpin_channel_message():
 
     unpin_data = unpin_response.json()
     assert unpin_data == {}
-
-    # data = data.store
-
-    # channel_search = data['channels'][channel_data['channel_id']]
-
-    # for messages in channel_search['messages']:
-    #     if message['message_id'] = message_data['message_id']:
-    #         assert message['is_pinned'] == True
-    #         break
 
     assert unpin_response.status_code == 200
 
@@ -1320,16 +1292,6 @@ def test_success_with_unpin_dm_message():
     assert unpin_data == {}
 
     assert unpin_response.status_code == 200
-    # assert pin_data == {}
-
-    # data = data.store
-
-    # channel_search = data['channels'][channel_data['channel_id']]
-
-    # for messages in channel_search['messages']:
-    #     if message['message_id'] = message_data['message_id']:
-    #         assert message['is_pinned'] == True
-    #         break
 
 
 def test_already_unpinned_dm():
