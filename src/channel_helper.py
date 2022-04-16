@@ -23,7 +23,7 @@ def message_in_channels(message_id):
     Checks if the message that is being request resides within channels and not dms
     '''
     store = data_store.get()
-    for c_dex, channel in enumerate(store['channels']):
+    for _, channel in enumerate(store['channels']):
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 return True
