@@ -7,7 +7,7 @@ from src.global_helper import check_owner, check_global_owner
 from src.other import clear_v1
 from src.user_helper import return_user_handle
 from src.commands_helper import get_user_channel_index, do_timeout, do_untimeout, warn_user, \
-    command_clear_chat, create_poll, vote, end_poll, add_poll_option, get_help
+    command_clear_chat, create_poll, vote, end_poll, add_poll_option, get_help, create_bot_message
 
 
 def recognise_commands(token, channel_id, message):
@@ -121,6 +121,13 @@ def recognise_commands(token, channel_id, message):
         clear_v1()
         return True
     elif command == "startpoll":
+        if len(params) < 4:
+            message = "Missing parameters, please do /startpoll <question> <option1> <option2>.."
+            bot_message = create_bot_message(message)
+            store['channels'][c_info['c_dex']]['messages'].append(bot_message)
+            raise InputError(
+                description="Not enough arguments!")
+
         create_poll(c_info['c_dex'], params[1], params[2:], c_id)
         return True
     elif command == "vote":

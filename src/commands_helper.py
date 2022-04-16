@@ -1,5 +1,6 @@
 import threading
 from src.data_store import data_store
+from src.error import InputError, AccessError
 from src.user_helper import attach_notification
 from src.channel_helper import time_now
 from src.user_helper import attach_notification
@@ -215,10 +216,11 @@ def create_poll(c_dex, question, options, c_id):
     '''
     store = data_store.get()
 
-    if len(options) < 1:
-        return False
-    elif store['channels'][c_dex]['poll']['poll_status']:
-        return False
+    if store['channels'][c_dex]['poll']['poll_status']:
+        message = "There is already a poll!"
+        bot_message = create_bot_message(message)
+        store['channels'][c_dex]['messages'].append(bot_message)
+        raise InputError(description="There is already an ongoing poll!")
 
     # Activates the voting dict in the channel
     store['channels'][c_dex]['poll']['poll_status'] = True
@@ -237,6 +239,12 @@ def add_poll_option(c_dex, options):
         Expand the range of options available for voting
     '''
     store = data_store.get()
+
+    if not store['channels'][c_dex]['poll']['poll_status']:
+        message = "There is no ongoing poll!"
+        bot_message = create_bot_message(message)
+        store['channels'][c_dex]['messages'].append(bot_message)
+        raise InputError(description="There is no ongoing poll!")
 
     for choice in options:
         store['channels'][c_dex]['poll']['poll_info'][choice] = []
@@ -257,7 +265,7 @@ def vote(u_id, c_dex, vote_choice):
     if poll_status == False:
         warning_message = create_bot_message(format_no_vote())
         store['channels'][c_dex]['messages'].append(warning_message)
-        return
+        raise InputError(description="There is no ongoing poll!")
 
     poll_info = store['channels'][c_dex]['poll']['poll_info']
 
@@ -289,11 +297,11 @@ def end_poll(c_dex, c_id):
     if poll_status == False:
         warning_message = create_bot_message(format_no_vote())
         store['channels'][c_dex]['messages'].append(warning_message)
-        return
+        raise InputError(description="There is no ongoing poll!")
     elif poll_started != c_id:
         warning_message = create_bot_message(format_no_start())
         store['channels'][c_dex]['messages'].append(warning_message)
-        return
+        raise AccessError(description="You did not start this poll!")
 
     results = get_best_poll(poll_info['poll_info'])
 
