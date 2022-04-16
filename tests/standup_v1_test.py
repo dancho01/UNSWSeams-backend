@@ -2,6 +2,7 @@ import pytest
 import requests
 import random
 import string
+import time
 from src import config
 
 ''' fixtures '''
@@ -43,7 +44,7 @@ def test_standup_start_invalid_channel(create_first_user):
     channel_id = channel_id_resp.json()
 
     response = requests.post(config.url + 'standup/start/v1', json={
-                             'token': user['token'], 'channel_id': channel_id['channel_id'] + 1, 'length': 60})
+                             'token': user['token'], 'channel_id': channel_id['channel_id'] + 1, 'length': 2})
 
     assert response.status_code == 400
 
@@ -107,6 +108,7 @@ def test_standup_start_success(create_first_user):
 
     response = requests.post(config.url + 'standup/start/v1', json={'token': user['token'],
                                                                     'channel_id': channel_id['channel_id'], 'length': 1})
+    time.sleep(3)
 
     assert response.status_code == 200
 
