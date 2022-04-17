@@ -13,10 +13,9 @@ def find_message_channel_index(message_id):
     for c_dex, channel in enumerate(store['channels']):
         for message in channel['messages']:
             if message['message_id'] == message_id:
-                return c_dex
-
-    raise InputError(description="Message does not exist in channels")
-
+                to_return = c_dex
+                
+    return to_return 
 
 def message_in_channels(message_id):
     '''
@@ -56,15 +55,17 @@ def remove_message(message_id):
                 decrement_total_messages()
                 channel['messages'].remove(message)
                 return
+                
 
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 decrement_total_messages()
                 dm['messages'].remove(message)
-                return
+                # return 
+                
 
-    raise InputError(description="message_id does not exist")
+    # raise InputError(description="message_id does not exist")
 
 
 def member_leave(u_id, channel_index):
@@ -117,13 +118,11 @@ def edit_message(message_id, message):
         for messages in channel['messages']:
             if messages['message_id'] == message_id:
                 messages['message'] = message
-                return
 
     for dm in store['dms']:
         for messages in dm['messages']:
             if messages['message_id'] == message_id:
                 messages['message'] = message
-                return
 
 
 '''
@@ -181,7 +180,7 @@ def check_valid_message_or_dm(og, c_id, dm_id, u_id):
     if dm_id == -1:
         # dm_id == -1 means the message resides in channels
         return check_message_in_channels(og, u_id, store)
-    elif c_id == -1:
+    else:
         # c_id == -1 means the message resides within dms
         return check_message_in_dms(og, u_id, store)
 
