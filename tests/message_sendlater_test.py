@@ -12,7 +12,7 @@ import time
 @pytest.fixture
 def create_future_timestamp():
     # datetime(year, month, day, hour, minute, second, microsecond)
-    future_timestamp = time_now() + 3
+    future_timestamp = time_now() + 2
     return future_timestamp
 
 @pytest.fixture
