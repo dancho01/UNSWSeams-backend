@@ -2,6 +2,7 @@ from src.error import AccessError, InputError
 
 
 def check_valid_message(message_id, u_id, store):
+
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
@@ -35,12 +36,14 @@ def find_channel_or_dm(store, message_id):
     for dm in store['dms']:
         for message in dm['messages']:
             if message_id == message['message_id']:
-                return dm, message
+                c_ret, mess = dm, message
 
     for channel in store['channels']:
         for message in channel['messages']:
             if message_id == message['message_id']:
-                return channel, message 
+                c_ret, mess = channel, message
+
+    return c_ret, message
 
 def check_if_pinned_v2(message):
     if message['is_pinned'] == False:

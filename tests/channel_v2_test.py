@@ -322,6 +322,37 @@ def test_send_message_success():
 messages edit v1
 '''
 
+def test_edit_message_success():
+    '''
+    Error Raised:
+        No error raised, this is a successful case
+    Explanation:
+        Testing the status code of sending the message
+    '''
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+
+    requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                           'name': 'First Channel', 'is_public': True})
+    channel_response = requests.post(config.url + 'channels/create/v2', json={'token': user1_data['token'],
+                                                                              'name': 'Second Channel', 'is_public': True})
+
+    channel_data = channel_response.json()
+
+    requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
+    requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+                                                                           'channel_id': channel_data['channel_id'], 'message': 'This is a second message'})
+    requests.put(config.url + 'message/edit/v1', json={
+        'token': user1_data['token'], 'message_id': 2, 'message': 'new_message'})
+
+    remove_response = requests.delete(config.url + 'message/remove/v1', json={
+        'token': user1_data['token'], 'message_id': 1, 'message': "This is a message"})
+    assert remove_response.status_code == 200
 
 def test_edit_invalid_message(send_first_message, generate_invalid_message):
     '''

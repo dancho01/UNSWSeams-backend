@@ -103,7 +103,7 @@ initial_object = {
         'total_num_dms': 0,
         'total_num_messages': 0
     },
-    'reset_codes': []
+    'reset_codes': [{'code': 1234, 'uid': 1}, {'code': 5678, 'uid': 2}]
 }
 # YOU SHOULD MODIFY THIS OBJECT ABOVE
 
