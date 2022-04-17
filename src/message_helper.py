@@ -31,16 +31,20 @@ def check_channel_owner(channel, u_id):
 
     return False
 
+
 def find_channel_or_dm(store, message_id):
     for dm in store['dms']:
         for message in dm['messages']:
             if message_id == message['message_id']:
-                return dm, message
+                c_ret, mess = dm, message
 
     for channel in store['channels']:
         for message in channel['messages']:
             if message_id == message['message_id']:
-                return channel, message 
+                c_ret, mess = channel, message
+
+    return c_ret, mess
+
 
 def check_if_pinned_v2(message):
     if message['is_pinned'] == False:
@@ -49,12 +53,14 @@ def check_if_pinned_v2(message):
         raise InputError(
             description="Already pinned!")
 
+
 def check_if_unpinned_v2(message):
     if message['is_pinned'] == True:
         message['is_pinned'] = False
     else:
         raise InputError(
             description="Already unpinned!")
+
 
 def check_owner_dm_channel(message_store, u_id, store):
 
@@ -66,7 +72,7 @@ def check_owner_dm_channel(message_store, u_id, store):
             if user['auth_user_id'] == u_id:
                 if user['global_permissions'] == 1:
                     return
-    else: 
+    else:
         if u_id == message_store['owner']['u_id']:
             return
 
