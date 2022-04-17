@@ -6,11 +6,13 @@ import json
 from src import config
 from datetime import datetime, timezone
 from src.channel_helper import time_now
+import time
+
 
 @pytest.fixture
 def create_future_timestamp():
     # datetime(year, month, day, hour, minute, second, microsecond)
-    future_timestamp = time_now() + 3
+    future_timestamp = time_now() + 2
     return future_timestamp
 
 @pytest.fixture
@@ -203,16 +205,31 @@ def test_message_sendlater_not_member(create_second_user, create_future_timestam
 def test_message_sendlater_success(create_future_timestamp, create_public_channel):
     '''
     Sucess case: user 1 successfully schedules a message to be sent later to a channel they are a member of
+    Check that it actually send the message 3 seconds later and not straight away or never. 
     '''
     
     user1_data = create_public_channel[1]
     channel1 = create_public_channel[0]
+
+    # before sendlater
+    user_stats1 = requests.get(config.url + 'user/stats/v1', params={'token': user1_data['token']})
+    user_stats1_data = user_stats1.json()
+    assert user_stats1.status_code == 200
+    assert len(user_stats1_data['user_stats']['messages_sent']) == 1
+
     response = requests.post(config.url + 'message/sendlater/v1', json={
         'token': user1_data['token'], 'channel_id': channel1['channel_id'], 'message': 'hello', 'time_sent': create_future_timestamp})
+    assert len(user_stats1_data['user_stats']['messages_sent']) == 1
+    time.sleep(3)
 
     assert response.status_code == 200  # Success
 
-
+    # after sendlater
+    user_stats2 = requests.get(config.url + 'user/stats/v1', params={'token': user1_data['token']})
+    user_stats2_data = user_stats2.json()
+    assert user_stats2.status_code == 200
+    assert user_stats2_data['user_stats']['messages_sent'][1]['num_messages_sent'] == 1
+    
 # check that it actually runs 3 seconds later and not straight away or never
 
 '''
@@ -390,8 +407,21 @@ def test_message_sendlaterdm_success(create_future_timestamp, create_public_chan
     })
     dm_response = requests.post(config.url + 'dm/create/v1', json = {'token': user1_data['token'] , 'u_ids': [2]})
     dm1 = dm_response.json()
+
+    # before sendlater
+    user_stats1 = requests.get(config.url + 'user/stats/v1', params={'token': user1_data['token']})
+    user_stats1_data = user_stats1.json()
+    assert user_stats1.status_code == 200
+    assert len(user_stats1_data['user_stats']['messages_sent']) == 1
+
     response = requests.post(config.url + 'message/sendlaterdm/v1', json={
                     'token': user1_data['token'], 'dm_id': dm1['dm_id'], 'message': 'hello', 'time_sent': create_future_timestamp})
+    assert len(user_stats1_data['user_stats']['messages_sent']) == 1
+    time.sleep(3)
 
-
+    # after sendlater
     assert response.status_code == 200  # Success
+    user_stats2 = requests.get(config.url + 'user/stats/v1', params={'token': user1_data['token']})
+    user_stats2_data = user_stats2.json()
+    assert user_stats2.status_code == 200
+    assert user_stats2_data['user_stats']['messages_sent'][1]['num_messages_sent'] == 1
