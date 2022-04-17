@@ -1,6 +1,7 @@
 import pytest
 import requests
 import json
+import time
 from src import config
 from src.data_store import data_store
 
@@ -189,11 +190,11 @@ def test_command_deactivated_bot(create_public_channel):
 
 
 def test_time_out(create_public_channel):
-    command = "/timeout firstlast 2"
+    command = "/timeout firstlast 1"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command})
-
+    time.sleep(2)
     assert response.status_code == 200
 
 
