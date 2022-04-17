@@ -5,6 +5,7 @@ from src.user_helper import attach_notification
 from src.channel_helper import time_now
 from src.user_helper import attach_notification
 from src.dm_helpers import decrement_total_num_messages_in_channel_dm
+from src.global_helper import check_global_owner
 
 
 def get_help(c_dex):
@@ -13,7 +14,7 @@ def get_help(c_dex):
     '''
     help_message = """
     Here is a list of commands available:
-    
+
     /abot
     Description
         Activates the bot, if channel has no owners then bot can be activated by anyone
@@ -25,47 +26,47 @@ def get_help(c_dex):
         Deactivates the bot
     Args
         - None
-    
+
     /timeout <targethandle> <length>
     Description
         Times out the user whos handle is specified for an specified length.
     Args
         - targethandle is the handle of the user you want to time out
         - length is the time of the timeout in seconds
-    
+
     /clearchat
     Description
         Clears the chat of the server it is used in.
     Args
         None
-        
+
     /reset
     Description
         THIS IS ONLY TO  BE USED BY GLOBAL OWNERS, it serves as a hard reset.
     Args
         None
-    
+
     /startpoll <question> <option1> <option2> ...
     Description
         Initiates a poll in the specified server, will read as many options as inputted.
         First argument will be considered the question
     Args
-        - question 
+        - question
         - option (as many as needed)
-    
+
     /addpolloption <option1> <option2> ...
     Description
         Adds options to existing poll, will read as many options as inputted
     Args
-        - option (as many as needed) 
-        
+        - option (as many as needed)
+
     /vote <option>
     Description
         Reads one option, considering that the option inputted is valid (case sensitive).
         A user can only choose 1 option.
     Args
         - option
-        
+
     /endpoll
     Description
         Ends existing poll.
@@ -127,8 +128,8 @@ def do_untimeout(c_dex, u_dex):
 def warn_user(c_dex, u_id):
     '''
         Prompts the bot to send out a tag and also a notification is sent to the user
-        that is using expletives. Every 3 warnings, the user is timed out for 
-        number of warnings * 20 seconds, where they will also be prompted of this 
+        that is using expletives. Every 3 warnings, the user is timed out for
+        number of warnings * 20 seconds, where they will also be prompted of this
         action by the SEAMS bot.
     '''
     store = data_store.get()
@@ -435,3 +436,25 @@ def largest_vote_name(poll_info):
             largest = len(key)
 
     return largest
+
+
+'''
+    General helper
+'''
+
+
+def check_command_owner_status(channel_index, auth_user_id):
+
+    store = data_store.get()
+    owner_members = store['channels'][channel_index]['owner_members']
+
+    valid = False
+    for owner in owner_members:
+        if owner['u_id'] == auth_user_id or check_global_owner(auth_user_id):
+            valid = True
+
+    if valid:
+        return
+    else:
+        raise AccessError(
+            'auth_user_id does not have owner permissions in the channel')

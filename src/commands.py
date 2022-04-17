@@ -7,7 +7,8 @@ from src.global_helper import check_owner, check_global_owner
 from src.other import clear_v1
 from src.user_helper import return_user_handle
 from src.commands_helper import get_user_channel_index, do_timeout, do_untimeout, warn_user, \
-    command_clear_chat, create_poll, vote, end_poll, add_poll_option, get_help, create_bot_message
+    command_clear_chat, create_poll, vote, end_poll, add_poll_option, get_help, create_bot_message, \
+    check_command_owner_status
 
 
 def recognise_commands(token, channel_id, message):
@@ -86,12 +87,12 @@ def recognise_commands(token, channel_id, message):
 
     if command == "abot":
         if len(channel_members) != 0:
-            check_owner(c_info['c_dex'], c_id)
+            check_command_owner_status(c_info['c_dex'], c_id)
         store['channels'][c_info['c_dex']]['bot_status'] = True
         return True
     elif command == "dbot":
         if len(channel_members) != 0:
-            check_owner(c_info['c_dex'], c_id)
+            check_command_owner_status(c_info['c_dex'], c_id)
         store['channels'][c_info['c_dex']]['bot_status'] = False
         return True
 
@@ -103,7 +104,7 @@ def recognise_commands(token, channel_id, message):
         if len(params) != 3:
             raise InputError(description="Missing a parameter, please retry")
         u_info = get_user_channel_index(params[1], channel_id)
-        check_owner(u_info['c_dex'], c_id)
+        check_command_owner_status(u_info['c_dex'], c_id)
         time_end = time_now() + int(params[2])
         do_timeout(u_info['c_dex'], u_info['u_dex'], time_end)
 
@@ -113,7 +114,7 @@ def recognise_commands(token, channel_id, message):
         return True
     elif command == "clearchat":
         if len(channel_members) != 0:
-            check_owner(c_info['c_dex'], c_id)
+            check_command_owner_status(c_info['c_dex'], c_id)
         command_clear_chat(channel_id)
         return True
     elif command == "reset":
