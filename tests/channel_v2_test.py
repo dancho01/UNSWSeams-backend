@@ -199,7 +199,7 @@ def test_message_share_both_ch_and_dm_ids(create_public_channel, create_second_u
         'channel_id': channel1['channel_id'], 'dm_id': dm_message_data['message_id']})
     assert response.status_code == 400
 
-def test_message_share_both_ch_and_dm_ids(create_public_channel, create_second_user):
+def test_message_share_invalid_message_id(create_public_channel, create_second_user):
     user1_data = create_public_channel[1]
     channel1 = create_public_channel[0]
     user2_data = create_second_user
