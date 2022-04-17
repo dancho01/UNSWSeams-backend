@@ -452,10 +452,6 @@ def check_command_owner_status(channel_index, auth_user_id):
         if owner['u_id'] == auth_user_id or check_global_owner(auth_user_id):
             valid = True
 
-    print(auth_user_id)
-    print(store['channels'][channel_index]['owner_members'])
-    print(valid, "-------------------->")
-
     if valid:
         return
     else:
