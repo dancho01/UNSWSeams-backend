@@ -1215,22 +1215,20 @@ def test_global_owner_success_channel_unpin():
 
     channel_data = channel_response.json()
 
-    requests.post(config.url + 'channel/join/v2', json={'token': user1_data['token'],
-                                                        'channel_id': 1})
+    requests.post(config.url + 'channel/join/v2', json={'token': user2_data['token'],
+                                                        'channel_id': channel_data['channel_id']})
 
-    message_response = requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
+    message_response = requests.post(config.url + 'message/send/v1', json={'token': user2_data['token'],
                                                                            'channel_id': channel_data['channel_id'], 'message': 'This is a message'})
 
     message_data = message_response.json()
 
-    requests.post(config.url + 'message/pin/v1', json={'token': user2_data['token'],
+    requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
                                                        'message_id': message_data['message_id']})
 
-    pin_response = requests.post(config.url + 'message/unpin/v1', json={'token': user1_data['token'],
-                                                                        'message_id': message_data['message_id']})
 
-    pin_data = pin_response.json()
-    assert pin_data == {}
+    pin_response = requests.post(config.url + 'message/unpin/v1', json={'token': user1_data['token'],
+                                                                       'message_id': message_data['message_id']})
 
     assert pin_response.status_code == 200
 

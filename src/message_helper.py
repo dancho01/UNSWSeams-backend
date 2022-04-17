@@ -56,14 +56,6 @@ def check_if_unpinned_v2(message):
         raise InputError(
             description="Already unpinned!")
 
-def check_part_of_message_group_v2(message_store, u_id):
-    for member in message_store['all_members']:
-        if u_id == member['u_id']:
-            return
-
-    raise InputError(
-        description=f"Not part of channel or DM")
-
 def check_owner_dm_channel(message_store, u_id, store):
 
     if 'owner_members' in message_store.keys():
