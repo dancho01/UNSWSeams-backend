@@ -392,8 +392,8 @@ def test_vote(create_public_channel):
 
 def test_change_vote(create_public_channel):
     command = "/startpoll 2 3 4"
-    command1 = "/vote 2"
-    command2 = "/vote 3"
+    command1 = "/vote 3"
+    command2 = "/vote 4"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
                                                         'channel_id': ch1['channel_id'], 'message': command})
@@ -426,6 +426,48 @@ def test_endpoll(create_public_channel):
                                                         'channel_id': ch1['channel_id'], 'message': command})
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command1})
+    assert response.status_code == 200
+
+
+def test_voted_endpoll_one_winner(create_public_channel):
+    '''
+        Tests where there is one most popular
+    '''
+    command = "/startpoll 2 3 4"
+    command2 = "/vote 4"
+    command4 = "/endpoll"
+    ch1, user2, user3 = create_public_channel['ch1'], create_public_channel['user2'], create_public_channel['user3']
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command})
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command2})
+    requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command2})
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': command4})
+    assert response.status_code == 200
+
+
+def test_voted_endpoll_multiple_votes(create_public_channel):
+    '''
+        Tests multiple people voting, second option is more popular than the first
+    '''
+    command = "/startpoll 2 3 4"
+    command1 = "/vote 3"
+    command2 = "/vote 4"
+    command4 = "/endpoll"
+    ch1, user1, user2, user3 = create_public_channel['ch1'], create_public_channel[
+        'user1'], create_public_channel['user2'], create_public_channel['user3']
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command})
+    requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command1})
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command2})
+    requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command2})
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': command4})
     assert response.status_code == 200
 
 
