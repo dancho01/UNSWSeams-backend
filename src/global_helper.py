@@ -20,9 +20,6 @@ def check_valid_user(u_id):
     '''
         Checks if user's id is valid
     '''
-    if u_id == - 1:
-        return
-
     store = data_store.get()
 
     for user in store['users']:
@@ -83,8 +80,7 @@ def check_global_owner(auth_user_id):
         if user['auth_user_id'] == auth_user_id:
             if user['global_permissions'] == 1:
                 return True
-            else:
-                return False
+    return False
 
 
 def is_user_member(u_id, channel_index):
@@ -131,7 +127,7 @@ def check_already_owner(channel_index, auth_user_id):
 def return_member_information(u_id, store):
     for user in store['users']:
         if user['auth_user_id'] == u_id:
-            return {
+            to_return = {
                 'u_id': user['auth_user_id'],
                 'email': user['email'],
                 'name_first': user['name_first'],
@@ -139,6 +135,8 @@ def return_member_information(u_id, store):
                 'handle_str': user['handle'],
                 'profile_img_url': user['profile_img_url'],
             }
+    return to_return
+    
 
 def increment_messages_sent(auth_user_id):
     store = data_store.get()
