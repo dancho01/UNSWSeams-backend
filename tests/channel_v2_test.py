@@ -145,6 +145,7 @@ def test_message_share_dm(create_public_channel, create_second_user):
         'channel_id': -1, 'dm_id': dm_data['dm_id']})
     assert response.status_code == 200
 
+
 def test_message_share_dm_no_message(create_public_channel, create_second_user):
     user1_data = create_public_channel[1]
     user2_data = create_second_user
@@ -198,6 +199,7 @@ def test_message_share_both_ch_and_dm_ids(create_public_channel, create_second_u
         'token': user1_data['token'], 'og_message_id': dm_message_data['message_id'], 'message': "hello",
         'channel_id': channel1['channel_id'], 'dm_id': dm_message_data['message_id']})
     assert response.status_code == 400
+
 
 def test_message_share_invalid_message_id(create_public_channel, create_second_user):
     user1_data = create_public_channel[1]
@@ -259,24 +261,23 @@ def test_unauthorised_user(create_public_channel, create_second_user):
         'token': create_second_user['token'], 'channel_id': create_public_channel[0]['channel_id'], 'start': 0})
 
     assert message_response.status_code == 403
-    
-    
+
+
 def test_channel_messages_over_fifty(create_first_user):
     user1 = create_first_user
 
     channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
                                                                        'name': 'First Channel', 'is_public': True})
     channel_1_data = channel_1.json()
-    
+
     for _ in range(55):
         requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
-                                                        'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+                                                            'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
 
     message_response = requests.get(config.url + 'channel/messages/v2', params={
         'token': user1['token'], 'channel_id': channel_1_data['channel_id'], 'start': 0})
 
     assert message_response.status_code == 200
-
 
 
 '''
@@ -532,6 +533,7 @@ def test_edit_invalid_channel(send_first_message, create_second_user):
 
     assert edit_response.status_code == 403
 
+
 def test_edit_bot_message():
     '''
     Error Raised:
@@ -555,8 +557,7 @@ def test_edit_bot_message():
                                                         'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
 
     requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
-                                                                           'channel_id': channel_1_data['channel_id'], 'message': 'This is a second message'})
-
+                                                        'channel_id': channel_1_data['channel_id'], 'message': 'This is a second message'})
 
     edit_response = requests.put(config.url + 'message/edit/v1', json={'token': user1_data['token'],
                                                                        'message_id': -1, 'message': 'This is updated'})
@@ -773,6 +774,7 @@ def test_channel_detail_invalid_user():
 
     assert response.status_code == 403
 
+
 def test_remove_bot_message():
     '''
     Error Raised:
@@ -796,10 +798,10 @@ def test_remove_bot_message():
                                                         'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
 
     requests.post(config.url + 'message/send/v1', json={'token': user1_data['token'],
-                                                                           'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
+                                                        'channel_id': channel_1_data['channel_id'], 'message': 'This is a message'})
 
     removal_response = requests.delete(config.url + 'message/remove/v1', json={
-                                       'token': user1_data['token'], 'message_id':-1})
+                                       'token': user1_data['token'], 'message_id': -1})
 
     assert removal_response.status_code == 403
 
@@ -1322,9 +1324,8 @@ def test_global_owner_success_channel_unpin():
     requests.post(config.url + 'message/pin/v1', json={'token': user1_data['token'],
                                                        'message_id': message_data['message_id']})
 
-
     pin_response = requests.post(config.url + 'message/unpin/v1', json={'token': user1_data['token'],
-                                                                       'message_id': message_data['message_id']})
+                                                                        'message_id': message_data['message_id']})
 
     assert pin_response.status_code == 200
 
@@ -1502,3 +1503,19 @@ def test_not_valid_dm_unpin():
                                                                           'message_id': message_data['message_id']})
 
     assert unpin_response.status_code == 400
+
+
+def test_channel_leave_user_start_standup(create_first_user):
+    user1 = create_first_user
+
+    channel_id_resp = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
+                                                                             'name': 'Second Channel', 'is_public': True})
+    channel_id = channel_id_resp.json()
+
+    requests.post(config.url + 'standup/start/v1', json={'token': user1['token'],
+                                                         'channel_id': channel_id['channel_id'], 'length': 3})
+
+    response = requests.post(config.url + 'channel/leave/v1',
+                             json={'token': user1['token'], 'channel_id': channel_id['channel_id']})
+
+    assert response.status_code == 400
