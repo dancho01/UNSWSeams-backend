@@ -142,10 +142,10 @@ def auth_password_reset(code, new_pass):
 
     # iterating through a list of dicts. these dicts contain the reset code and the user_id the code belongs to
     for codes in store['reset_codes']:
-        if codes['code'] == int(code):  # checks if user inputted code is valid
-            for user in store['users']:
-                # finds the user who the reset code belongs to
-                if user['auth_user_id'] == codes['uid']:
+        for user in store['users']:
+            # finds the user who the reset code belongs to
+            if user['auth_user_id'] == codes['uid']:
+                if codes['code'] == int(code):  # checks if user inputted code is valid
                     # sets this users password
                     user['password'] = hash(new_pass)
                     del codes  # removes the reset_code and uid dict from reset_codes list
