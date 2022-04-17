@@ -30,11 +30,22 @@ def create_second_user():
 
 
 @pytest.fixture
-def create_public_channel(create_first_user, create_second_user):
+def create_third_user():
+    '''
+        Fixture for creating second user
+    '''
+    user3 = requests.post(config.url + 'auth/register/v2', json={'email': 'tessstemail@gmail.com',
+                                                                 'password': 'hello!!!!', 'name_first': 'Daniel', 'name_last': 'Chode'})
+    user3 = user3.json()
+    return user3
+
+
+@pytest.fixture
+def create_public_channel(create_first_user, create_second_user, create_third_user):
     '''
         Creates a public channel with 2 users, user2 is admin
     '''
-    user1, user2 = create_first_user, create_second_user
+    user1, user2, user3 = create_first_user, create_second_user, create_third_user
 
     ch1 = requests.post(config.url + 'channels/create/v2',
                         json={'token': user2['token'], 'name': 'ch1', 'is_public': True})
@@ -47,9 +58,13 @@ def create_public_channel(create_first_user, create_second_user):
     requests.post(config.url + 'channel/join/v2', json={
         'token': user1['token'], 'channel_id': channel1_data['channel_id']})
 
+    requests.post(config.url + 'channel/join/v2', json={
+        'token': user3['token'], 'channel_id': channel1_data['channel_id']})
+
     return {
         'user1': user1,
         'user2': user2,
+        'user3': user3,
         'ch1': channel1_data,
     }
 
@@ -129,8 +144,8 @@ def test_deactivate_bot(create_public_channel):
 
 def test_deactivate_bot_no_perms(create_public_channel):
     command = "/dbot"
-    ch1, user1 = create_public_channel['ch1'], create_public_channel['user1']
-    response = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+    ch1, user3 = create_public_channel['ch1'], create_public_channel['user3']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command})
 
     assert response.status_code == 403
@@ -147,8 +162,8 @@ def test_activate_bot(create_public_channel):
 
 def test_activate_bot_no_perms(create_public_channel):
     command = "/abot"
-    ch1, user1 = create_public_channel['ch1'], create_public_channel['user1']
-    response = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+    ch1, user3 = create_public_channel['ch1'], create_public_channel['user3']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command})
 
     assert response.status_code == 403
@@ -209,8 +224,8 @@ def test_time_invalid_params(create_public_channel):
 
 def test_time_out_message_no_perms(create_public_channel):
     command = "/timeout firstlast 2"
-    ch1, user1 = create_public_channel['ch1'], create_public_channel['user1']
-    response = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+    ch1, user3 = create_public_channel['ch1'], create_public_channel['user3']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command})
 
     assert response.status_code == 403
@@ -261,9 +276,9 @@ def test_clear_chat(create_public_channel):
 
 def test_clear_chat_no_perms(create_public_channel):
     command = "/clearchat"
-    ch1, user1 = create_public_channel['ch1'], create_public_channel['user1']
+    ch1, user3 = create_public_channel['ch1'], create_public_channel['user3']
 
-    response = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+    response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command})
 
     assert response.status_code == 403

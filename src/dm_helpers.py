@@ -156,6 +156,7 @@ def decrement_total_num_messages_in_channel_dm(num_msgs_in_dm):
 
 def store_message_send_dm_message(dm_index, new_message, auth_user_id):
     store = data_store.get()
-    store['dms'][dm_index]['messages'].append(new_message)
     increment_messages_sent(auth_user_id)
     increment_total_messages()
+    store['dms'][dm_index]['messages'].append(new_message)
+

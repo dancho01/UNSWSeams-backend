@@ -33,22 +33,17 @@ def combine_standup_cache(cache):
 def check_active(channel_id):
     store = data_store.get()
     
-    found = False
     for channel in store['channels']:
         if channel['channel_id'] == channel_id:
-            if channel['standup']['active']:
-                found = True
-                
-    if found != False:    
-        return {
-            'is_active': True,
-            'time_finish': channel['standup']['finish_time']
-        }
-    else:
-        return {
-            'is_active': False,
-            'time_finish': None
-        }
+            if channel['standup']['active']:              
+                return {
+                    'is_active': True,
+                    'time_finish': channel['standup']['finish_time']
+                }
+    return {
+        'is_active': False,
+        'time_finish': None
+    }
 
 
 def format_message(handle, message):
