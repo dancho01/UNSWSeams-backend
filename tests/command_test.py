@@ -70,11 +70,11 @@ def create_public_channel(create_first_user, create_second_user, create_third_us
 
 
 @pytest.fixture
-def create_public_channel_no_owner(create_first_user, create_second_user):
+def create_public_channel_no_owner(create_first_user, create_second_user, create_third_user):
     '''
         Creates a public channel, no owner
     '''
-    user1, user2 = create_first_user, create_second_user
+    user1, user2, user3 = create_first_user, create_second_user, create_third_user
 
     ch1 = requests.post(config.url + 'channels/create/v2',
                         json={'token': user2['token'], 'name': 'ch1', 'is_public': True})
@@ -93,9 +93,13 @@ def create_public_channel_no_owner(create_first_user, create_second_user):
     requests.post(config.url + 'channel/join/v2', json={
         'token': user2['token'], 'channel_id': channel1_data['channel_id']})
 
+    requests.post(config.url + 'channel/join/v2', json={
+        'token': user3['token'], 'channel_id': channel1_data['channel_id']})
+
     return {
         'user1': user1,
         'user2': user2,
+        'user3': user3,
         'ch1': channel1_data,
     }
 
@@ -171,8 +175,8 @@ def test_activate_bot_no_perms(create_public_channel):
 
 def test_activate_bot_no_owner(create_public_channel_no_owner):
     command = "/abot"
-    ch1, user2 = create_public_channel_no_owner['ch1'], create_public_channel_no_owner['user2']
-    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+    ch1, user3 = create_public_channel_no_owner['ch1'], create_public_channel_no_owner['user3']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command})
 
     assert response.status_code == 200
@@ -180,8 +184,8 @@ def test_activate_bot_no_owner(create_public_channel_no_owner):
 
 def test_deactivate_bot_no_owner(create_public_channel_no_owner):
     command = "/dbot"
-    ch1, user2 = create_public_channel_no_owner['ch1'], create_public_channel_no_owner['user2']
-    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+    ch1, user3 = create_public_channel_no_owner['ch1'], create_public_channel_no_owner['user3']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command})
 
     assert response.status_code == 200

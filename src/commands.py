@@ -83,15 +83,14 @@ def recognise_commands(token, channel_id, message):
     c_info = get_user_channel_index(c_handle, channel_id)
 
     # /abot activates bot, /dbot deactivates bot
-    channel_members = store['channels'][c_info['c_dex']]['owner_members']
-
+    channel_owners = store['channels'][c_info['c_dex']]['owner_members']
     if command == "abot":
-        if len(channel_members) != 0:
+        if len(channel_owners) != 0:
             check_command_owner_status(c_info['c_dex'], c_id)
         store['channels'][c_info['c_dex']]['bot_status'] = True
         return True
     elif command == "dbot":
-        if len(channel_members) != 0:
+        if len(channel_owners) != 0:
             check_command_owner_status(c_info['c_dex'], c_id)
         store['channels'][c_info['c_dex']]['bot_status'] = False
         return True
@@ -113,7 +112,7 @@ def recognise_commands(token, channel_id, message):
         t.start()
         return True
     elif command == "clearchat":
-        if len(channel_members) != 0:
+        if len(channel_owners) != 0:
             check_command_owner_status(c_info['c_dex'], c_id)
         command_clear_chat(channel_id)
         return True
