@@ -94,10 +94,12 @@ def get_user_channel_index(handle, channel_id):
         if channel['channel_id'] == channel_id:
             for u_dex, user in enumerate(channel['all_members']):
                 if user['handle_str'] == handle:
-                    return {
+                    to_return = {
                         'c_dex': c_dex,
                         'u_dex': u_dex
                     }
+
+    return to_return
 
 
 def do_timeout(c_dex, u_dex, time_end):
@@ -198,7 +200,7 @@ def count_not_bot_messages(messages):
     '''
     counter = 0
     for message in messages:
-        if message['message_id'] > 0:
+        if message['message_id'] != - 1:
             counter += 1
 
     return counter
@@ -342,11 +344,15 @@ def get_best_poll(poll_info):
 
 
 def has_user_voted(poll_info, u_id):
+    voted = False
     for voters in poll_info.values():
         if u_id in voters:
-            return True
+            voted = True
 
-    return False
+    if voted:
+        return True
+    else:
+        return False
 
 
 '''
@@ -404,7 +410,7 @@ def format_bot_poll(c_dex, stage):
         poll_message = "A poll has been started\n"
     elif stage == 1:
         poll_message = "Poll in progress...\n"
-    elif stage == 2:
+    else:
         poll_message = "Poll has ended, these were the results\n"
 
     poll_message += poll_stats['poll_question'] + ":" + "\n"
