@@ -446,12 +446,15 @@ def largest_vote_name(poll_info):
 def check_command_owner_status(channel_index, auth_user_id):
 
     store = data_store.get()
-    owner_members = store['channels'][channel_index]['owner_members']
 
     valid = False
-    for owner in owner_members:
+    for owner in store['channels'][channel_index]['owner_members']:
         if owner['u_id'] == auth_user_id or check_global_owner(auth_user_id):
             valid = True
+
+    print(auth_user_id)
+    print(store['channels'][channel_index]['owner_members'])
+    print(valid, "-------------------->")
 
     if valid:
         return
