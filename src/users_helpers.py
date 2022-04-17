@@ -32,7 +32,7 @@ def return_profile(u_id):
 
     for user in store['users']:
         if user['auth_user_id'] == u_id:
-            return {
+            to_return = {
                 'u_id': user['auth_user_id'],
                 'email': user['email'],
                 'name_last': user['name_last'],
@@ -40,3 +40,5 @@ def return_profile(u_id):
                 'handle_str': user['handle'],
                 'profile_img_url': user['profile_img_url'],
             }
+
+    return to_return

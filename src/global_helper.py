@@ -215,10 +215,8 @@ def reset_globals():
 
 def load_globals(auth, channel, message, dm):
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
-    AUTH_COUNTER = auth
-    CHANNEL_COUNTER = channel
-    MESSAGE_ID_COUNTER = message
-    DM_ID_COUNTER = dm
+
+    CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER = channel, auth, message, dm
 
 
 def get_globals():
