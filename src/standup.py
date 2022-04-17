@@ -17,7 +17,7 @@ def standup_start_v1(token, channel_id, length):
 
     end_time = time_now() + length
 
-    start_standup(channel_id, end_time)
+    start_standup(channel_id, end_time, user_id)
 
     t = threading.Timer(length, end_standup, [channel_id, token])
     t.start()

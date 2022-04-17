@@ -14,8 +14,9 @@ def find_message_channel_index(message_id):
         for message in channel['messages']:
             if message['message_id'] == message_id:
                 to_return = c_dex
-                
-    return to_return 
+
+    return to_return
+
 
 def message_in_channels(message_id):
     '''
@@ -55,15 +56,13 @@ def remove_message(message_id):
                 decrement_total_messages()
                 channel['messages'].remove(message)
                 return
-                
 
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
                 decrement_total_messages()
                 dm['messages'].remove(message)
-                # return 
-                
+                # return
 
     # raise InputError(description="message_id does not exist")
 
@@ -253,3 +252,14 @@ def decrement_user_channels_joined(auth_user_id):
                 "num_channels_joined": num_channels_joined,
                 "time_stamp": time_now()
             })
+
+
+def check_standup_owner(u_id, c_dex):
+    store = data_store.get()
+
+    standup_info = store['channels'][c_dex]['standup']
+
+    if standup_info['active']:
+        if standup_info['standup_owner'] != u_id:
+            raise InputError(
+                description="the authorised user is the starter of an active standup in the channel")

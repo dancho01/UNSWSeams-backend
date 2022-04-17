@@ -2,7 +2,7 @@ from src.error import InputError, AccessError
 from src.data_store import data_store
 from src.channel_helper import check_message, remove_message, member_leave, get_messages, edit_message, \
     check_valid_message_or_dm, send_message, create_message, share_message_format, send_dm, time_now, increment_user_channels_joined, decrement_user_channels_joined, \
-    decrement_total_messages, check_timed_out, find_message_channel_index, message_in_channels
+    decrement_total_messages, check_timed_out, find_message_channel_index, message_in_channels, check_standup_owner
 from src.token import check_valid_token
 from src.global_helper import check_valid_channel, check_authorized_user, check_already_auth, check_valid_user, increment_messages_sent, \
     check_owner, check_already_owner, generate_new_message_id, return_member_information, is_user_member, check_global_owner
@@ -271,6 +271,8 @@ def channel_leave_v1(token, channel_id):
     # InputError
     channel_index = check_valid_channel(channel_id)
     # AccessError
+    check_standup_owner(user_info, channel_index)
+
     check_authorized_user(user_info['u_id'], channel_index)
 
     # Filters that user out of the list of all_members and owner_members
@@ -460,7 +462,7 @@ def message_pin_v1(token, message_id):
     message_pair = find_channel_or_dm(store, message_id)
 
     check_owner_dm_channel(message_pair[0], auth_user_id, store)
-    
+
     check_if_pinned_v2(message[0])
 
     return {}
@@ -476,7 +478,7 @@ def message_unpin_v1(token, message_id):
     message_pair = find_channel_or_dm(store, message_id)
 
     check_owner_dm_channel(message_pair[0], auth_user_id, store)
-    
+
     check_if_unpinned_v2(message[0])
 
     return {}

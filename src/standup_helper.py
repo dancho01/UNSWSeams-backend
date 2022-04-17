@@ -3,7 +3,7 @@ from src.channel import message_send_v1
 from src.error import InputError
 
 
-def start_standup(channel_id, time_finish):
+def start_standup(channel_id, time_finish, u_id):
     store = data_store.get()
 
     for channel in store['channels']:
@@ -11,6 +11,7 @@ def start_standup(channel_id, time_finish):
             channel['standup']['active'] = True
             channel['standup']['finish_time'] = time_finish
             channel['standup']['standup_cache'] = []
+            channel['standup']['standup_owner'] = u_id
 
 
 def end_standup(channel_id, token):
@@ -22,8 +23,10 @@ def end_standup(channel_id, token):
                 channel['standup']['standup_cache'])
             channel['standup']['active'] = False
             channel['standup']['finish_time'] = -1
-            channel['standup']['standup_cache'] = []                
+            channel['standup']['standup_cache'] = []
+            channel['standup']['standup_owner'] = None
             message_send_v1(token, channel_id, combined)
+
 
 def combine_standup_cache(cache):
     combined_cache = '\n'.join(cache)
@@ -32,10 +35,10 @@ def combine_standup_cache(cache):
 
 def check_active(channel_id):
     store = data_store.get()
-    
+
     for channel in store['channels']:
         if channel['channel_id'] == channel_id:
-            if channel['standup']['active']:              
+            if channel['standup']['active']:
                 return {
                     'is_active': True,
                     'time_finish': channel['standup']['finish_time']
