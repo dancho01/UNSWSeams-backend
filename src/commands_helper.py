@@ -118,9 +118,10 @@ def do_untimeout(c_dex, u_dex):
     '''
     store = data_store.get()
 
-    timed_out = store['channels'][c_dex]['all_members'][u_dex]['info']
-    timed_out['timed_out_status'] = False
-    timed_out['time_out_end'] = - 1
+    store['channels'][c_dex]['all_members'][u_dex]['info']['timed_out_status'] = False
+    store['channels'][c_dex]['all_members'][u_dex]['info']['time_out_end'] = - 1
+
+    return
 
 
 def warn_user(c_dex, u_id):
@@ -170,8 +171,6 @@ def warn_user(c_dex, u_id):
             attach_notification(user['handle_str'], warning)
 
             return True
-
-    return False
 
 
 '''

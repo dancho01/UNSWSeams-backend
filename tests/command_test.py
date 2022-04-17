@@ -85,6 +85,34 @@ def create_public_channel_no_owner(create_first_user, create_second_user):
 
 
 '''
+    Invalid command
+'''
+
+
+def test_invalid_command(create_public_channel):
+    command = "/invalidcommand"
+    ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': command})
+
+    assert response.status_code == 400
+
+
+'''
+    /help
+'''
+
+
+def test_help(create_public_channel):
+    command = "/help"
+    ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': command})
+
+    assert response.status_code == 200
+
+
+'''
     /dbot and /abot
 '''
 
@@ -141,6 +169,18 @@ def test_deactivate_bot_no_owner(create_public_channel_no_owner):
                                                                    'channel_id': ch1['channel_id'], 'message': command})
 
     assert response.status_code == 200
+
+
+def test_command_deactivated_bot(create_public_channel):
+    command = "/dbot"
+    command1 = "/clearchat"
+    ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command})
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': command1})
+
+    assert response.status_code == 400
 
 
 '''
@@ -330,6 +370,20 @@ def test_vote(create_public_channel):
     assert response.status_code == 200
 
 
+def test_change_vote(create_public_channel):
+    command = "/startpoll 2 3 4"
+    command1 = "/vote 2"
+    command2 = "/vote 3"
+    ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command})
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command1})
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': command2})
+    assert response.status_code == 200
+
+
 def test_vote_no_poll(create_public_channel):
     command = "/vote 2"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
@@ -355,6 +409,20 @@ def test_endpoll(create_public_channel):
     assert response.status_code == 200
 
 
+def test_winner_endpoll(create_public_channel):
+    command = "/startpoll 2 3 4"
+    command1 = "/vote 2"
+    command2 = "/endpoll"
+    ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command})
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': command1})
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': command2})
+    assert response.status_code == 200
+
+
 def test_endpoll_no_poll(create_public_channel):
     command = "/endpoll"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
@@ -372,3 +440,45 @@ def test_endpoll_diff_user(create_public_channel):
     response = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
                                                                    'channel_id': ch1['channel_id'], 'message': command1})
     assert response.status_code == 403
+
+
+'''
+    language filter
+'''
+
+
+def test_language_filter_off(create_public_channel):
+    message = "shit"
+    command = "/dbot"
+
+    ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': command})
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': message})
+
+    assert response.status_code == 200
+
+
+def test_language_filter_on(create_public_channel):
+    message = "shit"
+
+    ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': message})
+
+    assert response.status_code == 200
+
+
+def test_language_filter_timedout(create_public_channel):
+    message = "shit"
+
+    ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': message})
+    requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                        'channel_id': ch1['channel_id'], 'message': message})
+    response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
+                                                                   'channel_id': ch1['channel_id'], 'message': message})
+
+    assert response.status_code == 200
