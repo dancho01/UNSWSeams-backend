@@ -62,6 +62,17 @@ def combine_standup_cache(cache):
 
 
 def check_active(channel_id):
+    '''
+    Checks if the channel with the given channel_id currently has an active
+    standup in it
+    
+    Args: 
+        channel_id      int
+        
+    Return:
+        returns a dictionary which indicates if standup is active or not
+    
+    '''
     store = data_store.get()
 
     for channel in store['channels']:

@@ -2,6 +2,14 @@ from src.error import AccessError, InputError
 
 
 def check_valid_message(message_id, u_id, store):
+    '''
+    checks if message_id refers to a valid message within channel/DM 
+    
+    Args:
+        message_id      int
+        u_id            int
+        store           copy of datastore
+    '''
     for dm in store['dms']:
         for message in dm['messages']:
             if message['message_id'] == message_id:
@@ -25,6 +33,11 @@ def check_valid_message(message_id, u_id, store):
 
 
 def check_channel_owner(channel, u_id):
+    '''
+    Checks if user is a owner of the channel
+    Returns True if owner
+    Returns False if not owner    
+    '''
     for owner in channel['owner_members']:
         if owner['u_id'] == u_id:
             return True
