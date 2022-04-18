@@ -36,6 +36,10 @@ def generate_invalid_message():
 
 
 def test_standup_start_invalid_channel(create_first_user):
+    '''
+    Tests when channel_id passed in is invalid , resulting in InputError
+    
+    '''
 
     user = create_first_user
 
@@ -50,6 +54,10 @@ def test_standup_start_invalid_channel(create_first_user):
 
 
 def test_standup_start_negative_length(create_first_user):
+    '''
+    Tests when length passed in is a negative integer, resulting in InputError
+    
+    '''
 
     user = create_first_user
 
@@ -65,6 +73,10 @@ def test_standup_start_negative_length(create_first_user):
 
 
 def test_standup_start_already_running(create_first_user):
+    '''
+    Tests attempting to start a standup when there is already one running in the channel,
+    resulting in InputError
+    '''
     user = create_first_user
 
     channel_id_resp = requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
@@ -81,6 +93,11 @@ def test_standup_start_already_running(create_first_user):
 
 
 def test_standup_start_unauthorised_user(create_first_user, create_second_user):
+    '''
+    Tests when authorised user is not a member of the channel that user is 
+    trying to start standup in, resulting in AccessError
+    
+    '''
     user1 = create_first_user
     user2 = create_second_user
 
@@ -95,6 +112,9 @@ def test_standup_start_unauthorised_user(create_first_user, create_second_user):
 
 
 def test_standup_start_success(create_first_user):
+    '''
+    Tests 
+    '''
     user = create_first_user
     
     requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
