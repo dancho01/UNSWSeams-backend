@@ -113,7 +113,7 @@ def test_standup_start_unauthorised_user(create_first_user, create_second_user):
 
 def test_standup_start_success(create_first_user):
     '''
-    Tests 
+    Tests when standup is successfully started by user
     '''
     user = create_first_user
     
@@ -137,6 +137,9 @@ def test_standup_start_success(create_first_user):
 
 
 def test_standup_active_invalid_channel(create_first_user):
+    '''
+    Tests when channel_id passed in is invalid, resulting in InputError
+    '''
 
     user = create_first_user
 
@@ -154,6 +157,11 @@ def test_standup_active_invalid_channel(create_first_user):
 
 
 def test_standup_active_unauthorised_user(create_first_user, create_second_user):
+    '''
+    Tests when channel_id is valid and the authorised user is not a member of 
+    the channel, resulting in AccessError
+    
+    '''
 
     user1 = create_first_user
     user2 = create_second_user
@@ -172,6 +180,10 @@ def test_standup_active_unauthorised_user(create_first_user, create_second_user)
 
 
 def test_standup_active_success(create_first_user):
+    '''
+    Tests successful return in the case that standup is active in channel
+    
+    '''
     user = create_first_user
 
     channel_id_resp = requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
@@ -186,6 +198,9 @@ def test_standup_active_success(create_first_user):
     assert response.status_code == 200
     
 def test_standup_not_active_success(create_first_user):
+    '''
+    Tests successful return in the case that standup is NOT active in channel
+    '''
     user = create_first_user
 
     requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
@@ -202,8 +217,10 @@ def test_standup_not_active_success(create_first_user):
 
 ''' tests for standup/send/v1 '''
 
-
 def test_standup_send_invalid_channel(create_first_user):
+    '''
+    Tests when channel_id passed in is invalid, resulting in InputError
+    '''
 
     user = create_first_user
 
@@ -221,6 +238,10 @@ def test_standup_send_invalid_channel(create_first_user):
 
 
 def test_standup_send_invalid_length_message(create_first_user, generate_invalid_message):
+    '''
+    Tests when length of message is over 1000 characters, resulting in InputError
+    
+    '''
 
     user = create_first_user
 
@@ -238,6 +259,9 @@ def test_standup_send_invalid_length_message(create_first_user, generate_invalid
 
 
 def test_standup_send_not_currently_active(create_first_user):
+    '''
+    Tests sending a message to a standup not currently running, resulting in InputError
+    '''
     user = create_first_user
 
     channel_id_resp = requests.post(config.url + 'channels/create/v2', json={'token': user['token'],
@@ -251,6 +275,11 @@ def test_standup_send_not_currently_active(create_first_user):
 
 
 def test_standup_send_unauthorised_user(create_first_user, create_second_user):
+    '''
+    Tests when channel_id is valid and the authorised user is not a member of 
+    the channel, resulting in AccessError
+    
+    '''
     user1 = create_first_user
     user2 = create_second_user
 
@@ -268,6 +297,9 @@ def test_standup_send_unauthorised_user(create_first_user, create_second_user):
 
 
 def test_standup_send_success(create_first_user):
+    '''
+    Tests when standup/send/v1 is successful
+    '''
     user1 = create_first_user
 
     requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
