@@ -11,6 +11,9 @@
 
 1. Assumes that the first user that is registered is the ONLY one who has global owner permissions as there is currently no function to upgrade memberships.
 
+#### auth_passwordreset_request_v1
+1. Assumes the user is already logged out before requesting a password reset
+
 ---
 
 ## channel.py
