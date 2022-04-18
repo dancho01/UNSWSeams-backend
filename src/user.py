@@ -22,14 +22,14 @@ def user_profile_v1(token, u_id):
 
 
 def user_stats_v1(token):
-    '''
-        Outputs: Dictionary of shape {
-                channels_joined: [{num_channels_joined, time_stamp}],
-                dms_joined: [{num_dms_joined, time_stamp}],
-                messages_sent: [{num_messages_sent, time_stamp}],
-                involvement_rate
-        }
-    '''
+    """returns a users stats
+
+    Args:
+        token (str)
+
+    Returns:
+        dictionary: returns a dictionary containing a users stats
+    """
     store = data_store.get()
 
     auth_user_id = check_valid_token(token)['u_id']
@@ -49,15 +49,14 @@ def user_stats_v1(token):
 
 
 def users_stats_v1(token):
-    '''
-        returns Dictionary of shape {
-                channels_exist: [{num_channels_exist, time_stamp}], 
-                dms_exist: [{num_dms_exist, time_stamp}], 
-                messages_exist: [{num_messages_exist, time_stamp}], 
-                utilization_rate 
-        }
+    """Returns stats for workspace
 
-    '''
+    Args:
+        token (str)
+
+    Returns:
+        dict: dict containing workspace stats
+    """
     store = data_store.get()
     check_valid_token(token)['u_id']
     # = num_users_who_have_joined_at_least_one_channel_or_dm / num_users
@@ -81,6 +80,14 @@ def users_stats_v1(token):
 
 
 def notifications_get_v1(token):
+    """Grabs notifications attached to a users profile
+
+    Args:
+        token (str)
+
+    Returns:
+        dictionary: dictionary key of notifications with its str list user_notifications
+    """
     user_id = check_valid_token(token)['u_id']
 
     user_notifications = return_notifications(user_id)

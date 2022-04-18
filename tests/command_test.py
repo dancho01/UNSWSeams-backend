@@ -110,6 +110,9 @@ def create_public_channel_no_owner(create_first_user, create_second_user, create
 
 
 def test_invalid_command(create_public_channel):
+    '''
+        Tests for a command that does not exist
+    '''
     command = "/invalidcommand"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -124,6 +127,9 @@ def test_invalid_command(create_public_channel):
 
 
 def test_help(create_public_channel):
+    '''
+        Tests the /help function
+    '''
     command = "/help"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -138,6 +144,9 @@ def test_help(create_public_channel):
 
 
 def test_deactivate_bot(create_public_channel):
+    '''
+        Testing to see if deactivating bot works
+    '''
     command = "/dbot"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -147,6 +156,10 @@ def test_deactivate_bot(create_public_channel):
 
 
 def test_deactivate_bot_no_perms(create_public_channel):
+    '''
+        Testing to see if deactivating bot will raise an error when the user
+        does not have the right permissions
+    '''
     command = "/dbot"
     ch1, user3 = create_public_channel['ch1'], create_public_channel['user3']
     response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
@@ -156,6 +169,9 @@ def test_deactivate_bot_no_perms(create_public_channel):
 
 
 def test_activate_bot(create_public_channel):
+    '''
+        Testing to see if activating bot works
+    '''
     command = "/abot"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -165,6 +181,10 @@ def test_activate_bot(create_public_channel):
 
 
 def test_activate_bot_no_perms(create_public_channel):
+    '''
+        Testing to see if activating bot will raise an error when the user
+        does not have the right permissions
+    '''
     command = "/abot"
     ch1, user3 = create_public_channel['ch1'], create_public_channel['user3']
     response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
@@ -174,6 +194,9 @@ def test_activate_bot_no_perms(create_public_channel):
 
 
 def test_activate_bot_no_owner(create_public_channel_no_owner):
+    '''
+        Testing to see if /abot will work when there are no owner members in the channel
+    '''
     command = "/abot"
     ch1, user3 = create_public_channel_no_owner['ch1'], create_public_channel_no_owner['user3']
     response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
@@ -183,6 +206,9 @@ def test_activate_bot_no_owner(create_public_channel_no_owner):
 
 
 def test_deactivate_bot_no_owner(create_public_channel_no_owner):
+    '''
+        Testing to see if /dbot will work when there are no owner members in the channel
+    '''
     command = "/dbot"
     ch1, user3 = create_public_channel_no_owner['ch1'], create_public_channel_no_owner['user3']
     response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
@@ -192,6 +218,9 @@ def test_deactivate_bot_no_owner(create_public_channel_no_owner):
 
 
 def test_command_deactivated_bot(create_public_channel):
+    '''
+        Testing to see if any commands will work if there is no bot active
+    '''
     command = "/dbot"
     command1 = "/clearchat"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
@@ -209,6 +238,9 @@ def test_command_deactivated_bot(create_public_channel):
 
 
 def test_time_out(create_public_channel):
+    '''
+        Testing timeout is successful
+    '''
     command = "/timeout firstlast 1"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -218,6 +250,9 @@ def test_time_out(create_public_channel):
 
 
 def test_time_invalid_params(create_public_channel):
+    '''
+        /timeout does not have the required params inputted
+    '''
     command = "/timeout firstlast"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -227,6 +262,9 @@ def test_time_invalid_params(create_public_channel):
 
 
 def test_time_out_message_no_perms(create_public_channel):
+    '''
+        Tests if user who calls /timeout has no perms
+    '''
     command = "/timeout firstlast 2"
     ch1, user3 = create_public_channel['ch1'], create_public_channel['user3']
     response = requests.post(config.url + 'message/send/v1', json={'token': user3['token'],
@@ -236,6 +274,10 @@ def test_time_out_message_no_perms(create_public_channel):
 
 
 def test_time_out_message(create_public_channel):
+    '''
+        Tests to see if an error is raised after a user is timed out and they try
+        to send a message
+    '''
     command = "/timeout firstlast 2"
     ch1, user1, user2 = create_public_channel['ch1'], create_public_channel['user1'], create_public_channel['user2']
     requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -252,6 +294,9 @@ def test_time_out_message(create_public_channel):
 
 
 def test_clear_chat(create_public_channel):
+    '''
+        Testing if clearing chat is successful with sufficient perms
+    '''
     command = "/clearchat"
     ch1, user1, user2 = create_public_channel['ch1'], create_public_channel['user1'], create_public_channel['user2']
     requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -279,6 +324,9 @@ def test_clear_chat(create_public_channel):
 
 
 def test_clear_chat_no_perms(create_public_channel):
+    '''
+        Testing if an error is raised if chat is cleared when the user has no perms
+    '''
     command = "/clearchat"
     ch1, user3 = create_public_channel['ch1'], create_public_channel['user3']
 
@@ -294,6 +342,9 @@ def test_clear_chat_no_perms(create_public_channel):
 
 
 def test_reset(create_public_channel):
+    '''
+        Tests if /reset works if user is a global owner
+    '''
     command = "/reset"
     ch1, user1 = create_public_channel['ch1'], create_public_channel['user1']
     lr = requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
@@ -307,6 +358,10 @@ def test_reset(create_public_channel):
 
 
 def test_reset_not_global_owner(create_public_channel):
+    '''
+        Tests to see if an error is raised when /reset is called when user is not a
+        global owner
+    '''
     command = "/reset"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     lr = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -321,6 +376,9 @@ def test_reset_not_global_owner(create_public_channel):
 
 
 def test_start_poll(create_public_channel):
+    '''
+        Tests to see if a poll is started successfully
+    '''
     command = "/startpoll food chinese japanese"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -330,6 +388,10 @@ def test_start_poll(create_public_channel):
 
 
 def test_start_poll_already_exists(create_public_channel):
+    '''
+        Tests to see if an error is raised when a poll is started when a poll
+        already exists
+    '''
     command = "/startpoll food chinese japanese"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -341,6 +403,9 @@ def test_start_poll_already_exists(create_public_channel):
 
 
 def test_start_invalid_params(create_public_channel):
+    '''
+        Tests to see if an error is raised when not enough params are entered
+    '''
     command = "/startpoll 2 3 "
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -355,6 +420,9 @@ def test_start_invalid_params(create_public_channel):
 
 
 def test_addpolloption(create_public_channel):
+    '''
+        Tests to see if /addpolloption works as intended
+    '''
     command = "/startpoll 2 3 4"
     command1 = "/addpolloption 1 2 3"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
@@ -366,6 +434,9 @@ def test_addpolloption(create_public_channel):
 
 
 def test_no_poll_addpolloption(create_public_channel):
+    '''
+        Tests if an error is raised when options are added when no poll exists
+    '''
     command = "/addpolloption 1 2 3"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -380,6 +451,9 @@ def test_no_poll_addpolloption(create_public_channel):
 
 
 def test_vote(create_public_channel):
+    '''
+        Tests if vote works as intended
+    '''
     command = "/startpoll 2 3 4"
     command1 = "/vote 2"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
@@ -391,6 +465,9 @@ def test_vote(create_public_channel):
 
 
 def test_change_vote(create_public_channel):
+    '''
+        Tests if calling /vote after you have already voted works
+    '''
     command = "/startpoll 2 3 4"
     command1 = "/vote 3"
     command2 = "/vote 4"
@@ -405,6 +482,9 @@ def test_change_vote(create_public_channel):
 
 
 def test_vote_no_poll(create_public_channel):
+    '''
+        Testing if voting when there is no poll raises an error
+    '''
     command = "/vote 2"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
 
@@ -419,6 +499,9 @@ def test_vote_no_poll(create_public_channel):
 
 
 def test_endpoll(create_public_channel):
+    '''
+        Tests if endpoll works as intended
+    '''
     command = "/startpoll 2 3 4"
     command1 = "/endpoll"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
@@ -472,6 +555,9 @@ def test_voted_endpoll_multiple_votes(create_public_channel):
 
 
 def test_winner_endpoll(create_public_channel):
+    '''
+        Tests if the most popular option works as intended
+    '''
     command = "/startpoll 2 3 4"
     command1 = "/vote 2"
     command2 = "/endpoll"
@@ -486,6 +572,9 @@ def test_winner_endpoll(create_public_channel):
 
 
 def test_endpoll_no_poll(create_public_channel):
+    '''
+        Tests if an error is raised if there is no poll when /endpoll is called
+    '''
     command = "/endpoll"
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
     response = requests.post(config.url + 'message/send/v1', json={'token': user2['token'],
@@ -494,6 +583,10 @@ def test_endpoll_no_poll(create_public_channel):
 
 
 def test_endpoll_diff_user(create_public_channel):
+    '''
+        Test if an error is raised when a user different to the one who started
+        the poll tries to end it
+    '''
     command = "/startpoll 2 3 4"
     command1 = "/endpoll"
     ch1, user1, user2 = create_public_channel['ch1'], create_public_channel['user1'], create_public_channel['user2']
@@ -510,6 +603,9 @@ def test_endpoll_diff_user(create_public_channel):
 
 
 def test_language_filter_off(create_public_channel):
+    '''
+        Tests that no error is raised when swearing if the bot is off
+    '''
     message = "shit"
     command = "/dbot"
 
@@ -523,6 +619,9 @@ def test_language_filter_off(create_public_channel):
 
 
 def test_language_filter_on(create_public_channel):
+    '''
+        Tests if the filter works when the bot is on
+    '''
     message = "shit"
 
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']
@@ -533,6 +632,9 @@ def test_language_filter_on(create_public_channel):
 
 
 def test_language_filter_timedout(create_public_channel):
+    '''
+        Tests that if a user is timed out after swearing 3 times
+    '''
     message = "shit"
 
     ch1, user2 = create_public_channel['ch1'], create_public_channel['user2']

@@ -4,13 +4,31 @@ import urllib.request
 import requests
 from PIL import Image
 from src.data_store import data_store
-from src.error import InputError, AccessError
+from src.error import InputError
 from src import config
 
 
 def check_for_tags_and_send_notifications(message, u_id, c_id, dm_id):
+    """Filters out any tags that may exist in message, separates them
+    and sends notifications to each of those users tagged if they exist,
+    c_id is -1 if message is sent from dms and dm_id is -1 if message is
+    sent from channels
 
+    Args:
+        message (str): _description_
+        u_id (int): _description_
+        c_id (int): _description_
+        dm_id (int): _description_
+    """
     def filter_tags(word):
+        """Checks if @ is in a string
+
+        Args:
+            word (str): _description_
+
+        Returns:
+            bool: True if @ is in word, else false
+        """
         if '@' not in word:
             return False
         return True
@@ -43,6 +61,17 @@ def check_for_tags_and_send_notifications(message, u_id, c_id, dm_id):
 
 
 def create_tag_notification(channel_id, dm_id, tagger_id, message):
+    """Makes the tag notification with the message and tagger handle attached
+
+    Args:
+        channel_id (int): _description_
+        dm_id (int): _description_
+        tagger_id (int): _description_
+        message (str): _description_
+
+    Returns:
+        dict: dict with the channel/dm id it was send, and the message attached
+    """
     tagger_handle = return_user_handle(tagger_id)
     channel_name = return_channel_or_dm_name(channel_id, dm_id)
 
@@ -59,6 +88,15 @@ def create_tag_notification(channel_id, dm_id, tagger_id, message):
 
 
 def create_channel_invite_notification(channel_id, dm_id, inviter_id, invited_id, channel_or_dm_name):
+    """Creates and sends notification when a user is invited to a channel
+
+    Args:
+        channel_id (int): _description_
+        dm_id (int): _description_
+        inviter_id (int): _description_
+        invited_id (int): _description_
+        channel_or_dm_name (str): _description_
+    """
     invited_handle = return_user_handle(invited_id)
     inviter_handle = return_user_handle(inviter_id)
     notification_message = "{0} added you to {1}".format(
@@ -73,6 +111,14 @@ def create_channel_invite_notification(channel_id, dm_id, inviter_id, invited_id
 
 
 def create_message_react_notification(channel_id, dm_id, reacter_id, recipient_id):
+    """Creates and sends notification when a users message is reacted to
+
+    Args:
+        channel_id (int): _description_
+        dm_id (int): _description_
+        reacter_id (int): _description_
+        recipient_id (int): _description_
+    """
     reacter_handle = return_user_handle(reacter_id)
     recipient_handle = return_user_handle(recipient_id)
     channel_dm_name = return_channel_or_dm_name(channel_id, dm_id)
@@ -92,6 +138,12 @@ def create_message_react_notification(channel_id, dm_id, reacter_id, recipient_i
 
 
 def attach_notification(user_handle, notification):
+    """Attaches a notification to a users profile
+
+    Args:
+        user_handle (str): _description_
+        notification (dict): _description_
+    """
     store = data_store.get()
     for user in store['users']:
         if user['handle'] == user_handle:
@@ -99,7 +151,14 @@ def attach_notification(user_handle, notification):
 
 
 def return_notifications(user_id):
+    """Grabs the first 20 notifications for a specified user
 
+    Args:
+        user_id (int): _description_
+
+    Returns:
+        list: list of dictionaries containing the last 20 notifications
+    """
     store = data_store.get()
 
     for user in store['users']:
@@ -110,7 +169,15 @@ def return_notifications(user_id):
 
 
 def return_channel_or_dm_name(channel_id, dm_id):
+    """Returns the index at which the channel or dm is located in datastore
 
+    Args:
+        channel_id (str): _description_
+        dm_id (str): _description_
+
+    Returns:
+        str: index of channel/dm
+    """
     store = data_store.get()
 
     if dm_id == -1:
@@ -134,7 +201,7 @@ def return_user_handle(user_id):
 
     Returns:
         {}
-    """    
+    """
 
     store = data_store.get()
 
@@ -146,6 +213,16 @@ def return_user_handle(user_id):
 
 
 def user_in_channel(user_handle, channel_id, dm_id):
+    """Checks if the user is in the channel or dm specified
+
+    Args:
+        user_handle (int): _description_
+        channel_id (int): _description_
+        dm_id (int): _description_
+
+    Returns:
+        bool: True if user is in the channel, false otherwise
+    """
     store = data_store.get()
 
     if dm_id == -1:
@@ -173,7 +250,7 @@ def check_url_status(img_url):
 
     Raises:
         InputError
-    """    
+    """
     try:
         if urllib.request.urlopen(img_url).getcode() != 200:
             raise InputError(
@@ -210,7 +287,7 @@ def check_dimensions(x1, y1, x2, y2, handle):
 
     Raises:
         InputError
-    """    
+    """
     imageObject = Image.open(f"image/{handle}.jpg")
     width, height = imageObject.size
     if x1 < 0 or y1 < 0 or x2 > width or y2 > height:
@@ -232,7 +309,7 @@ def check_image_type(handle):
 
     Raises:
         InputError
-    """    
+    """
     imageObject = Image.open(f"image/{handle}.jpg")
     if imageObject.format != 'JPEG':
         raise InputError(
@@ -253,7 +330,7 @@ def crop(x1, y1, x2, y2, handle):
 
     Raises:
         InputError
-    """    
+    """
 
     imageObject = Image.open(f"image/{handle}.jpg")
     cropped = imageObject.crop((x1, y1, x2, y2))
@@ -269,7 +346,7 @@ def newphoto(handle):
 
     Args:
         handle (string)
-    """    
+    """
 
     store = data_store.get()
 
@@ -305,7 +382,7 @@ def newphoto(handle):
 def clear_profile_images():
     """
         Removes all images in the image and images folder 
-    """    
+    """
 
     directory = os.getcwd()
     for file in os.listdir(f'{directory}/images'):
