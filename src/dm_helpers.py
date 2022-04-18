@@ -100,6 +100,14 @@ def check_user_member_dm(u_id, store, dm_index):
         raise AccessError(description='authorised user is not member of DM')
 
 def increment_user_dms_joined(auth_user_id):
+    '''
+    Increases the number of dms joined by the user in user_stats by 1
+    Args:
+        auth_user_id        int             the id of the user
+
+    Return:
+        None
+    '''
     store = data_store.get()
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
@@ -112,6 +120,14 @@ def increment_user_dms_joined(auth_user_id):
 
 
 def decrement_user_dms_joined(auth_user_id):
+    '''
+    Decreases the number of dms joined by the user in user_stats by 1
+    Args:
+        auth_user_id        int             the id of the user
+
+    Return:
+        None
+    '''
     store = data_store.get()
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
@@ -124,6 +140,13 @@ def decrement_user_dms_joined(auth_user_id):
 
 
 def increment_total_num_dms():
+    '''
+    Increases the total number of dms that exist in the server in workspace_stats by 1
+    Args:
+        None
+    Return:
+        None
+    '''
     store = data_store.get()
     store['stats']['total_num_dms'] += 1
     num_dms_exist = store['stats']['total_num_dms']
@@ -134,6 +157,13 @@ def increment_total_num_dms():
 
 
 def decrement_total_num_dms():
+    '''
+    Decreases the total number of dms that exist in the server in workspace_stats by 1
+    Args:
+        None
+    Return:
+        None
+    '''
     store = data_store.get()
     store['stats']['total_num_dms'] -= 1
     num_dms_exist = store['stats']['total_num_dms']
@@ -144,6 +174,13 @@ def decrement_total_num_dms():
 
 
 def decrement_total_num_messages_in_channel_dm(num_msgs_in_dm):
+    '''
+    Decreases the total number of messages that exist in the server in workspace_stats by 1
+    Args:
+        None
+    Return:
+        None
+    '''
     store = data_store.get()
     store['stats']['total_num_messages'] -= num_msgs_in_dm
     if num_msgs_in_dm != 0:
@@ -155,6 +192,17 @@ def decrement_total_num_messages_in_channel_dm(num_msgs_in_dm):
 
 
 def store_message_send_dm_message(dm_index, new_message, auth_user_id):
+    '''
+    Increases the total number of dms that exist in the server in workspace_stats by 1. 
+    Increases the number of messages sent by the user by 1. 
+    Sends the message into the dm. 
+    Args:
+        auth_user_id    int         the id of authorised user
+        dm_index        int         the index of the dm 
+        new_message     string      the new message to send in the dm 
+    Return:
+        None
+    '''
     store = data_store.get()
     increment_messages_sent(auth_user_id)
     increment_total_messages()
