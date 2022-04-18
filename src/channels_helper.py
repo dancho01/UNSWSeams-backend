@@ -71,6 +71,9 @@ def check_channel_len(name):
 
 
 def increment_total_num_channels():
+    '''
+        Increases the total number of channels in workspace stats by 1
+    '''
     store = data_store.get()
     store['stats']['total_num_channels'] += 1
     num_channels_exist = store['stats']['total_num_channels']

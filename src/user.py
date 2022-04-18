@@ -9,7 +9,12 @@ from PIL import Image
 
 def user_profile_v1(token, u_id):
     '''
-        Returns a given user's profile 
+        Args:
+            token (str)
+            u_id (int)
+
+        Returns:
+            A dictionary containing a given user's profile 
     '''
 
     check_valid_token(token)
@@ -28,7 +33,7 @@ def user_stats_v1(token):
         token (str)
 
     Returns:
-        dictionary: returns a dictionary containing a users stats
+        user_stats: a dictionary containing a dictionary of user stats
     """
     store = data_store.get()
 
