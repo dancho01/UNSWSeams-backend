@@ -9,6 +9,18 @@ from src.standup_helper import start_standup, end_standup, check_active, format_
 
 
 def standup_start_v1(token, channel_id, length):
+    """After passing error checks, calls start standup to initialise the standup
+    in that channel, then after length amount of time called end startup to conclude
+    the session.
+
+    Args:
+        token (str)
+        channel_id (int)
+        length (int)
+
+    Returns:
+        struct: struct with ending time attached to the key 'time_finish'
+    """
     user_id = check_valid_token(token)['u_id']
     channel_index = check_valid_channel(channel_id)
     check_length(length)
@@ -26,6 +38,16 @@ def standup_start_v1(token, channel_id, length):
 
 
 def standup_active_v1(token, channel_id):
+    """Finds the channel index after error checks, looks at if
+    standup is active within the channel
+
+    Args:
+        token (str)
+        channel_id (int)
+
+    Returns:
+        bool: true if there is active standup, else false
+    """
     user_id = check_valid_token(token)['u_id']
     channel_index = check_valid_channel(channel_id)
     check_authorized_user(user_id, channel_index)
@@ -35,6 +57,16 @@ def standup_active_v1(token, channel_id):
 
 
 def standup_send_v1(token, channel_id, message):
+    """Formats the standup, and sends it once it is over
+
+    Args:
+        token (str)
+        channel_id (int)
+        message (str)
+
+    Returns:
+        dict: empty_dict
+    """
     user_id = check_valid_token(token)['u_id']
     channel_index = check_valid_channel(channel_id)
     check_authorized_user(user_id, channel_index)

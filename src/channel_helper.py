@@ -97,6 +97,9 @@ def time_now():
 
 
 def get_messages(start, end_return, channel_index):
+    '''
+    Gets messages from start index to end
+    '''
     store = data_store.get()
 
     return_messages = []
@@ -111,6 +114,9 @@ def get_messages(start, end_return, channel_index):
 
 
 def edit_message(message_id, message):
+    '''
+    Alter the message at message_id and replace with message
+    '''
     store = data_store.get()
 
     for channel in store['channels']:
@@ -130,6 +136,13 @@ def edit_message(message_id, message):
 
 
 def send_message(new_message, channel_id, user_id):
+    """Sends the message attached to a channel and increments stats
+
+    Args:
+        new_message (str)
+        channel_id (int)
+        user_id (int)
+    """
     store = data_store.get()
     for channel in store['channels']:
         if channel['channel_id'] == channel_id:
@@ -255,6 +268,16 @@ def decrement_user_channels_joined(auth_user_id):
 
 
 def check_standup_owner(u_id, c_dex):
+    """Checks if the owner who is indicated at u_id is the started of a standup,
+    if so they cannot leave the channel until the standup is over.
+
+    Args:
+        u_id (int)
+        c_dex (int)
+
+    Raises:
+        InputError: the authorised user is the starter of an active standup in the channel_
+    """
     store = data_store.get()
 
     standup_info = store['channels'][c_dex]['standup']
