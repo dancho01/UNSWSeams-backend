@@ -33,6 +33,17 @@ def check_channel_owner(channel, u_id):
 
 
 def find_channel_or_dm(store, message_id):
+    """
+        Returns the message and channel, or message and dm, 
+        where the message_id matches the message
+
+    Args:
+        store (dict)
+        message_id (int)
+
+    Returns:
+        c_ret, mess (dict, dict)
+    """
     for dm in store['dms']:
         for message in dm['messages']:
             if message_id == message['message_id']:
@@ -47,6 +58,15 @@ def find_channel_or_dm(store, message_id):
 
 
 def check_if_pinned_v2(message):
+    """
+       Checks if message is pinned. If unpinned, pins it. If pinned, return InputError 
+
+    Args:
+        message (dict)
+
+    Raises:
+        InputError
+    """
     if message['is_pinned'] == False:
         message['is_pinned'] = True
     else:
@@ -55,6 +75,16 @@ def check_if_pinned_v2(message):
 
 
 def check_if_unpinned_v2(message):
+    """
+        Checks if message is unpinned. If pinned, unpins it. If unpinned, return InputError
+
+    Args:
+        message (dict)
+
+    Raises:
+        InputError
+    """
+
     if message['is_pinned'] == True:
         message['is_pinned'] = False
     else:
@@ -63,6 +93,18 @@ def check_if_unpinned_v2(message):
 
 
 def check_owner_dm_channel(message_store, u_id, store):
+    """
+        Checks whether the user is an owner or global owner in a channel.
+        Checks if the owner of a dm
+
+    Args:
+        message_store (dict)
+        u_id (int)
+        store (dict)
+
+    Raises:
+        AccessError
+    """
 
     if 'owner_members' in message_store.keys():
         for member in message_store['owner_members']:

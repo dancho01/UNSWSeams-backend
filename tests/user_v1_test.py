@@ -68,6 +68,9 @@ def test_invalid_user():
 
 
 def test_valid_image():
+    '''
+        Successful upload of image 
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -83,6 +86,9 @@ def test_valid_image():
 
 
 def test_valid_image2():
+    '''
+        Successful upload of image 
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -98,6 +104,9 @@ def test_valid_image2():
 
 
 def test_not_valid_image_jpg():
+    '''
+        Upload unsuccessful as image is PNG, not JPEG, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -113,6 +122,9 @@ def test_not_valid_image_jpg():
 
 
 def test_not_valid_image2_jpg():
+    '''
+        Upload unsuccessful as image is PNG, not JPEG
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -128,6 +140,9 @@ def test_not_valid_image2_jpg():
 
 
 def test_not_valid_url():
+    '''
+        URL is invalid as it produces a 404 error, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -143,6 +158,9 @@ def test_not_valid_url():
 
 
 def test_invalid_dimensions():
+    '''
+        One of the give dimesions is less than zero, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -158,7 +176,9 @@ def test_invalid_dimensions():
 
 
 def test_invalid2_dimensions():
-
+    '''
+        One of the give dimesions larger than image dimensions, resulting in InputError
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -173,6 +193,9 @@ def test_invalid2_dimensions():
 
 
 def test_start_dimension_bigger():
+    '''
+        One of the starting dimensions is larger than the end dimensions, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -188,6 +211,9 @@ def test_start_dimension_bigger():
 
 
 def test_invalid_status_code():
+    '''
+        URL is invalid due to status code, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -203,6 +229,9 @@ def test_invalid_status_code():
 
 
 def test_valid_image_multiple_users_in_channel():
+    '''
+        Successful upload of profile photos of multiple users in channels
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -232,6 +261,9 @@ def test_valid_image_multiple_users_in_channel():
 
 
 def test_valid_image_multiple_users_in_dm():
+    '''
+        Successful upload of profile photos of multiple users in dm
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1210,12 +1242,9 @@ def test_valid_notification_channel_invite(create_first_user, create_second_user
     assert response_sender.status_code == 200
 
 
-def test_valid_notification_channel_message(create_first_user, create_second_user):
+def test_valid_notification_channel_message_tag(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 on a channel, expects a notification for user 2
+        Successful notifications from channel invite and tagged message from User 1 to User 2
     '''
 
     user1 = create_first_user
@@ -1253,10 +1282,7 @@ def test_valid_notification_channel_message(create_first_user, create_second_use
 
 def test_invalid_notification_channel_message(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 on a channel, expects a notification for user 2
+        User 1 tags User 2 in a channel in which User 2 is not a part of 
     '''
 
     user1 = create_first_user
@@ -1289,41 +1315,38 @@ def test_invalid_notification_channel_message(create_first_user, create_second_u
     assert response_sender.status_code == 200
 
 
-def test_channel_message_valid_tag(create_first_user, create_second_user):
-    '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 on a channel, expects a notification for user 2
-    '''
+# def test_channel_message_valid_tag(create_first_user, create_second_user):
+#     '''
+#     Error raised:
+#         None
+#     ExplanationL
+#         User 1 messages user 2 on a channel, expects a notification for user 2
+#     '''
 
-    user1 = create_first_user
-    user2 = create_second_user
+#     user1 = create_first_user
+#     user2 = create_second_user
 
-    channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
-                                                                       'is_public': True})
-    channel_1_data = channel_1.json()
+#     channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
+#                                                                        'is_public': True})
+#     channel_1_data = channel_1.json()
 
-    requests.post(config.url + 'channel/invite/v2', json={'token': user1['token'], 'channel_id': channel_1_data['channel_id'],
-                                                          'u_id': user2['auth_user_id']})
+#     requests.post(config.url + 'channel/invite/v2', json={'token': user1['token'], 'channel_id': channel_1_data['channel_id'],
+#                                                           'u_id': user2['auth_user_id']})
 
-    requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
-                                                        'channel_id': channel_1_data['channel_id'], 'message': '@danielcho'})
+#     requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
+#                                                         'channel_id': channel_1_data['channel_id'], 'message': '@danielcho'})
 
-    response_receiver = requests.get(config.url + 'notifications/get/v1',
-                                     params={'token': user2['token']})
+#     response_receiver = requests.get(config.url + 'notifications/get/v1',
+#                                      params={'token': user2['token']})
 
-    response_receiver_data = response_receiver.json()
-    assert len(response_receiver_data['notifications']) == 2
-    assert response_receiver.status_code == 200
+#     response_receiver_data = response_receiver.json()
+#     assert len(response_receiver_data['notifications']) == 2
+#     assert response_receiver.status_code == 200
 
 
 def test_channel_message_invalid_tag(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 on a channel, expects a notification for user 2
+        Incorrect tag by User 1 for User 2
     '''
 
     user1 = create_first_user
@@ -1353,10 +1376,7 @@ def test_channel_message_invalid_tag(create_first_user, create_second_user):
 
 def test_valid_notification_dm_invite(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 on a channel, expects a notification for user 2
+        User 1 invite User 2 to a dm, recieving one notifcation 
     '''
 
     user1 = create_first_user
@@ -1379,10 +1399,7 @@ def test_valid_notification_dm_invite(create_first_user, create_second_user):
 
 def test_valid_notification_dm_message(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 on a channel, expects a notification for user 2
+        User 1 invites and tags User 2 in dm, recieving two notifcations
     '''
 
     user1 = create_first_user
@@ -1416,10 +1433,8 @@ def test_valid_notification_dm_message(create_first_user, create_second_user):
 
 def test_valid_notification_react(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 21 times, expects 20 notification for user 2
+        User 1 invites User 2 to a channel, User 2 creates a message and User 1 reacts.
+        User2 expects 2 notifications
     '''
 
     user1 = create_first_user
@@ -1454,10 +1469,8 @@ def test_valid_notification_react(create_first_user, create_second_user):
 
 def test_invalid_notification_react_no_longer_in_channel(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 21 times, expects 20 notification for user 2
+        User 1 invites User 2 to a channel, User 2 creates a message, User 2 leaves and User 1 reacts.
+        User2 expects 1 notifications
     '''
 
     user1 = create_first_user
@@ -1495,10 +1508,8 @@ def test_invalid_notification_react_no_longer_in_channel(create_first_user, crea
 
 def test_invalid_notification_react_no_longer_in_dm(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 21 times, expects 20 notification for user 2
+        User 1 invites User 2 to a dm, User 2 creates a message, User 2 leaves and User 1 reacts.
+        User2 expects 1 notifications
     '''
 
     user1 = create_first_user
@@ -1534,10 +1545,7 @@ def test_invalid_notification_react_no_longer_in_dm(create_first_user, create_se
 
 def test_valid_notification_only_20(create_first_user, create_second_user):
     '''
-    Error raised:
-        None
-    ExplanationL
-        User 1 messages user 2 21 times, expects 20 notification for user 2
+        User 1 messages user 2 21 times, expects 20 notifications for user 2
     '''
 
     user1 = create_first_user

@@ -893,6 +893,9 @@ def test_channel_leave_success():
 
 
 def test_success_with_pin_channel_message():
+    '''
+        A successful case of pinning channel message
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -923,6 +926,9 @@ def test_success_with_pin_channel_message():
 
 
 def test_already_pinned_channel_message():
+    '''
+        Pinning an already pinned channel message, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -953,6 +959,10 @@ def test_already_pinned_channel_message():
 
 
 def test_not_owner_channel_message_pin():
+    '''
+        A channel member attempts to pin message but is not channel owner nor global owner, resulting in AccessError
+    '''
+
 
     requests.delete(config.url + 'clear/v1')
 
@@ -987,6 +997,9 @@ def test_not_owner_channel_message_pin():
 
 
 def test_global_owner_success_channel_pin():
+    '''
+        Global owner successfully pin a channel message 
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1026,6 +1039,10 @@ def test_global_owner_success_channel_pin():
 
 
 def test_not_valid_channel_message_pin():
+    '''
+        Pinning a message that does not exist in the specified channel, resulting in InputError 
+    '''
+
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1064,6 +1081,9 @@ def test_not_valid_channel_message_pin():
 
 
 def test_success_with_pin_dm_message():
+    '''
+        A successful case of pinning dm message
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1097,6 +1117,9 @@ def test_success_with_pin_dm_message():
 
 
 def test_already_pinned_dm():
+    '''
+        Pinning an already pinned dm message, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1129,6 +1152,9 @@ def test_already_pinned_dm():
 
 
 def test_not_dm_owner_pin():
+    '''
+        A dm member attempts to pin message but is not dm owner , resulting in AccessError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1158,6 +1184,9 @@ def test_not_dm_owner_pin():
 
 
 def test_not_valid_dm_pin():
+    '''
+        Pinning a message that does not exist in the specified dm, resulting in InputError 
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1195,6 +1224,9 @@ def test_not_valid_dm_pin():
 
 
 def test_success_with_unpin_channel_message():
+    '''
+        A successful case of unpinning channel message
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1228,6 +1260,9 @@ def test_success_with_unpin_channel_message():
 
 
 def test_already_unpinned_channel_message():
+    '''
+        Uninning an already unpinned channel message, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1255,6 +1290,9 @@ def test_already_unpinned_channel_message():
 
 
 def test_not_owner_channel_message_unpin():
+    '''
+        A channel member attempts to unpin message but is not channle owner or global owner, resulting in AccessError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1292,6 +1330,9 @@ def test_not_owner_channel_message_unpin():
 
 
 def test_global_owner_success_channel_unpin():
+    '''
+        Global owner successfully unpins a channel message 
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1331,6 +1372,9 @@ def test_global_owner_success_channel_unpin():
 
 
 def test_not_valid_channel_message_unpin():
+    '''
+        Unpinning a message that does not exist in the specified channel, resulting in InputError 
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1372,6 +1416,9 @@ def test_not_valid_channel_message_unpin():
 
 
 def test_success_with_unpin_dm_message():
+    '''
+        A successful case of unpinning dm message
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1408,6 +1455,9 @@ def test_success_with_unpin_dm_message():
 
 
 def test_already_unpinned_dm():
+    '''
+        Unpinning an already unpinned dm message, resulting in InputError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1437,6 +1487,9 @@ def test_already_unpinned_dm():
 
 
 def test_not_dm_owner_unpin():
+    '''
+        A dm member attempts to unpin message but is not dm owner, resulting in AccessError
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1469,6 +1522,9 @@ def test_not_dm_owner_unpin():
 
 
 def test_not_valid_dm_unpin():
+    '''
+        Unpinning a message that does not exist in the specified dm, resulting in InputError 
+    '''
 
     requests.delete(config.url + 'clear/v1')
 
@@ -1504,6 +1560,10 @@ def test_not_valid_dm_unpin():
 
     assert unpin_response.status_code == 400
 
+
+'''
+    standup
+'''
 
 def test_channel_leave_user_start_standup(create_first_user):
     user1 = create_first_user

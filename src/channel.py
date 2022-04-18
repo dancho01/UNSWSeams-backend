@@ -453,6 +453,16 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
 
 
 def message_pin_v1(token, message_id):
+    """
+        Pins unpinned messages in dm or channel
+
+    Args:
+        token (string)
+        message_id (int)
+
+    Returns:
+        {}
+    """
 
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
@@ -469,6 +479,16 @@ def message_pin_v1(token, message_id):
 
 
 def message_unpin_v1(token, message_id):
+    """
+        Unpins pinned message in a dm or channel
+
+    Args:
+        token (string)
+        message_id (id)
+
+    Returns:
+        {}
+    """
 
     auth_user_id = check_valid_token(token)['u_id']
     store = data_store.get()
