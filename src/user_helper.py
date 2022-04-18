@@ -126,6 +126,15 @@ def return_channel_or_dm_name(channel_id, dm_id):
 
 
 def return_user_handle(user_id):
+    """
+        Returns user handle via user_id
+
+    Args:
+        user_id (int)
+
+    Returns:
+        {}
+    """    
 
     store = data_store.get()
 
@@ -156,6 +165,15 @@ def user_in_channel(user_handle, channel_id, dm_id):
 
 
 def check_url_status(img_url):
+    """
+        Checks if URL is valid
+
+    Args:
+        img_url (string)
+
+    Raises:
+        InputError
+    """    
     try:
         if urllib.request.urlopen(img_url).getcode() != 200:
             raise InputError(
@@ -167,13 +185,32 @@ def check_url_status(img_url):
 
 
 def imgDown(img_url, handle):
+    """
+        Downloads image from URL and saves in image processing file 
 
+    Args:
+        img_url (string)
+        handle (string)
+    """
     urllib.request.urlretrieve(img_url, f"image/{handle}.jpg")
 
     return
 
 
 def check_dimensions(x1, y1, x2, y2, handle):
+    """
+        Checks the image saved in the image folder, checks dimensions.
+
+    Args:
+        x1 (int)
+        y1 (int)
+        x2 (int)
+        y2 (int)
+        handle (string)
+
+    Raises:
+        InputError
+    """    
     imageObject = Image.open(f"image/{handle}.jpg")
     width, height = imageObject.size
     if x1 < 0 or y1 < 0 or x2 > width or y2 > height:
@@ -188,6 +225,14 @@ def check_dimensions(x1, y1, x2, y2, handle):
 
 
 def check_image_type(handle):
+    """
+        Checks if the photo is in JPEG format 
+    Args:
+        handle (string)
+
+    Raises:
+        InputError
+    """    
     imageObject = Image.open(f"image/{handle}.jpg")
     if imageObject.format != 'JPEG':
         raise InputError(
@@ -196,6 +241,20 @@ def check_image_type(handle):
 
 
 def crop(x1, y1, x2, y2, handle):
+    """
+        Crops image if it is valid, saves it in the images folder
+
+    Args:
+        x1 (int)
+        y1 (int)
+        x2 (int)
+        y2 (int)
+        handle (string)
+
+    Raises:
+        InputError
+    """    
+
     imageObject = Image.open(f"image/{handle}.jpg")
     cropped = imageObject.crop((x1, y1, x2, y2))
     cropped.save(f"images/{handle}.jpg")
@@ -204,6 +263,13 @@ def crop(x1, y1, x2, y2, handle):
 
 
 def newphoto(handle):
+    """
+        Retrieves the stored image linked to the user, and changes the profile 
+        picture in all instances of the user in the data structure
+
+    Args:
+        handle (string)
+    """    
 
     store = data_store.get()
 
@@ -237,6 +303,9 @@ def newphoto(handle):
 
 
 def clear_profile_images():
+    """
+        Removes all images in the image and images folder 
+    """    
 
     directory = os.getcwd()
     for file in os.listdir(f'{directory}/images'):

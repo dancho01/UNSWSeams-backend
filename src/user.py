@@ -88,6 +88,22 @@ def notifications_get_v1(token):
 
 
 def user_profile_uploadphoto_v1(token, img_url, x_start, y_start, x_end, y_end):
+    """
+        User uploads a JPEG with the correct crop dimensions, changing its default
+        profile picture in all of the given user instances in the data structure.
+        Photo is unable to be uploaded if provided URL does not work, the image is not
+        a JPEG, or incorrect crop dimensions are given.
+    Args:
+        token (string)
+        img_url (string)
+        x_start (int)
+        y_start (int)
+        x_end (int)
+        y_end (int)
+
+    Returns:
+        {}
+    """
 
     user_info = check_valid_token(token)
     handle = return_user_handle(user_info['u_id'])
