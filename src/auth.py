@@ -112,8 +112,15 @@ def auth_logout(token):
 
 def auth_password_request(mail, email):
     '''
-        takes in an email, runs through some validation checks and
-        sends an email to user with the reset code
+    Takes in an email, runs through some validation checks and
+    sends an email to user with the reset code
+    
+    Args:
+        mail        object
+        email       str
+        
+    Return:
+        returns nothing
     '''
     
 
@@ -131,8 +138,15 @@ def auth_password_request(mail, email):
 
 def auth_password_reset(code, new_pass):
     '''
-        words 
-        here
+    Given a reset code for a user, set that user's new password to the password 
+    provided. Once a reset code has been used, it is then invalidated. 
+    
+    Args:
+        code        str
+        new_pass    str
+        
+    Return:
+        returns nothing
     '''
 
     store = data_store.get()

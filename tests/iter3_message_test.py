@@ -20,6 +20,10 @@ def create_second_user():
     
 ''' tests for search/v1 '''
 def test_search_query_invalid_length(create_first_user):
+    '''
+    Tests for when query string is less than 1 character, resulting in InputError
+       
+    '''
 
     user1 = create_first_user
     
@@ -36,6 +40,11 @@ def test_search_query_invalid_length(create_first_user):
 
 
 def test_search_query_success(create_first_user, create_second_user):
+    '''
+    Tests when search/v1 is successful and is able to return all the messages
+    containing the query string
+    
+    '''
 
     user1 = create_first_user
     user2 = create_second_user
@@ -62,6 +71,11 @@ def test_search_query_success(create_first_user, create_second_user):
     assert search_response.status_code == 200
     
 def test_search_query_user_not_joined_any_dms_nor_channels(create_first_user):
+    '''
+    Tests when user has not joined any channels/dms, hence, should successfully
+    only return an empty list
+    
+    '''
 
     user1 = create_first_user
     search_response = requests.get(config.url + 'search/v1', params = {'token': user1['token'], 'query_str': 'message'})
@@ -71,6 +85,10 @@ def test_search_query_user_not_joined_any_dms_nor_channels(create_first_user):
     assert response_data == {'messages':[]}
 
 def test_search_multiple_dms(create_first_user):
+    '''
+    Tests the successful return of messages containing query strings in all the
+    dms that user is a part of 
+    '''
     user1 = create_first_user
     dm_response1 = requests.post(config.url + 'dm/create/v1', json = {'token': user1['token'] , 'u_ids': []}) 
     dm_data1 = dm_response1.json()
@@ -86,6 +104,10 @@ def test_search_multiple_dms(create_first_user):
     assert search_response.status_code == 200
 
 def test_search_is_user_reacted(create_first_user):
+    '''
+    Tests the successful return of messsages when they have been reacted
+    
+    '''
     user1 = create_first_user
 
     channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
@@ -103,6 +125,10 @@ def test_search_is_user_reacted(create_first_user):
 
 ''' tests for message/react/v1 '''
 def test_react_invalid_message_id(create_first_user, create_second_user):
+    '''
+    Tests when message id passed in is invalid, resulting in an InputError
+    
+    '''
 
     user1 = create_first_user
     user2 = create_second_user
@@ -125,6 +151,10 @@ def test_react_invalid_message_id(create_first_user, create_second_user):
     assert resp.status_code == 400
 
 def test_react_invalid_react_id(create_first_user):
+    '''
+    Tests when react id passed in is invalid, resulting in InputError
+    
+    '''
     
     user1 = create_first_user
     
@@ -141,6 +171,10 @@ def test_react_invalid_react_id(create_first_user):
     assert resp.status_code == 400
     
 def test_react_already_reacted(create_first_user):
+    '''
+    Tests when reacting to an already reacted message, resulting in InputError
+    
+    '''
 
     user1 = create_first_user
 
@@ -158,7 +192,11 @@ def test_react_already_reacted(create_first_user):
 
     assert resp.status_code == 400
     
-def test_react_success(create_first_user):
+def test_react_success(create_first_user): 
+    '''
+    Tests when message is successfully reacted
+    
+    '''
     
     user1 = create_first_user
 
@@ -177,6 +215,10 @@ def test_react_success(create_first_user):
     
 ''' tests for message/unreact/v1 '''
 def test_unreact_invalid_message_id(create_first_user):
+    '''
+    Tests when message_id passed in is invalid, resulting in InputError
+    
+    '''
     user1 = create_first_user
     
     channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
@@ -193,6 +235,10 @@ def test_unreact_invalid_message_id(create_first_user):
 
 
 def test_unreact_invalid_react_id(create_first_user):
+    '''
+    Tests when react_id passed in is invalid, resulting in InputError
+    
+    '''
     user1 = create_first_user
     
     channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
@@ -208,6 +254,10 @@ def test_unreact_invalid_react_id(create_first_user):
     assert resp.status_code == 400   
     
 def test_unreact_never_reacted(create_first_user):
+    '''
+    Tests when unreacting a message thats never been reacted, resulting in InputError
+    
+    '''
     user1 = create_first_user
 
     channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],
@@ -224,6 +274,10 @@ def test_unreact_never_reacted(create_first_user):
 
     
 def test_unreact_success(create_first_user):
+    '''
+    Tests when a message is successfully unreacted by authorised user
+    
+    '''
     user1 = create_first_user
 
     channel_data = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'],

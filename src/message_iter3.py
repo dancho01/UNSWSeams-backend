@@ -7,6 +7,17 @@ from src.user_helper import create_message_react_notification
 
 
 def search_v1(token, query_str):
+    '''
+    Given a query string, return a collection of messages in all of the channels/DMs 
+    that the user has joined that contain the query (case-insensitive). 
+    There is no expected order for these messages.
+    
+    Args:
+        token       string
+        query_str   string
+    Return:
+        Returns the list of messages that contain the query
+    '''
     store = data_store.get()
     user_id = check_valid_token(token)['u_id']
 
@@ -32,7 +43,18 @@ def search_v1(token, query_str):
 
 
 def message_react_v1(token, message_id, react_id):
-
+    '''
+    Given a message within a channel or DM the authorised user is part of, 
+    add a "react" to that particular message.
+    
+    Args:
+        token           string
+        message_id      int
+        react_id        int
+    Return:
+        Returns an empty dict
+    '''
+    
     store = data_store.get()
     user_id = check_valid_token(token)['u_id']
 
@@ -61,6 +83,18 @@ def message_react_v1(token, message_id, react_id):
 
 
 def message_unreact_v1(token, message_id, react_id):
+    '''
+    Given a message within a channel or DM the authorised user is part of, 
+    remove a "react" to that particular message.
+    
+    Args:
+        token           string
+        message_id      int
+        react_id        int
+        
+    Return:
+        Returns an empty dict
+    '''
 
     store = data_store.get()
     user_id = check_valid_token(token)['u_id']
