@@ -395,6 +395,7 @@ def test_message_sendlaterdm_not_member(create_second_user, create_future_timest
 def test_message_sendlaterdm_success(create_future_timestamp, create_public_channel, create_second_user):
     '''
     Sucess case: user 1 successfully schedules a message to be sent later to a channel they are a member of
+    Tests that num_messages_sent increases after sleeping for 3 seconds. 
     '''
     
     user1_data = create_public_channel[1]

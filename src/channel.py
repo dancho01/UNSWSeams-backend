@@ -424,6 +424,12 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     You do not need to consider cases where a user's token is invalidated or a user leaves before the message is 
     scheduled to be sent.
 
+    Args:
+        token (string)
+        channel_id (int)
+        message (string)
+        time_sent (int)
+
     Return Type:    dictionary containing int     { message_id }
     '''
 

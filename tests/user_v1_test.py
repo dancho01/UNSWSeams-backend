@@ -294,10 +294,11 @@ def test_valid_image_multiple_users_in_dm():
 user/stats test
 
 '''
-# test starting figures
-
 
 def test_user_stats_base_case():
+    '''
+        Testing the starting figures for user stats
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -329,41 +330,10 @@ def test_user_stats_base_case():
     assert type(response_data['user_stats']['involvement_rate']) == float
 
 
-def test_users_stats_base_case():
-    requests.delete(config.url + 'clear/v1')
-
-    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
-                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
-
-    user1_data = user1.json()
-    response = requests.get(config.url + 'users/stats/v1',
-                            params={'token': user1_data['token']})
-    response_data = response.json()
-
-    # channels exit
-    assert response.status_code == 200
-    assert response_data['workspace_stats']['channels_exist'][0]['num_channels_exist'] == 0
-    assert len(response_data['workspace_stats']['channels_exist']) == 1
-    assert type(response_data['workspace_stats']
-                ['channels_exist'][0]['time_stamp']) == int
-    # messages exist
-    assert response_data['workspace_stats']['messages_exist'][0]['num_messages_exist'] == 0
-    assert len(response_data['workspace_stats']['messages_exist']) == 1
-    assert type(response_data['workspace_stats']
-                ['messages_exist'][0]['time_stamp']) == int
-    # dms exist
-    assert response_data['workspace_stats']['dms_exist'][0]['num_dms_exist'] == 0
-    assert len(response_data['workspace_stats']['dms_exist']) == 1
-    assert type(response_data['workspace_stats']
-                ['dms_exist'][0]['time_stamp']) == int
-    # utilization rate
-    assert response_data['workspace_stats']['utilization_rate'] == 0.0
-    assert type(response_data['workspace_stats']['utilization_rate']) == float
-
-# test number of messages after removing messages in channel & dm
-
-
 def test_user_stats_users_stats_num_messages_after_removing_messages():
+    '''
+        Test number of messages after removing messages in channel & dm
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -441,6 +411,9 @@ def test_user_stats_users_stats_num_messages_after_removing_messages():
 
 
 def test_user_stats_users_stats_channel_leave():
+    '''
+        Test number of channels joined after channel leave
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -523,6 +496,9 @@ def test_user_stats_users_stats_channel_leave():
 
 
 def test_involvement_rate_above_1():
+    '''
+        Test that involvement rate is max 1.0
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -581,6 +557,9 @@ def test_involvement_rate_above_1():
 
 
 def test_user_stats_users_stats_dm_leave():
+    '''
+        Test number of dms joined after dm leave
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -640,6 +619,9 @@ def test_user_stats_users_stats_dm_leave():
 
 
 def test_user_stats_dm_remove():
+    '''
+        Test number of messages exist and number of dms exist and joined after removing dm
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -700,6 +682,9 @@ def test_user_stats_dm_remove():
 
 
 def test_user_stats_second_user():
+    '''
+        Test number of messages after removing messages in channel & dm for a second user (non global owner)
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -739,6 +724,9 @@ def test_user_stats_second_user():
 
 
 def test_user_stats_return_types():
+    '''
+        Test return types for user/stats/v1
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -758,6 +746,9 @@ def test_user_stats_return_types():
 
 
 def test_user_stats_users_stats_channel_join():
+    '''
+        Test number of channels joined after channel join
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -821,10 +812,47 @@ users/stats test
 
 '''
 
+def test_users_stats_base_case():
+    '''
+        Testing the starting figures for workspace stats
+    '''
+    requests.delete(config.url + 'clear/v1')
+
+    user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
+                                                                 'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
+
+    user1_data = user1.json()
+    response = requests.get(config.url + 'users/stats/v1',
+                            params={'token': user1_data['token']})
+    response_data = response.json()
+
+    # channels exit
+    assert response.status_code == 200
+    assert response_data['workspace_stats']['channels_exist'][0]['num_channels_exist'] == 0
+    assert len(response_data['workspace_stats']['channels_exist']) == 1
+    assert type(response_data['workspace_stats']
+                ['channels_exist'][0]['time_stamp']) == int
+    # messages exist
+    assert response_data['workspace_stats']['messages_exist'][0]['num_messages_exist'] == 0
+    assert len(response_data['workspace_stats']['messages_exist']) == 1
+    assert type(response_data['workspace_stats']
+                ['messages_exist'][0]['time_stamp']) == int
+    # dms exist
+    assert response_data['workspace_stats']['dms_exist'][0]['num_dms_exist'] == 0
+    assert len(response_data['workspace_stats']['dms_exist']) == 1
+    assert type(response_data['workspace_stats']
+                ['dms_exist'][0]['time_stamp']) == int
+    # utilization rate
+    assert response_data['workspace_stats']['utilization_rate'] == 0.0
+    assert type(response_data['workspace_stats']['utilization_rate']) == float
+
 # test number of messages after removing messages
 
 
 def test_users_stats_total_num_messages_after_removing_messages():
+    '''
+        Test number of messages exist after removing messages in channel
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -868,6 +896,9 @@ def test_users_stats_total_num_messages_after_removing_messages():
 
 
 def test_users_stats_dm_leave():
+    '''
+        Test workspace stats after dm leave
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -912,6 +943,9 @@ def test_users_stats_dm_leave():
 
 
 def test_users_stats_dm_remove():
+    '''
+        Test number of messages exist and num dms exist after removing dm
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -952,6 +986,9 @@ def test_users_stats_dm_remove():
 
 
 def test_user_stats_users_stats_message_share():
+    '''
+        Test number of messages sent and exist after message share in channel
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -1025,6 +1062,9 @@ def test_user_stats_users_stats_message_share():
 
 
 def test_user_stats_users_stats_message_edit():
+    '''
+        Test number of messages sent and exist after editing a message in channel
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -1086,6 +1126,9 @@ def test_user_stats_users_stats_message_edit():
 
 
 def test_user_stats_users_stats_message_send_later():
+    '''
+        Test number of messages sent and exist before and after message_sendlater in channel
+    '''
     requests.delete(config.url + 'clear/v1')
 
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
@@ -1148,10 +1191,12 @@ def test_user_stats_users_stats_message_send_later():
     # utilization rate
     assert stats_response_data['workspace_stats']['utilization_rate'] == 1.0
 
-# message_sendlaterdm
 
 
 def test_user_stats_users_stats_sendlaterdm():
+    '''
+        Test number of messages sent and exist before and after message_sendlater in dm
+    '''
     requests.delete(config.url + 'clear/v1')
     user1 = requests.post(config.url + 'auth/register/v2', json={'email': 'email@gmail.com',
                                                                  'password': 'password', 'name_first': 'First', 'name_last': 'Last'})
@@ -1313,35 +1358,6 @@ def test_invalid_notification_channel_message(create_first_user, create_second_u
     assert len(response_sender_data['notifications']) == 0
     assert response_receiver.status_code == 200
     assert response_sender.status_code == 200
-
-
-# def test_channel_message_valid_tag(create_first_user, create_second_user):
-#     '''
-#     Error raised:
-#         None
-#     ExplanationL
-#         User 1 messages user 2 on a channel, expects a notification for user 2
-#     '''
-
-#     user1 = create_first_user
-#     user2 = create_second_user
-
-#     channel_1 = requests.post(config.url + 'channels/create/v2', json={'token': user1['token'], 'name': 'First Channel',
-#                                                                        'is_public': True})
-#     channel_1_data = channel_1.json()
-
-#     requests.post(config.url + 'channel/invite/v2', json={'token': user1['token'], 'channel_id': channel_1_data['channel_id'],
-#                                                           'u_id': user2['auth_user_id']})
-
-#     requests.post(config.url + 'message/send/v1', json={'token': user1['token'],
-#                                                         'channel_id': channel_1_data['channel_id'], 'message': '@danielcho'})
-
-#     response_receiver = requests.get(config.url + 'notifications/get/v1',
-#                                      params={'token': user2['token']})
-
-#     response_receiver_data = response_receiver.json()
-#     assert len(response_receiver_data['notifications']) == 2
-#     assert response_receiver.status_code == 200
 
 
 def test_channel_message_invalid_tag(create_first_user, create_second_user):
