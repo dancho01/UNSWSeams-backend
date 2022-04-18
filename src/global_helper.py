@@ -215,29 +215,58 @@ def generate_new_dm_id():
 
 
 def generate_user_id():
+    '''
+    Generates a new user_id that is uniqe and sequentially increases by 1
+    Args:
+        None
+    Return:
+        Returns the next user_id   
+    '''
     global AUTH_COUNTER
     AUTH_COUNTER += 1
     return AUTH_COUNTER
 
 
 def generate_channel_id():
+    '''
+    Generates a new channel_id that is uniqe and sequentially increases by 1
+    Args:
+        None
+    Return:
+        Returns the next channel_id  
+    '''
     global CHANNEL_COUNTER
     CHANNEL_COUNTER += 1
     return CHANNEL_COUNTER
 
 
 def reset_globals():
+    '''
+    Resets the all of the ID counters for channels, dms, users, messages
+    Args:
+        None
+    '''
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
     CHANNEL_COUNTER = AUTH_COUNTER = MESSAGE_ID_COUNTER = DM_ID_COUNTER = 0
 
 
 def load_globals(auth, channel, message, dm):
+    '''
+    Loads the all of the ID counters for channels, dms, users, messages
+    Args:
+        None
+    '''
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
 
     CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER = channel, auth, message, dm
 
 
 def get_globals():
+    '''
+    Gets the all of the ID counters for channels, dms, users, messages
+    Args:
+        None    
+    '''
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
 
     return CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
