@@ -84,6 +84,9 @@ def check_global_owner(auth_user_id):
 
 
 def is_user_member(u_id, channel_index):
+    '''
+    Checks if user is a member of the channel   
+    '''
     store = data_store.get()
 
     for member in store['channels'][channel_index]['all_members']:
@@ -125,6 +128,9 @@ def check_already_owner(channel_index, auth_user_id):
 
 
 def return_member_information(u_id, store):
+    '''
+    Returns the member information of the authorised user 
+    '''
     for user in store['users']:
         if user['auth_user_id'] == u_id:
             to_return = {
@@ -139,6 +145,10 @@ def return_member_information(u_id, store):
 
 
 def increment_messages_sent(auth_user_id):
+    '''
+    Increments the amount of messages sent, including channel and dm messages
+    
+    '''
     store = data_store.get()
     for user in store['users']:
         if user['auth_user_id'] == auth_user_id:
@@ -151,6 +161,10 @@ def increment_messages_sent(auth_user_id):
 
 
 def increment_total_messages():
+    '''
+    Increments to the total amount of messages that have been sent
+    
+    '''
     store = data_store.get()
     store['stats']['total_num_messages'] += 1
     total_num_messages = store['stats']['total_num_messages']
@@ -161,6 +175,10 @@ def increment_total_messages():
 
 
 def decrement_total_messages():
+    '''
+    Decrements from the total amount of messages sent
+    
+    '''
     store = data_store.get()
     store['stats']['total_num_messages'] -= 1
     total_num_messages = store['stats']['total_num_messages']
@@ -197,29 +215,58 @@ def generate_new_dm_id():
 
 
 def generate_user_id():
+    '''
+    Generates a new user_id that is uniqe and sequentially increases by 1
+    Args:
+        None
+    Return:
+        Returns the next user_id   
+    '''
     global AUTH_COUNTER
     AUTH_COUNTER += 1
     return AUTH_COUNTER
 
 
 def generate_channel_id():
+    '''
+    Generates a new channel_id that is uniqe and sequentially increases by 1
+    Args:
+        None
+    Return:
+        Returns the next channel_id  
+    '''
     global CHANNEL_COUNTER
     CHANNEL_COUNTER += 1
     return CHANNEL_COUNTER
 
 
 def reset_globals():
+    '''
+    Resets the all of the ID counters for channels, dms, users, messages
+    Args:
+        None
+    '''
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
     CHANNEL_COUNTER = AUTH_COUNTER = MESSAGE_ID_COUNTER = DM_ID_COUNTER = 0
 
 
 def load_globals(auth, channel, message, dm):
+    '''
+    Loads the all of the ID counters for channels, dms, users, messages
+    Args:
+        None
+    '''
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
 
     CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER = channel, auth, message, dm
 
 
 def get_globals():
+    '''
+    Gets the all of the ID counters for channels, dms, users, messages
+    Args:
+        None    
+    '''
     global CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
 
     return CHANNEL_COUNTER, AUTH_COUNTER, MESSAGE_ID_COUNTER, DM_ID_COUNTER
