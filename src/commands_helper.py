@@ -256,10 +256,18 @@ def add_poll_option(c_dex, options):
 
 
 def vote(u_id, c_dex, vote_choice):
-    '''
-        Allows a user to vote for 1 option only, if you vote for another option
-        after you have already voted, your vote will be changed.
-    '''
+    """_summary_
+    Allows a user to vote for 1 option only, if you vote for another option
+    after you have already voted, your vote will be changed.
+
+    Args:
+        u_id (int): _description_
+        c_dex (int): _description_
+        vote_choice (int): _description_
+
+    Raises:
+        InputError: There is no ongoing poll
+    """
     store = data_store.get()
 
     poll_status = store['channels'][c_dex]['poll']['poll_status']
@@ -290,6 +298,16 @@ def vote(u_id, c_dex, vote_choice):
 
 
 def end_poll(c_dex, c_id):
+    """Cnds the poll in the channel
+
+    Args:
+        c_dex (int): _description_
+        c_id (int): _description_
+
+    Raises:
+        InputError: There is no ongoing poll!
+        AccessError: You did not start this poll!
+    """
     store = data_store.get()
 
     poll_info = store['channels'][c_dex]['poll']
@@ -323,6 +341,14 @@ def end_poll(c_dex, c_id):
 
 
 def get_best_poll(poll_info):
+    """Returns the poll with the most votes
+
+    Args:
+        poll_info (list): _description_
+
+    Returns:
+        dict: dict with most popular options and formatted return of the most popular
+    """
     largest = 0
     most_popular_options = []
     return_str = ""
@@ -344,6 +370,15 @@ def get_best_poll(poll_info):
 
 
 def has_user_voted(poll_info, u_id):
+    """Checks if a user has voted
+
+    Args:
+        poll_info (list): _description_
+        u_id (int): _description_
+
+    Returns:
+        bool: True if voted, else false
+    """
     voted = False
     for voters in poll_info.values():
         if u_id in voters:
@@ -361,6 +396,15 @@ def has_user_voted(poll_info, u_id):
 
 
 def create_bot_message(warning_message):
+    """Formats a bot message
+
+    Args:
+        warning_message (str): _description_
+
+    Returns:
+        dict: returns a normal message, message id and u_id = - 1 as it is 
+        reserved for the bot
+    """
     message = {
         'message_id': - 1,
         'u_id': - 1,
@@ -374,11 +418,26 @@ def create_bot_message(warning_message):
 
 
 def format_no_start():
+    """Formats the message for the bot when the user requesting
+    did not start the vode
+
+    Returns:
+        str: formatted message for user who did not start vote
+    """
     warning_message = "You did not start the vote!"
     return warning_message
 
 
 def format_bot_warning(warnings, handle):
+    """Formats bot message for when a user is warned about swearing
+
+    Args:
+        warnings (int): _description_
+        handle (str): _description_
+
+    Returns:
+        str: formatted string warning user they will be timed out
+    """
     warning_message = "Stop swearing @{0}! {1} more warning before timeout!!".format(
         handle, 3 - (warnings % 3))
 
@@ -386,6 +445,15 @@ def format_bot_warning(warnings, handle):
 
 
 def format_bot_timeout_warning(handle, length):
+    """Formats a message which will let a user know they will be timed out
+
+    Args:
+        handle (str): _description_
+        length (int): _description_
+
+    Returns:
+        str: formatted message warning user they are timed out
+    """
     warning_message = "@{0} has been timed out for {1} seconds for profanity!".format(handle,
                                                                                       length)
 
@@ -393,12 +461,26 @@ def format_bot_timeout_warning(handle, length):
 
 
 def format_no_vote():
+    """Formats a message when a user tries to vote but there is no poll
+
+    Returns:
+        str: message instructing user to start poll
+    """
     message = "There is no active poll, please do /startpoll <question> <vote1> <vote2> ..."
 
     return message
 
 
 def format_bot_poll(c_dex, stage):
+    """Formats a message which displays the vote question, options and how many people voted
+
+    Args:
+        c_dex (int): _description_
+        stage (int): _description_
+
+    Returns:
+        str: formatted string which displays poll information
+    """
     store = data_store.get()
 
     poll_stats = store['channels'][c_dex]['poll']
@@ -424,18 +506,28 @@ def format_bot_poll(c_dex, stage):
 
 
 def make_vote_graphics(len):
-    '''
-        Makes voting graphics
-    '''
+    """Makes voting graphics, translates number of voters to an emoji
+
+    Args:
+        len (int): _description_
+
+    Returns:
+        str: str of emojis depending on len
+    """
     graphic = "👩 " * len
 
     return graphic
 
 
 def largest_vote_name(poll_info):
-    '''
-        Chooses which
-    '''
+    """Chooses which option has the largest name for formatting
+
+    Args:
+        poll_info (list): _description_
+
+    Returns:
+        int: number of letters in the word with option with the largest name
+    """
     largest = 0
     for key in poll_info:
         if len(key) > largest:
@@ -450,7 +542,15 @@ def largest_vote_name(poll_info):
 
 
 def check_command_owner_status(channel_index, auth_user_id):
+    """Checks if owner is owner of channel or a global owner
 
+    Args:
+        channel_index (int): _description_
+        auth_user_id (int): _description_
+
+    Raises:
+        AccessError: auth_user_id does not have owner permissions in the channel
+    """
     store = data_store.get()
 
     valid = False

@@ -178,7 +178,8 @@ def message_send_v1(token, channel_id, message):
 def messages_edit_v1(token, message_id, message):
     """
     Given a message, update its text with new text. If the new message is an empty string, the message is deleted.
-    As long as you have a message_id, can find the message in either channels or dms and edit it. 
+    As long as you have a message_id, can find the message in either channels or dms and edit it. If the bot is on,
+    checks if there are any expletives, if so message is altered and a warning is given.
     Args: 
         token           str         user's token
         channel_id      int         channel's id
@@ -213,7 +214,8 @@ def messages_edit_v1(token, message_id, message):
 
 def messages_remove_v1(token, message_id):
     """
-    Given a message_id for a message, this message is removed from the channel/DM
+    Given a message_id for a message, this message is removed from the channel/DM, bot messages
+    cannot be removed
 
     Args: 
         token           str         user's token
@@ -235,6 +237,18 @@ def messages_remove_v1(token, message_id):
 
 
 def message_share_v1(token, og_message_id, message, channel_id, dm_id):
+    """Shares the message that is requested into the channel or dm
+
+    Args:
+        token (str)
+        og_message_id (int)
+        message (str)
+        channel_id (int)
+        dm_id (int)
+
+    Returns:
+        int: returns the new_message_id
+    """
     user_id = check_valid_token(token)['u_id']
 
     check_message(message)
@@ -258,7 +272,8 @@ def message_share_v1(token, og_message_id, message, channel_id, dm_id):
 def channel_leave_v1(token, channel_id):
     """
     Given a channel with ID channel_id that the authorised user is a member of, remove them as a member of the channel. 
-    Their messages should remain in the channel. If the only channel owner leaves, the channel will remain.
+    Their messages should remain in the channel. If the only channel owner leaves, the channel will remain. If user is
+    the owner of a standup, they cannot leave until it is finished
 
     Args: 
         token           str         user's token
@@ -449,6 +464,7 @@ def message_sendlater_v1(token, channel_id, message, time_sent):
     if float(time_difference) < 0:
         raise InputError(
             'time_sent is a time in the past')
+
     t = threading.Timer(time_difference, send_message,
                         [new_message, channel_id, auth_user_id])
     t.start()
