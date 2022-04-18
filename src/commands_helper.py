@@ -256,10 +256,18 @@ def add_poll_option(c_dex, options):
 
 
 def vote(u_id, c_dex, vote_choice):
-    '''
-        Allows a user to vote for 1 option only, if you vote for another option
-        after you have already voted, your vote will be changed.
-    '''
+    """_summary_
+    Allows a user to vote for 1 option only, if you vote for another option
+    after you have already voted, your vote will be changed.
+
+    Args:
+        u_id (_type_): _description_
+        c_dex (_type_): _description_
+        vote_choice (_type_): _description_
+
+    Raises:
+        InputError: _description_
+    """
     store = data_store.get()
 
     poll_status = store['channels'][c_dex]['poll']['poll_status']
@@ -290,6 +298,16 @@ def vote(u_id, c_dex, vote_choice):
 
 
 def end_poll(c_dex, c_id):
+    """_summary_
+
+    Args:
+        c_dex (_type_): _description_
+        c_id (_type_): _description_
+
+    Raises:
+        InputError: _description_
+        AccessError: _description_
+    """
     store = data_store.get()
 
     poll_info = store['channels'][c_dex]['poll']

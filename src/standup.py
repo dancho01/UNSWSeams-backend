@@ -9,6 +9,16 @@ from src.standup_helper import start_standup, end_standup, check_active, format_
 
 
 def standup_start_v1(token, channel_id, length):
+    """_summary_
+
+    Args:
+        token (_type_): _description_
+        channel_id (_type_): _description_
+        length (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     user_id = check_valid_token(token)['u_id']
     channel_index = check_valid_channel(channel_id)
     check_length(length)
