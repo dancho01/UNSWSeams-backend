@@ -1,0 +1,33 @@
+Name                          Stmts   Miss Branch BrPart  Cover
+---------------------------------------------------------------
+src/admin.py                     26      0      6      0   100%
+src/admin_helper.py              64      1     50      2    97%
+src/auth.py                      48      3     12      1    93%
+src/auth_helper.py               72      1     42      1    98%
+src/channel.py                  173      1     34      1    99%
+src/channel_helper.py           129      0     90      1    99%
+src/channels.py                  33      0      0      0   100%
+src/channels_helper.py           28      0     10      0   100%
+src/commands.py                  85      0     43      2    98%
+src/commands_helper.py          203      0     80      6    98%
+src/config.py                     4      0      0      0   100%
+src/dm.py                       120      0     36      0   100%
+src/dm_helpers.py                71      0     28      0   100%
+src/error.py                      7      0      0      0   100%
+src/global_helper.py             99      2     42      1    98%
+src/iter3_message_helper.py      61      0     52      3    97%
+src/message_helper.py            50      0     50      2    98%
+src/message_iter3.py             45      0     18      0   100%
+src/other.py                     11      0      0      0   100%
+src/persistence.py               17      2      0      0    88%
+src/set.py                       18      0      0      0   100%
+src/set_helper.py                84      0     84      3    98%
+src/standup.py                   34      0      0      0   100%
+src/standup_helper.py            55      0     30      0   100%
+src/token.py                     34      0      6      0   100%
+src/user.py                      50      0     10      1    98%
+src/user_helper.py              149      1    100      3    98%
+src/users.py                      6      0      0      0   100%
+src/users_helpers.py             14      0      8      0   100%
+---------------------------------------------------------------
+TOTAL                          1790     11    831     27    99%
